@@ -70,7 +70,7 @@
         $headers .= "CC: membership@spi-inc.org\n";
         $headers .= "Errors-To: admin@members.spi-inc.org";
         mail($form[email], "Your SPI Contribution Membership application", $body, $headers);
-        echo "Applicant became a Contributing Member, emailing him.<P>";
+        echo "Applicant became a Contributing Member, emailing them.<P>";
     }
 
     return TRUE;

@@ -101,13 +101,13 @@
 #use wml::nmpage title="SPI New Member Application"
 <H1>New Member Application</H1>
 <?
-  if ($what == "new") { 
+  if (_REQUEST['what'] == "new") { 
     if ( ($db = open_db())) {
 
-      $name = trim(strip_tags($name));
-      $email = trim(strip_tags($email));
-      $passwda = trim($passwda);
-      $passwdb = trim($passwdb);
+      $name = trim(strip_tags($_REQUEST['name']));
+      $email = trim(strip_tags($_REQUEST['email']));
+      $passwda = trim($_REQUEST['passwda']);
+      $passwdb = trim($_REQUEST['passwdb']);
       $adate = strftime('%Y-%m-%d');
       $randstr = md5(uniqid(rand()));
 

@@ -31,7 +31,7 @@
 <P>Session management failed, you are not allowed here.
 <?
   } else { 
-    if ($submit == "") { 
+    if ($_REQUEST['submit'] == "") { 
 ?>
 <H1>Change Password</H1>
 <P>If you want to change your password, enter the details below.
@@ -45,6 +45,7 @@
 </form>
 <?
   } else {
+    $form = $_REQUEST['form'];
     $passwda = strip_tags(trim($form[passwda]));
     $passwdb = strip_tags(trim($form[passwdb]));
     $oldpasswd = strip_tags(trim($form[oldpasswd]));

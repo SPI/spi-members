@@ -3,7 +3,7 @@
   include("config.inc");
   include("common.inc");
 
-  switch($listtype) {
+  switch($_REQUEST['listtype']) {
     case 'ncapp':
       $title = 'Non-Contributing Member Applications';
       $where = "AND ( m.ismember = 'f' OR m.ismember IS NULL) ";

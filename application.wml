@@ -129,6 +129,10 @@ session management failed or timed out.
 <?
   } else { #sess reg
     $mgr_only = FALSE;
+    $what = $_REQUEST['what'];
+    $user = $_REQUEST['user'];
+    $appid = $_REQUEST['appid'];
+    $form = $_REQUEST['form'];
     if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
     # Did they click the apply?
     if ($what == 'newapply') {

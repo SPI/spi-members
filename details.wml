@@ -87,6 +87,8 @@
 <P>You do not have permission to view this page.  The problem is session management failed or timed out.";
 <?
   } else { #sess reg
+  $user = $_REQUEST['user'];
+  $form = $_REQUEST['form'];
   # Did the user click on update?
   if ($form[submit]) {
     update_member($db, $form);

@@ -66,7 +66,7 @@
 <P>You do not have permission to view this page.  The problem is
 <?
     if ($what == 'login') {
-      print " email not found or password was wrong.<P>If you have forgotten your password you can get it <A href=\"getpass.php\">emailed to you</A>.";
+      print " email not found or password was wrong.<P>If you have forgotten your password you can get a new one <A href=\"getpass.php\">emailed to you</A>.";
     } else {
       print " session management failed or timed out.";
     }

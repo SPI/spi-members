@@ -15,7 +15,8 @@ WML_DEFS := -I $(SPITEMPLATEDIR) -I template -DHOME="http://www.spi-inc.org" \
 all: $(PHPFILES) $(FINFILES)
 
 fin:
-	cp -a $(FINFILES) $(TARGETDIR)/
+	mkdir -p $(TARGETDIR)/finances
+	cp -a $(FINFILES) $(TARGETDIR)/finances
 
 %.html: %.wml $(SPITEMPLATES)
 	wml $(WML_DEFS) $< -o UNDEFuEN:$@
@@ -23,7 +24,7 @@ fin:
 %.php: %.wml $(SPITEMPLATES)
 	wml $(WML_DEFS) $< -o UNDEFuEN:$@
 
-install: all
+install: all fin
 	cp -a $(PHPFILES) $(INCFILES) $(TARGETDIR)/
 
 clean:

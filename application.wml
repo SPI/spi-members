@@ -3,6 +3,7 @@
   include("config.inc");
   include("common.inc");
 
+  // Returns appid on success, -1 on failure
   function create_contrib_application($db, $email) {
 
     $sql = "INSERT INTO applications (appdate, member, contribapp, lastchange) ";
@@ -11,22 +12,52 @@
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
       echo "SQL was: $sql<BR>\n";
-      return FALSE;
+      return -1;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
       echo "Only one row should be effected but $tuples rows were<BR>\n";
-      return FALSE;
+      return -1;
     }
-   echo "<P>Your application for the Contributing Membership has been ";
-   echo "registered successfully.  An Application Manager should soon ";
-   echo "get in contact with you.<P>";
+    $sql = "SELECT currval('applications_appid_seq')";
+    if (! ($newres = pg_exec($db, $sql))) {
+      echo "Cannot find your new application: ", pg_ErrorMessage($db), "<BR>\n";
+      echo "SQL was: $sql<BR>\n";
+      return -1;
+    }
+    if (pg_NumRows($newres) != 1) {
+      echo "I cannot find your new application in the database, something ";
+      echo "went wrong";
+      return -1;
+    }
+    $row = pg_Fetch_Array($newres, 0);
+    $appid = $row[0];
+    echo "<P>Your application for the Contributing Membership has been ";
+    echo "registered successfully.  An Application Manager should soon ";
+    echo "get in contact with you. Your application id is $appid<P>";
 
    $body = "$email applied for a contributing membership.\n";
    $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();
    mail("admin@nm.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
    
-    return TRUE;
+    return $appid;
   }
+
+  // Tries to find the latest contrib application, returns -1 if not found.
+  // Used as a pre-check for new applications
+  function get_latest_application($db, $email) {
+    $sql = "SELECT a.appid FROM applications a, members m WHERE m.email = '$email' AND a.member = m.memid AND a.contribapp = 't' AND a.approve IS NULL ORDER BY a.appdate DESC, appid DESC";
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
+      echo "SQL was: $sql<BR>\n";
+      return -1;
+    }
+    if (pg_NumRows($query) == 0) {
+      return -1;
+    }
+    $row = pg_Fetch_Array($query, 0);
+    return $row['appid'];
+  }
+
 
   function get_application($db, $email, $appid) {
   global $row, $query;
@@ -88,7 +119,14 @@ session management failed or timed out.
     if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
     # Did they click the apply?
     if ($what == 'newapply') {
-      create_contrib_application($db,$s_username);
+      // We can use s_username here as only applicants can apply themselves
+      $oldappid = get_latest_application($db, $s_username);
+      if ($oldappid == -1) {
+        $appid = create_contrib_application($db,$s_username);
+      } else {
+        echo "<p>You have already applied for contributing membership, please use application #$oldappid instead.</p>\n";
+	$appid = $oldappid;
+      }
     }
     # Did the user click on update?
     if ($what == 'update') {

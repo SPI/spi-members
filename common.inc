@@ -206,7 +206,18 @@ function print_applications($db, $sql, $email) {
     echo "<A href=\"application.php?"; ?><?=SID?><?;
     echo "&appid=", urlencode($row["appid"]), "&user=$email\">";
     echo "application #". $row['appid'];
-    echo " applied on ", $row['appdate'], "</a><br>\n";
+    echo " applied on ", $row['appdate'], "</a> ";
+    if ($row['contribapp'] == 't') { 
+      echo " (contrib) "; 
+      if ($row['approve'] != '') {
+        echo ' (complete) ';
+      }
+    } else {
+      if ($row['validemail'] == 't') {
+        echo ' (complete) ';
+      }
+    }
+    echo "<BR>\n";
   }
   pg_Close($db);
   return TRUE;

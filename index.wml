@@ -10,12 +10,11 @@ To apply for membership, please follow the
 <BR>
 <H1>Login</H1>
 <P>
-If your membership application has been filed, you can log in with
-your email address and password.  Once logged in, you can look at the status
-of your application, change your personal information, and apply for a
-application, change your personal information, and apply for a
-contributing membership (provided your email verification has already
-been successfully completed).
+If your membership application has been filed, you can log in with your
+email address and password.  Once logged in, you can look at the status of
+your application, change your personal information, and apply for a
+contributing membership (provided your email verification has already been
+successfully completed).
 <CENTER>
 <FORM method="post" action="nmstatus.php">
 <INPUT name="what" value="login" type="hidden">

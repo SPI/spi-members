@@ -11,7 +11,7 @@
       break;
     case 'ncmem':
       $title = 'Non-Contrib Members';
-      $where = "AND m.ismember = 't' AND m.iscontrib = 'f'";
+      $where = "AND m.ismember = 't' AND m.iscontrib = 'f' AND (contribapp = 'f' OR contribapp IS NULL)";
       $desc = "This page lists all members who have non-contributing status.";
       break;
     case 'capp':

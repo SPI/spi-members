@@ -132,7 +132,7 @@
 	later.
 	<?
 				 } else { #register ok
-echo "<p>SPI membership application ". get_appid($db, $email). " submitted ".
+echo "<p>SPI membership application #". get_appid($db, $email). " submitted ".
      "successfully on $adate.</p>\n";
 echo "<p>You will receive an automatic confirmation email at the email address that ".
      "you specified in the application.  If you do not receive the ".

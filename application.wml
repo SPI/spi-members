@@ -129,11 +129,12 @@ session management failed or timed out.
            echo "SQL was: $sql<BR>\n";
            return FALSE;
        }
-       echo "<TR><TD width=\"200\"><B>Manager:</B> </TD><TD width=\"400\"> ";
-	echo "<SELECT NAME = \"form[manager]\">";
-	echo "<OPTION VALUE=''>none\n";
-	$rows = pg_NumRows($result);
-	for ($i = 0 ; $i < $rows ; $i++) {
+       if ($mgr_only) {
+         echo "<TR><TD width=\"200\"><B>Manager:</B> </TD><TD width=\"400\"> ";
+	 echo "<SELECT NAME = \"form[manager]\">";
+	 echo "<OPTION VALUE=''>none\n";
+	 $rows = pg_NumRows($result);
+	 for ($i = 0 ; $i < $rows ; $i++) {
 	    $info = pg_Fetch_Array($result, $i);
 	    $sel = "";
 	    if ($row['manager'] == $info["memid"]) {
@@ -143,8 +144,9 @@ session management failed or timed out.
         }
 	print "</SELECT>\n";
 	echo "</TD></TR>\n";
-
-#	print_text('Manager', 'manager', $row['manager'], $mgr_only);
+     } else {
+       print_text('Manager', 'manager', $row['manager'], FALSE);
+     }
 
 	print_text('Date Assigned', 'manager_date', $row['manager_date'], $mgr_only);
         print_textbox('Mgr Comments', 'comment', $row['comment'], $mgr_only);

@@ -55,7 +55,6 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 <A href="logout.php?<?=SID?>">Logout</A><BR>
 <A href="nmstatus.php?<?=SID?>">Main</A><BR>
 <A href="details.php?<?=SID?>">Details</A><BR>
-<A href="application.php?<?=SID?>">Applications</A><BR>
 <?
     if (session_is_registered('s_ismanager')) {
 ?>

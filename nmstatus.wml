@@ -72,7 +72,7 @@
     }
   } else { #sess reg
   # Did the user click on update?
-  if ($form[emailkey] != $s_username && session_is_registered('s_ismanager')) {
+  if ($form[emailkey] != '' && $form[emailkey] != $s_username && session_is_registered('s_ismanager')) {
     $user = $form[emailkey];
   }
   # Work out if we were called as us or as a manager

@@ -49,7 +49,7 @@
 	return FALSE;
       }
       if (pg_NumRows($query) == 1) {
-	echo "This email address already exists<BR>\n";
+	echo "This email address already exists.<BR>\n";
 	return FALSE;
       }
       return TRUE;
@@ -114,7 +114,7 @@
         $errors = "";
 	if ($name == "") { $errors .= "<LI>You did not supply your name.\n"; }
 	if ($email == "") { $errors .= "<LI>You did not supply your email address.\n"; }
-	if ($passwda == "" || $passwdb == "") { $errors .= "<LI>You did not enter in your passwd in both boxes."; }
+	if ($passwda == "" || $passwdb == "") { $errors .= "<LI>You did not enter your passwd in both boxes."; }
 	if ($passwda != $passwdb) { $errors .= "<LI>The passwords are different."; }
 	if ($errors != "") {
 	 echo "<P>There were problems with your application:<UL>$errors</UL><BR>\n";

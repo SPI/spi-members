@@ -81,7 +81,7 @@
     } else {
       echo "<TR><TD>$desc</TD><TD>??</TD>";
     }
-    echo "</TD></TR>\n";
+    echo "</TR>\n";
     return;
     if ($startdate == '' || $startdate == '') {
       echo "<TD><SMALL>N/A</SMALL></TD><TD><SMALL>N/A</SMALL></TD><TD><SMALL>N/A</SMALL></TD><TD><SMALL>N/A</SMALL></TD>";

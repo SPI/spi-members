@@ -47,7 +47,7 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 <br>
 <<mainbody>>
 </td>
-<td valign="top" bgcolor="#1983C6">
+<td nowrap valign="top" bgcolor="#1983C6">
 <?
   if (session_is_registered("s_username")) {
 ?>

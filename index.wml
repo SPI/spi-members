@@ -22,7 +22,7 @@ been successfully completed).
 <TABLE border="0">
 <TR><TD>Email Address:</TD><TD><INPUT name="email" type=text></TD></TR>
 <TR><TD>Password:</TD><TD><INPUT name="passwd" type="password"></TD></TR>
-<TR><TD colspan="2" align="center"><INPUT type="submit" value="Login"></TD></YT>
+<TR><TD colspan="2" align="center"><INPUT type="submit" value="Login"></TD></tr>
 </TABLE>
 </FORM>
 </CENTER>

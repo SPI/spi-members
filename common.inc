@@ -79,7 +79,7 @@
   {
     echo "<TR><TD width=\"200\"><B>$title</B> </TD><TD width=\"400\"> ";
     if ($editable) {
-      echo "<textarea name=\"form[$name]\" rows=\"5\" cols=\"30\">$value </textarea>";
+      echo "<textarea name=\"form[$name]\" rows=\"10\" cols=\"60\">$value </textarea>";
     } else {
       echo "<QUOTE>$value</QUOTE>";
     }

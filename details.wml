@@ -20,6 +20,9 @@
   return TRUE;
 }
   function update_member($db, $form) {
+    global $row;
+    get_member($db, $form[email]);
+    $iscontrib = $row['iscontrib'];
 
     $sql = 'UPDATE members SET '.
            get_text('email', $form[email]);
@@ -40,6 +43,32 @@
       echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
+
+    # Applicant just became a Contrib Member, mail them
+    if ($iscontrib == 'f' && $form['iscontrib'] == 't') {
+        $body = "Dear " . $row[name] . "!\n";
+        $body .= "\n";
+        $body .= "I'm happy to announce that your SPI Contributing Membership\n";
+        $body .= "application has been accepted.  You can check your application\n";
+        $body .= "details by logging in at https://members.spi-inc.org/\n";
+        $body .= "\n";
+        $body .= "You will get subscribed to spi-private in the next few days.\n";
+        $body .= "This list is intended for internal SPI discussions.  Please do\n";
+        $body .= "not forward or distribute mails from this list.  There is also\n";
+        $body .= "an announcement list (spi-announce) and a general, public\n";
+        $body .= "discussion list (spi-general).  You can subscribe to those\n";
+        $body .= "online at http://www.spi-inc.org/mailing_lists\n";
+        $body .= "\n";
+        $body .= "Welcome to SPI!\n";
+        $body .= "-- \n";
+        $body .= "The SPI Membership Committee\n";
+        $headers = "From: SPI Membership Committee <membership@spi-inc.org>\n";
+        $headers .= "CC: membership@spi-inc.org\n";
+        $headers .= "Errors-To: admin@members.spi-inc.org";
+        mail($form[email], "Your SPI Contribution Membership application", $body, $headers);
+        echo "Applicant became a Contributing Member, emailing him.<P>";
+    }
+
     return TRUE;
   }
 

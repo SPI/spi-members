@@ -44,8 +44,8 @@
     pg_exec($db, $sql);
 
 //   $body = "$email applied for a contributing membership.\n";
-//   $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();
-//   mail("admin@nm.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
+//   $headers = "From: admin@members.spi-inc.org\nX-Mailer: PHP/" . phpversion();
+//   mail("admin@members.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
    
     return $appid;
   }

@@ -64,7 +64,7 @@ Email Address:&nbsp;<INPUT type="text" name="email" length="60"><BR>
 ?>
 <P>A new password has been emailed to you.  Please log in with this new
 password and then change it.
-<P>Back to the <A href="http://nm.spi-inc.org/">SPI Application Page</A> or 
+<P>Back to the <A href="http://members.spi-inc.org/">SPI Application Page</A> or 
 <A href="http://www.spi-inc.org/">SPI Inc Homepage</A>.
 <?
     }

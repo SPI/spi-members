@@ -7,7 +7,7 @@
     $body .= "Thank you for your interest in becoming a member of Software in the\n";
     $body .= "Public Interest, Inc.  To approve your membership, we first need to be\n";
     $body .= "able to verify your email address.  Please send this email to\n";
-    $body .= "email-check@nm.spi-inc.org including the verification string below.\n";
+    $body .= "email-check@members.spi-inc.org including the verification string below.\n";
     $body .= "For most email programs, simply replying to this email (including the\n";
     $body .= "body of the mail) will be sufficient.\n\n";
     $body .= "Application Information:\n";
@@ -16,7 +16,7 @@
     $body .= "Subscription Host: ". getenv(REMOTE_ADDR) . "\n\n";
     $body .= "Your name and email address were entered from the subscription host\n";
     $body .= "shown above.  If you did not apply for SPI membership, then email\n";
-    $body .= "admin@nm.spi-inc.org asking to be removed.  You can change your password\n";
+    $body .= "admin@members.spi-inc.org asking to be removed.  You can change your password\n";
     $body .= "on the membership web page once your application has been approved.\n\n";
     $body .= "Do not delete this random string as it is used for the verification\n";
     $body .= "process.\n\n";
@@ -26,7 +26,7 @@
     $body .= "\n";
     $body .= "Please be patient as your application is processed.  We are working the\n";
     $body .= "list of applicants as quickly as we can.  If you would like to check\n";
-    $body .= "The progress of your application you can do so at <http://nm.spi-inc.org/>\n\n";
+    $body .= "The progress of your application you can do so at <http://members.spi-inc.org/>\n\n";
     $body .= "SPI has several mailing lists dedicated to different topics of\n";
     $body .= "discussion.  We recommend that you at least subscribe to the\n";
     $body .= "spi-announce list, and suggest subscribing to the spi-general list as\n";
@@ -37,7 +37,7 @@
     $body .= "Software in the Public Interest, Inc.\n\n";
 
 
-    $headers = "From: email-check@nm.spi-inc.org\nReply-To: email-check@nm.spi-inc.org\nPrecedence: bulk\nErrors-To: admin@spi-inc.org\nX-Mailer: PHP/" . phpversion();
+    $headers = "From: email-check@members.spi-inc.org\nReply-To: email-check@members.spi-inc.org\nPrecedence: bulk\nErrors-To: admin@spi-inc.org\nX-Mailer: PHP/" . phpversion();
     mail($email, "SPI Membership application for $email", $body, $headers);
     return TRUE;
   }
@@ -136,7 +136,7 @@ echo "<p>SPI membership application #". get_appid($db, $email). " submitted ".
      "successfully on $adate.</p>\n";
 echo "<p>You will receive an automatic confirmation email at the email address that ".
      "you specified in the application.  If you do not receive the ".
-     "confirmation email within a day, please send an email to admin@nm.spi-inc.org ".
+     "confirmation email within a day, please send an email to admin@members.spi-inc.org ".
      "stating the email address used in the application, your application ".
      "ID and the application date.</p>\n";
 					 echo "<P>";

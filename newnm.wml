@@ -13,7 +13,6 @@
     $body .= "Application Information:\n";
     $body .= "Name: $name\n";
     $body .= "Email: $email\n";
-    $body .= "Password: $passwd\n";
     $body .= "Subscription Host: ". getenv(REMOTE_ADDR) . "\n\n";
     $body .= "Your name and email address were entered from the subscription host\n";
     $body .= "shown above.  If you did not apply for SPI membership, then email\n";
@@ -149,9 +148,7 @@ echo "<p>You should receive a confirmation email at the email address that ".
  } else { #not called  yet
 ?>
 <P>Thank you for your interest in SPI, if you would like to be put into
-the member list then enter in the information below. (NB: please
-do not choose a sensitive password since it will be stored in plain text
-and transmitted by e-mail).
+the member list then enter in the information below.
 <BR>
 <HR>
 <FORM method="post" action="newnm.php">

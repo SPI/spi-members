@@ -53,7 +53,7 @@
         $body .= "application information by logging in to the membership pages\n";
         $body .= "located at https://members.spi-inc.org/\n";
         $body .= "\n";
-        $body .= "You will be subscribed to the spi-private mailing list in the next\n"
+        $body .= "You will be subscribed to the spi-private mailing list in the next\n";
         $body .= "few days.  This list is intended for internal SPI discussions.\n";
         $body .= "Please do not forward or distribute mails from this list.\n";
         $body .= "\n";
@@ -65,7 +65,7 @@
         $body .= "Welcome to SPI!\n";
         $body .= "-- \n";
         $body .= "The SPI Membership Committee\n";
-        $body .= "<membership@spi-inc.org>":
+        $body .= "<membership@spi-inc.org>";
         $headers = "From: SPI Membership Committee <membership@spi-inc.org>\n";
         $headers .= "CC: membership@spi-inc.org\n";
         $headers .= "Errors-To: admin@members.spi-inc.org";

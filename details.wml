@@ -29,7 +29,7 @@
 	      ", ". get_text('expirydate', $form[expirydate]);
     }
     $sql .= " WHERE email = '". $form[emailkey] . "'";
-	   echo $sql;
+#	   echo $sql;
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
       echo "SQL was: $sql<BR>\n";

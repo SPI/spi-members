@@ -103,7 +103,7 @@
         print "Applied for contributing membership on ". $row['appdate'] . ".<P>";
     }
       # Get all the applications for this user.
-      print "Applications for this user<br>\n";
+      print "Your Applications:<br>\n";
       $sql = "SELECT * from applications WHERE member = '".$row['memid']."' ORDER BY appdate DESC";
       print_applications($db, $sql,$user);
 

@@ -97,7 +97,13 @@
     print "<P>";
 
     if ($row['ismember'] == 't' && $row['iscontrib'] != 't') {
-        print "<A href=\"application.php?what=newapply&"?><?=SID?><? print "\">Apply</A> for contributing membership.";
+        print "<A href=\"application.php?what=newapply&"?><?=SID?><? print "\">Apply</A> for contributing membership.  Please apply only if you belong to one of these groups:";
+        print "<UL>";
+        print "<LI>active members of SPI affiliated projects";
+        print "<LI>active members of any large free software development project";
+        print "<LI>any person who has made a significant contribution to the free software community";
+        print "<LI>any person who actively contributes to the free software community";
+        print "</UL>";
         print "<P>"; 
     }
       # Get all the applications for this user.

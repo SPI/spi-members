@@ -99,7 +99,7 @@
     if ($row['contribapp'] != 't') {
         print "<A href=\"application.php?what=newapply&"?><?=SID?><? print "\">Apply</A> for contributing membership.";
         print "<P>"; 
-    } else if ($row['contrib'] != 't') {
+    } else if ($row['contribapp'] != 't') {
         print "Applied for contributing membership on ". $row['appdate'] . ".<P>";
     }
       # Get all the applications for this user.

@@ -11,7 +11,7 @@ IMAGES=$(wildcard *.gif) $(wildcard *.jpg)
 SPITEMPLATEDIR=../spiwml/webwml/template
 SPITEMPLATES=$(wildcard template/*.wml) $(wildcard $(SIPTEMPLATEDIR)/*.wml)
 
-WML_DEFS= -I $(SPITEMPLATEDIR) -I template
+WML_DEFS= -I $(SPITEMPLATEDIR) -I template -DHOME="http://www.spi-inc.org"
 
 all: $(HTMLFILES) $(PHPFILES)
 

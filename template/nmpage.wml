@@ -61,6 +61,12 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 <hr>
 <b>Managers</b><br>
 <A href="mgrlist.php?<?=SID?>">All Members</A><BR>
+<A href="mgrlist.php?listtype=ncapp&<?=SID?>">NC Applications</A><BR>
+<A href="mgrlist.php?listtype=capp&<?=SID?>">Contrib Applications</A><BR>
+<A href="mgrlist.php?listtype=ncmem&<?=SID?>">NC Members</A><BR>
+<A href="mgrlist.php?listtype=cmem&<?=SID?>">Contrib Members</A><BR>
+<A href="mgrlist.php?listtype=mgr&<?=SID?>">Managers</A><BR>
+
 
 <?
     }

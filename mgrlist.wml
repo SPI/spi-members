@@ -2,27 +2,49 @@
   session_start();
   include("config.inc");
   include("common.inc");
+
+  switch($listtype) {
+    case 'ncapp':
+      $title = 'Non-Contributing Member Applications';
+      $where = "AND ( m.ismember = 'f' OR m.ismember IS NULL) ";
+      break;
+    case 'ncmem':
+      $title = 'Non-Contrib Members';
+      $where = "AND m.ismember = 't' AND m.iscontrib = 'f'";
+      break;
+    case 'capp':
+      $title = 'Contrib Applications';
+      $title = "AND m.ismember = 't' AND a.approve IS NULL";
+      break;
+    case 'cmem':
+      $title = 'Contrib Members';
+      $where = "AND m.ismember = 't' AND m.iscontrib = 't'";
+      break;
+    case 'mgr':
+      $title = 'Application Managers';
+      $where = "AND m.ismember = 't' AND m.ismanager = 't'" ;
+      break;
+
+    default:
+      $title = 'All Applicants';
+      $where = '';
+      break;
+  }
 ?>
-#use wml::nmpage title="SPI New Member - List of all Applicants"
+#use wml::nmpage title="SPI New Members - <? echo $title; ?>";
 <?
   
   if (!session_is_registered("s_username") || !session_is_registered("s_ismanager")) {
 ?>
 <STRONG>
 You should not be here!!</STRONG>
-<? } else { 
+<? 
+  } else { 
   session_register("s_username");
   session_register("s_manager");
-?>
-<H1>SPI New Member - All Applicants</H1><BR>
-<P>This is a list of all applicants known to the database. This list is sorted
-by application date. Applicants who are now maintainers are not shown up
-in this list.
-<TABLE border=0>
- <TR><TH>Appl Date</TH><TH>Applicant</TH><TH>Manager</TH></TR>
-<?
-   $sql = 'SELECT a.*,m.* from applications a, members m WHERE m.memid = a.member ORDER BY a.appdate';
-   print_applicants($sql);
-?>
-</TABLE>
-<? } # Registered session ?>
+
+  echo "<H1>SPI New Member -- $title</H1><BR>";
+
+    $sql = "SELECT a.*,m.* from applications a, members m WHERE m.memid = a.member $where ORDER BY a.appdate";
+    print_applicants($sql);
+  } # Registered session ?>

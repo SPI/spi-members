@@ -174,8 +174,10 @@ function print_applicants($sql) {
     return FALSE;
   }
   $rows = pg_NumRows($query);
-  if ($rows > 0) {
-    echo "<h2>Your Applicants</h2>\n<table border=\"0\" summary=\"\"";
+  if ($rows == 0) {
+    echo "None Found.";
+  } else {
+      echo "<TABLE border=\"0\" summary=\"\">\n<TR><TH>Appl Date</TH><TH>Applicant</TH><TH>Manager</TH></TR>\n";
     for ($i = 0 ; $i < $rows ; $i++) {
       $row = pg_Fetch_Array($query, $i);
       echo "<TR><TD>", $row["appdate"], "</TD>";

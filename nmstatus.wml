@@ -111,6 +111,7 @@
 
 
 if (session_is_registered('s_ismanager')) {
+    echo "<h2>Your Applicants</h2>\n";
     $memid = $row['member'];
     $sql = "SELECT a.*, m.* from applications a, members m WHERE m.memid = a.member AND a.manager = $memid ORDER BY a.appdate";
     print_applicants($sql);

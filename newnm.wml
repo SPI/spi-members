@@ -93,7 +93,7 @@
       return FALSE;
     }
     if (pg_NumRows($query) > 0 ) {
-      $row = pg_Fetch_Row($query);
+      $row = pg_Fetch_Row($query,0);
       return $row[0];
     }
     return "unknown";

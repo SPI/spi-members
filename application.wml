@@ -187,7 +187,7 @@ session management failed or timed out.
 	print "</SELECT>\n";
 	echo "</TD></TR>\n";
      } else {
-       print_text('Manager', 'manager', $row['manager'], FALSE);
+       print_text('Manager', 'manager', get_manager($db, $row['manager']), FALSE);
      }
 
 	print_text('Date Assigned', 'manager_date', $row['manager_date'], $mgr_only);

@@ -151,7 +151,7 @@
 function get_manager($db, $manager) {
       if (!$manager) return "none";
 
-      $sql = "SELECT email FROM members WHERE memid = '$manager'";
+      $sql = "SELECT name FROM members WHERE memid = '$manager'";
       if (! ($query = pg_exec($db, $sql))) {
           return "DB error";
       }

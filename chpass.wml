@@ -1,0 +1,67 @@
+<?
+  session_start();
+  include("config.inc");
+  include("common.inc");
+
+  function change_password($email,$oldpassword, $newpassword)
+  {
+    if (! ($db = open_db())) {
+      return "<LI>Problem connection to database.\n";
+    }
+    if (check_login($db, $email, $oldpassword) == 0) {
+      return "<LI>User not found or old password is incorrect.";
+    }
+    $sql = "UPDATE members SET password = '". crypt($newpassword) ."' WHERE email = '$email'";
+    if (! ($query = pg_exec($db, $sql))) {
+      return "<LI>Problem with SQL query to database<LI>SQL was: $sql";
+    }
+    if (($tuples = pg_CmdTuples($query)) != 1) {
+      return "<LI>Only one user record should  of been changed but $tuples were instead.";
+    }
+    pg_close($db);
+    return "";
+  }
+
+?>
+#use wml::nmpage title="Change Website password"
+
+<? 
+  if (!session_is_registered('s_username')) {
+?>
+<P>Session management failed, you are not allowed here.
+<?
+  } else { 
+    if ($submit == "") { 
+?>
+<H1>Change Password</H1>
+<P>If you want to change your password, enter the details below.
+<form action="chpass.php" method="post">
+<table border='0'>
+<tr><td>Old Password</td><td><input type="password" name="form[oldpasswd]"></td></tr>
+<tr><td>New Password</td><td><input type="password" name="form[passwda]"></td></tr>
+<tr><td>New Password (again)</td><td><input type="password" name="form[passwdb]"></td></tr>
+<tr><td colspan="2" align="center"><INPUT type="submit" name="submit" value="Change Password"><td></tr>
+</table>
+</form>
+<?
+  } else {
+    $passwda = strip_tags(trim($form[passwda]));
+    $passwdb = strip_tags(trim($form[passwdb]));
+    $oldpasswd = strip_tags(trim($form[oldpasswd]));
+    $errors = "";
+    if ($passwda == "") { $errors .= "<LI>You didn't type your new password."; }
+    if ($passwdb == "") { $errors .= "<LI>You didn't type your confirming password."; }
+    if ($oldpasswd == "") { $errors .= "<LI>You didn't type your old password."; }
+    if ($passwda != $passwdb) { $errors .= "<LI>New passwords do not match."; }
+    if ($errors == "") {
+      $errors .= change_password($s_username, $oldpasswd, $passwda);
+    }
+    if ($errors) {
+      echo "<P>There have been problems changing your password, the problems are <UL>$errors</UL>.";
+    } else {
+      echo "<P>Your password has been successfully changed.";
+    }
+  } # values in fields
+} # sess mgmt
+?>
+

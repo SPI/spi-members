@@ -51,7 +51,7 @@
 
 <? if ($email == "") { ?>
 <H1>Forgot your password?</H1>
-<P>If you have forgotten your password, you can enter your e-mail address
+<P>If you have forgotten your password, you can enter your email address
 here.  A new password will then be sent to you.
 <FORM action="getpass.php" method="post">
 Email Address:&nbsp;<INPUT type="text" name="email" length="60"><BR>

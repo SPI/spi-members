@@ -6,7 +6,7 @@
   function get_member($db, $email) {
   global $row, $query;
 
-  $sql = "SELECT members.*, applications.* FROM members, applications WHERE email='$email' AND members.memid = applications.member ORDER BY applications.appdate LIMIT 1";
+  $sql = "SELECT members.*, applications.* FROM members, applications WHERE UPPER(email) = UPPER('$email') AND members.memid = applications.member ORDER BY applications.appdate LIMIT 1";
   if (! ($query = pg_exec($db, $sql))) {
     echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
     echo "SQL was: $sql<BR>\n";
@@ -28,7 +28,7 @@
               ", ". get_bool('iscontrib', $form[iscontrib]).
 	      ", ". get_text('expirydate', $form[expirydate]);
     }
-    $sql .= " WHERE email = '". $form[emailkey] . "'";
+    $sql .= " WHERE UPPER(email) = '". UPPER($form[emailkey]) . "'";
 	   echo $sql;
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";

@@ -74,7 +74,7 @@
 <B>Not Logged in</B><BR>
 <A href="index.php">Main</A><BR>
 <A href="newnm.php">Apply</A></BR>
-<A href="getpass.php">Get Password</A><BR>
+<A href="getpass.php">Forgot your Password?</A><BR>
 <? } ?>
 </td>
 </tr>

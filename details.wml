@@ -89,6 +89,7 @@
   } else { #sess reg
   $user = $_REQUEST['user'];
   $form = $_REQUEST['form'];
+  $s_username = $_SESSION["s_username"];
   # Did the user click on update?
   if ($form[submit]) {
     update_member($db, $form);

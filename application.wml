@@ -137,9 +137,9 @@ session management failed or timed out.
     # Did they click the apply?
     if ($what == 'newapply') {
       // We can use s_username here as only applicants can apply themselves
-      $oldappid = get_latest_application($db, $s_username);
+      $oldappid = get_latest_application($db, $_SESSION["s_username"]);
       if ($oldappid == -1) {
-        $appid = create_contrib_application($db,$s_username);
+        $appid = create_contrib_application($db, $_SESSION["s_username"]);
       } else {
         echo "<p>You have already applied for contributing membership, please use application #$oldappid instead.</p>\n";
 	$appid = $oldappid;
@@ -147,14 +147,14 @@ session management failed or timed out.
     }
     # Did the user click on update?
     if ($what == 'update') {
-      update_application($db, $form, $mgr_only, $s_username);
+      update_application($db, $form, $mgr_only, $_SESSION["s_username"]);
       $appid = $form[appid];
       if ($mgr_only == TRUE) {
         $user = $form[email];
       }
     }
   if ($user == '' || !session_is_registered('s_ismanager')) {
-    $user = $s_username;
+    $user = $_SESSION["s_username"];
   }
 
   if (! get_application($db, $user, $appid)) {

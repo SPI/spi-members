@@ -87,7 +87,7 @@
 
   # Given an email ,get the last application ID
   function get_appid($db, $email) {
-    $sql = "SELECT appid FROM applications,members WHERE aplications.member = members.memid AND members.email = '$email' ORDER BY appid DESC";
+    $sql = "SELECT appid FROM applications,members WHERE applications.member = members.memid AND members.email = '$email' ORDER BY appid DESC";
     if (! ($query = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
       return FALSE;

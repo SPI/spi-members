@@ -31,7 +31,7 @@
   function get_application($db, $email, $appid) {
   global $row, $query;
 
-  $sql = "SELECT applications.* FROM members, applications WHERE members.email='$email' AND members.memid = applications.member AND appid = '$appid'";
+  $sql = "SELECT applications.*, members.* FROM members, applications WHERE members.email='$email' AND members.memid = applications.member AND appid = '$appid'";
   if (! ($query = pg_exec($db, $sql))) {
     echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
     echo "SQL was: $sql<BR>\n";
@@ -94,6 +94,7 @@ session management failed or timed out.
     # Did the user click on update?
     if ($what == 'update') {
       update_application($db, $form, $mgr_only);
+      $appid = $form[appid];
       if ($mgr_only == TRUE) {
         $user = $form[email];
       }
@@ -112,6 +113,8 @@ session management failed or timed out.
 <?
     print "<INPUT type=\"hidden\" name=\"form[appid]\" value=\"$appid\">\n";
     print "<TABLE border=\"0\" summary=\"\">\n";
+    print_text('Member Name', 'memname', $row['name'], FALSE);
+    print_text('Email', 'email', $row['email'], FALSE);
     print_text('Application #', 'appid', $row['appid'], FALSE);
     print "<input type=\"hidden\" name=\"form[appid]\" value=\"".$row['appid']."\">\n";
     print_text('Apply Date', 'appdate', $row['appdate'], $mgr_only);

@@ -66,7 +66,6 @@
     $user = $s_username;
   }
   print "<H1>Membership Status for $user</H1>\n";
-  print "<a href=\"application.php?=SID&user=$user\">[Get Application Details]</A>\n";
     if (! get_member($db, $user)) {
       print "Problem getting your information<BR>\n";
     } else {
@@ -87,8 +86,13 @@
           print "<TR><TD colspan=\"2\"><INPUT type=\"submit\" name=\"form[submit]\" value=\"Update\"></TD></TR>\n";
       }
       print "</TABLE>\n";
-      print "<P>";
+      print "<HR>";
 
+
+      # Get all the applications for this user.
+      print "<h2>Applications for this user</h2>\n";
+      $sql = "SELECT * from applications WHERE member = '".$row['memid']."' ORDER BY appdate DESC";
+      print_applications($db, $sql,$user);
     } #get_member()
   } #sess reg 
 

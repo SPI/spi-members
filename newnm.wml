@@ -65,7 +65,7 @@
       return FALSE;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
-      echo "Only one row should be effected but $tuples rows were<BR>\n";
+      echo "One row should be effected but $tuples rows were<BR>\n";
       return FALSE;
     }
     # Then get member number
@@ -76,7 +76,7 @@
       return FALSE;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
-      echo "Only one row should be effected but $tuples rows were<BR>\n";
+      echo "One row should be effected but $tuples rows were<BR>\n";
       return FALSE;
     }
 

@@ -16,7 +16,7 @@
       return "<LI>Problem with SQL query to database<LI>SQL was: $sql";
     }
     if (($tuples = pg_CmdTuples($query)) != 1) {
-      return "<LI>Only one user record should  of been changed but $tuples were instead.";
+      return "<LI>One user record should have been changed but $tuples were instead.";
     }
     pg_close($db);
     return "";

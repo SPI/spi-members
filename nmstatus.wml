@@ -97,7 +97,14 @@
     print "</TABLE>\n";
     print "<P>";
 
-    if ($row['ismember'] == 't' && $row['iscontrib'] != 't') {
+    # Check whether uses has not applied for a contributing membership yet
+    $sql = "SELECT contribapp FROM applications WHERE member = " .  $row['memid'] . " AND contribapp = 't'";
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    if (pg_NumRows($query) == 0) {
         print "<A href=\"application.php?what=newapply&"?><?=session_id()?><? print "\">Apply</A> for contributing membership.  Please apply only if you belong to one of these groups:";
         print "<UL>";
         print "<LI>active members of SPI affiliated projects";

@@ -241,6 +241,15 @@ function print_applications($db, $sql, $email) {
   pg_Close($db);
   return TRUE;
 }
+
+function get_salt() {
+    $salt = "";
+    $itoa64="./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    $random = rand(); $salt .= substr($itoa64, $random % 64, 1);
+    $random = rand(); $salt .= substr($itoa64, $random % 64, 1);
+    return $salt;
+}
+
 ?>
 
 

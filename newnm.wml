@@ -57,11 +57,7 @@
   function register_user($db, $name, $email, $password, $randstr)
   {
     # First update member
-    $salt = "";
-    $itoa64="./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    $random = rand(); $salt .= substr($itoa64, $random % 64, 1);
-    $random = rand(); $salt .= substr($itoa64, $random % 64, 1);
-    $crypted = crypt($password, $salt);
+    $crypted = crypt($password, get_salt());
     $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '$crypted')";
 
     if (! ($result = pg_exec($db, $sql))) {

@@ -11,7 +11,8 @@
     if (check_login($db, $email, $oldpassword) == 0) {
       return "<LI>User not found or old password is incorrect.";
     }
-    $sql = "UPDATE members SET password = '". crypt($newpassword) ."' WHERE email = '$email'";
+    $crypted = crypt($newpassword, get_salt());
+    $sql = "UPDATE members SET password = '$crypted' WHERE email = '$email'";
     if (! ($query = pg_exec($db, $sql))) {
       return "<LI>Problem with SQL query to database<LI>SQL was: $sql";
     }

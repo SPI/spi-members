@@ -55,7 +55,7 @@
     if ($oldpasswd == "") { $errors .= "<LI>You didn't type your old password."; }
     if ($passwda != $passwdb) { $errors .= "<LI>New passwords do not match."; }
     if ($errors == "") {
-      $errors .= change_password($s_username, $oldpasswd, $passwda);
+      $errors .= change_password($_SESSION["s_username"], $oldpasswd, $passwda);
     }
     if ($errors) {
       echo "<P>There have been problems changing your password, the problems are: <UL>$errors</UL>";

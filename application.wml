@@ -41,7 +41,7 @@
     // subscribe.  Only those who are actually approved as CM will be
     // subscribed, so setting this to true now will not hurt.
     $sql = "UPDATE members SET sub_private = 't' WHERE email = '$email'";
-    pg_exec($db, $sql;
+    pg_exec($db, $sql);
 
 //   $body = "$email applied for a contributing membership.\n";
 //   $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();

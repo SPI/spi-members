@@ -1,4 +1,4 @@
 <?
   $DBName="spiapp";
-  $DBUser="csmall";
+  $DBUser="www-data";
 ?>

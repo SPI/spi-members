@@ -50,7 +50,7 @@
 <?
   if (!session_is_registered("s_username")) {
 ?>
-<P>You do not have permssion to view this page.  The problem is session management failed or timed out.";
+<P>You do not have permission to view this page.  The problem is session management failed or timed out.";
 <?
   } else { #sess reg
   # Did the user click on update?

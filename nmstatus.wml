@@ -96,7 +96,7 @@
     print "</TABLE>\n";
     print "<P>";
 
-    if ($row['contribapp'] != 't') {
+    if ($row['ismember'] == 't' && $row['contribapp'] != 't') {
         print "<A href=\"application.php?what=newapply&"?><?=SID?><? print "\">Apply</A> for contributing membership.";
         print "<P>"; 
     } else if ($row['contribapp'] != 't') {

@@ -58,7 +58,7 @@
       $errors .= change_password($s_username, $oldpasswd, $passwda);
     }
     if ($errors) {
-      echo "<P>There have been problems changing your password, the problems are <UL>$errors</UL>.";
+      echo "<P>There have been problems changing your password, the problems are: <UL>$errors</UL>";
     } else {
       echo "<P>Your password has been successfully changed.";
     }

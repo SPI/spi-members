@@ -97,7 +97,7 @@
     print "<P>";
 
     if ($row['contribapp'] != 't') {
-        print "<A href=\"application.php?<?=SID?>\">Apply</A> for contributing membership.";
+        print "<A href=\"application.php?what=newapply&<?=SID?>\">Apply</A> for contributing membership.";
         print "<P>"; 
     } else if ($row['contrib'] != 't') {
         print "Applied for contributing membership on ". $row['appdate'] . ".<P>";

@@ -162,7 +162,9 @@ session management failed or timed out.
      print_text('Last Changed', 'lastchange', $row['lastchange'], FALSE);
      print "</TABLE>\n";
      print '<input type="hidden" name="form[email]" value="'. $row['email']. "\">\n";
-     print "<INPUT type=\"submit\" value=\"Update\">\n";
+     if ($mgr_only || $row['contribapp'] == 't' ) {
+       print "<INPUT type=\"submit\" value=\"Update\">\n";
+     }
      print "</form>\n";
 
     } # get mem

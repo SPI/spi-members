@@ -16,7 +16,7 @@
       break;
     case 'capp':
       $title = 'Contrib Applications';
-      $where = "AND m.ismember = 't' AND a.approve IS NULL";
+      $where = "AND m.ismember = 't' AND a.approve IS NULL AND contribapp= 't' ";
       $desc = "This page lists all non-contributing members who have filed a
       contributing membership application.";
 

@@ -1,4 +1,5 @@
 <?
+  session_start();
   include("config.inc");
   include("common.inc");
 ?>
@@ -103,12 +104,14 @@ function print_stats() {
   
   #
   # This is all applicants we know about
-  print_stat($db, "Applicants Pending", 
+  print_stat($db, "NC Applicants Pending Email Approval", 
       "SELECT count(*) from members WHERE ismember = 'f'" ,'', '');
-  print_stat($db, "Total Members (non-contrib)", 
+  print_stat($db, "NC Members", 
       "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 'f'" ,'', '');
-  print_stat($db, "Total Members (contrib)", 
+  print_stat($db, "Contrib Members", 
       "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 't'" ,'', '');
+  print_stat($db, "Contrib Membership Applications", 
+      "SELECT count(*) from members m, applications a WHERE ismember = 't' AND a.approve IS NULL AND a.contribapp = 't' AND m.memid = a.member" ,'', '');
   print_stat($db, "Application Managers",
       "SELECT count(*) FROM members where ismanager = 't'", '', '');
   echo "</TABLE>\n";
@@ -116,6 +119,16 @@ function print_stats() {
 }
 ?>
 #use wml::nmpage title="SPI Membership Statistics"
+<?
+  if (!session_is_registered("s_username") || !session_is_registered("s_ismanager")) {
+?>
+<STRONG>
+You should not be here!!</STRONG>
+<? 
+  } else { 
+  session_register("s_username");
+  session_register("s_manager");
+?>
 <H1>Aggregate Statistics</H1>
 <P>
 Here are the current statistics of SPI's membership including all
@@ -127,3 +140,4 @@ membership committee that approve contributing memberships.
 print_stats();
 ?>
 </CENTER>
+<? } # session reg ?>

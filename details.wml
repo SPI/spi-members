@@ -88,6 +88,7 @@
 ?>
       </TABLE>
       </form>
+<?      if ($mgr_only) { ?>
       <FORM method="post" action="delmem.php?<?=SID?>">
       <input type='hidden' name='email' value='<? echo $row['email']; ?>'>
       <input type='submit' value='  Delete Member  '>&nbsp;&nbsp;
@@ -96,6 +97,7 @@
       <HR>
 
 <?
+      }
       # Get all the applications for this user.
       print "<h2>Applications for this user</h2>\n";
       $sql = "SELECT * from applications WHERE member = '".$row['memid']."' ORDER BY appdate DESC";

@@ -175,7 +175,7 @@ function print_applicants($sql) {
   }
   $rows = pg_NumRows($query);
   if ($rows == 0) {
-    echo "None Found.";
+    echo "<p>None Found.</p>\n";
   } else {
       echo "<TABLE border=\"0\" summary=\"\">\n<TR><TH>Appl Date</TH><TH>Applicant</TH><TH>Manager</TH></TR>\n";
     for ($i = 0 ; $i < $rows ; $i++) {

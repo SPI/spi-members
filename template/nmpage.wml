@@ -60,7 +60,8 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 ?>
 <hr>
 <b>Managers</b><br>
-<A href="mgrlist.php?<?=SID?>">All Members</A><BR>
+<A href="stats.php?<?=SID?>">Statistics</A><BR>
+<A href="mgrlist.php?<?=SID?>">Everyone</A><BR>
 <A href="mgrlist.php?listtype=ncapp&<?=SID?>">NC Applications</A><BR>
 <A href="mgrlist.php?listtype=ncmem&<?=SID?>">NC Members</A><BR>
 <A href="mgrlist.php?listtype=capp&<?=SID?>">C Applications</A><BR>
@@ -76,7 +77,6 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 <A href="index.php">Main</A><BR>
 <A href="newnm.php">Apply</A></BR>
 <A href="getpass.php">Get Password</A><BR>
-<A href="stats.php">Statistics</A><BR>
 <? } ?>
 </td>
 </tr>

@@ -133,8 +133,13 @@
 	later.
 	<?
 				 } else { #register ok
-					 echo "<P>SPI membership application submitted successfully on $adate. You should receive a confirmation email at the email address that you specified in the application.  Your application ID is ";
-					 echo get_appid($db,$email);
+echo "<p>SPI membership application ". get_appid($db, $email). " submitted ".
+     "successfully on $adate</p>\n";
+echo "<p>You should receive a confirmation email at the email address that ".
+     "you specified in the application.  If you do not receive the ".
+     "confirmation email, please send an email to admin@nm.spi-inc.org ".
+     "stating the email address used in the application, your application ".
+     "ID and the application date.</p>\n";
 					 echo ".<P>";
 					 email_user($db, $name, $email,$passwda, $randstr);
 				 } #register ok

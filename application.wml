@@ -37,9 +37,9 @@
     echo "as soon as possible so that your application can be reviewed ";
     echo "by the membership committee.";
 
-   $body = "$email applied for a contributing membership.\n";
-   $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();
-   mail("admin@nm.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
+//   $body = "$email applied for a contributing membership.\n";
+//   $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();
+//   mail("admin@nm.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
    
     return $appid;
   }

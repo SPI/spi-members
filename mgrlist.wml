@@ -23,7 +23,7 @@
       break;
     case 'cmem':
       $title = 'Contrib Members';
-      $where = "AND m.ismember = 't' AND m.iscontrib = 't'";
+      $where = "AND m.ismember = 't' AND m.iscontrib = 't' AND contribapp='t'";
       $desc = "This page lists all active contributing members in SPI.";
       break;
     case 'mgr':

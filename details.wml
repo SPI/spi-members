@@ -68,6 +68,7 @@
         $body .= "<membership@spi-inc.org>";
         $headers = "From: SPI Membership Committee <membership@spi-inc.org>\n";
         $headers .= "CC: membership@spi-inc.org\n";
+        $headers .= "Precedence: bulk\n";
         $headers .= "Errors-To: admin@members.spi-inc.org";
         mail($form[email], "Your SPI Contribution Membership application", $body, $headers);
         echo "Applicant became a Contributing Member, emailing them.<P>";

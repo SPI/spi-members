@@ -37,7 +37,7 @@
     $body .= "Software in the Public Interest, Inc.\n\n";
 
 
-    $headers = "From: email-check@nm.spi-inc.org\nReply-To: email-check@nm.spi-inc.org\nErrors-To: admin@spi-inc.org\nX-Mailer: PHP/" . phpversion();
+    $headers = "From: email-check@nm.spi-inc.org\nReply-To: email-check@nm.spi-inc.org\nPrecedence: bulk\nErrors-To: admin@spi-inc.org\nX-Mailer: PHP/" . phpversion();
     mail($email, "SPI Membership application for $email", $body, $headers);
     return TRUE;
   }

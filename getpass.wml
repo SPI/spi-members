@@ -40,7 +40,7 @@
     }
     $body = "Your new password for the SPI membership pages is: '". $newpass. "'\n\n";
     $body .= "Please log in with this new password and then change it.\n";
-    $headers = "From: new-members@spi-inc.org\nReply-To: new-members@spi-inc.org\nX-Mailer: PHP/" . phpversion();
+    $headers = "From: new-members@spi-inc.org\nReply-To: new-members@spi-inc.org\nPrecedence: bulk\nX-Mailer: PHP/" . phpversion();
     mail($email, "SPI website password", $body, $headers);
     pg_close($db);
     return TRUE;

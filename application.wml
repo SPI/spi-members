@@ -60,7 +60,6 @@
     $sql .= ", lastchange = 'today'::date";
     $sql .= " WHERE appid = '$form[appid]'";
 
-    echo $sql;
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
       echo "SQL was: $sql<BR>\n";
@@ -162,6 +161,7 @@ session management failed or timed out.
      } # contrib
      print_text('Last Changed', 'lastchange', $row['lastchange'], FALSE);
      print "</TABLE>\n";
+     print '<input type="hidden" name="form[email]" value="'. $row['email']. "\">\n";
      print "<INPUT type=\"submit\" value=\"Update\">\n";
      print "</form>\n";
 

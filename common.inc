@@ -27,7 +27,7 @@
   # 2 = found and they are a application manager
   function check_login($db, $email, $passwd) 
   {
-    $sql = "SELECT * from members WHERE email = '$email' and password = '$passwd'";
+    $sql = "SELECT * from members WHERE email = '$email'";
     if (! ($query = pg_exec($db, $sql))) {
       echo "Problem with query", pg_ErrorMessage($db), "<BR>";
       return 0;
@@ -36,6 +36,10 @@
       return 0;
     }
     $row = pg_Fetch_Array($query, 0);
+    $salt = substr($row['password'], 0, 2);
+    if ($row['password'] != crypt($passwd, $salt)) {
+      return 0;
+    }
     if ($row['ismanager'] == 't') {
       return 2;
     }
@@ -170,14 +174,19 @@ function print_applicants($sql) {
     return FALSE;
   }
   $rows = pg_NumRows($query);
-  for ($i = 0 ; $i < $rows ; $i++) {
-    $row = pg_Fetch_Array($query, $i);
-    echo "<TR><TD>", $row["appdate"], "</TD>";
-    echo "<TD><A href=\"nmstatus.php?"; ?><?=SID?><?;
-    echo "&user=", urlencode($row["email"]), "\">",
-          $row["name"], " &lt;",
-	  $row["email"], "&gt;</A>",
-          " </TD><TD>", get_manager($db, $row["manager"]), "</TD></TR>\n";
+  if ($rows > 0) {
+    echo "<h2>Your Applicants</h2>\n<table border=\"0\" summary=\"\"";
+    for ($i = 0 ; $i < $rows ; $i++) {
+      $row = pg_Fetch_Array($query, $i);
+      echo "<TR><TD>", $row["appdate"], "</TD>";
+      echo "<TD><A href=\"details.php?"; ?><?=SID?><?;
+      echo "&user=", urlencode($row["email"]), "\">",
+            $row["name"], " &lt;",
+  	    $row["email"], "&gt;</A>",
+            " </TD><TD>", get_manager($db, $row["manager"]), "</TD></TR>\n";
+
+    }
+    echo "</table>\n";
   }
   pg_Close($db);
   return TRUE;
@@ -194,8 +203,8 @@ function print_applications($db, $sql, $email) {
     $row = pg_Fetch_Array($query, $i);
     echo "<A href=\"application.php?"; ?><?=SID?><?;
     echo "&appid=", urlencode($row["appid"]), "&user=$email\">";
-    echo $row['appid'], "</a>";
-    echo " applied on ", $row['appdate'], "<br>\n";
+    echo "application #". $row['appid'];
+    echo " applied on ", $row['appdate'], "</a><br>\n";
   }
   pg_Close($db);
   return TRUE;

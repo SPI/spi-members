@@ -4,7 +4,7 @@
 
 
 HTMLFILES= 
-PHPFILES=index.php newnm.php nmstatus.php logout.php getpass.php stats.php application.php mgrlist.php details.php
+PHPFILES=index.php newnm.php nmstatus.php logout.php getpass.php stats.php application.php mgrlist.php details.php chpass.php
 INCFILES=config.inc common.inc
 WMLFILES=$(wildcard *.wml)
 IMAGES=$(wildcard *.gif) $(wildcard *.jpg)

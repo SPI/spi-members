@@ -58,7 +58,7 @@
   function register_user($db, $name, $email, $password, $randstr)
   {
     # First update member
-    $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '$password')";
+    $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '" . crypt($password) . "')";
 
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";

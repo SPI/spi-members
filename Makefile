@@ -1,7 +1,7 @@
 # Please send a message to new-member@spi-inc.org if you need to modify
 # anything here.
 
-FINFILES := $(wildcard finances/*) finances/.htaccess
+FINFILES := $(wildcard finances/*.*) finances/.htaccess
 WMLFILES := $(wildcard *.wml)
 PHPFILES := $(WMLFILES:wml=php)
 INCFILES := config.inc common.inc

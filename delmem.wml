@@ -1,0 +1,57 @@
+<?
+  session_start();
+  include("config.inc");
+  include("common.inc");
+
+  function delete_member($db, $email) {
+    $sql="SELECT memid FROM members WHERE email='$email'";
+
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    if (pg_NumRows($query) == 0) {
+      echo "<P>No member found with email '$email'<BR>\n";
+      return FALSE;
+    }
+    $row = pg_Fetch_Array($query, 0);
+    $memid = $row["memid"];
+
+    $sql = "DELETE FROM applications WHERE member = $memid";
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    $sql = "DELETE FROM members WHERE memid = $memid";
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+?>
+#use wml::nmpage title="SPI Membership - Delete Member"
+<?
+  if (!session_is_registered("s_username") || !session_is_registered('s_ismanager')) {
+?>
+<P>You do not have permssion to view this page.  The problem is session management failed or timed out.  You must be an application manager to access this 
+screen.
+<?
+  } else { #sess reg
+
+  $db = open_db();
+    if ($sure != 'yes') {
+      echo "<P>You did not click the confirm button, abandoning delete.";
+    } else if ($email == '') {
+      echo "<P>No email address specified.";
+    } else if (! delete_member($db, $email)) {
+      echo "<P>Something went wrong trying to delete user.";
+    } else {
+      echo "<P>User <b>$email</b> successfully deleted.";
+    }
+  }
+?>

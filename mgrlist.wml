@@ -7,27 +7,36 @@
     case 'ncapp':
       $title = 'Non-Contributing Member Applications';
       $where = "AND ( m.ismember = 'f' OR m.ismember IS NULL) ";
+      $desc = "This page contains a list of all people who have applied for non-contributing membership but have not completed the email verification step.";
       break;
     case 'ncmem':
       $title = 'Non-Contrib Members';
       $where = "AND m.ismember = 't' AND m.iscontrib = 'f'";
+      $desc = "This page lists all members who have non-contributing status.";
       break;
     case 'capp':
       $title = 'Contrib Applications';
-      $title = "AND m.ismember = 't' AND a.approve IS NULL";
+      $where = "AND m.ismember = 't' AND a.approve IS NULL";
+      $desc = "This page lists all non-contributing members who have filed a
+      contributing membership application.";
+
       break;
     case 'cmem':
       $title = 'Contrib Members';
       $where = "AND m.ismember = 't' AND m.iscontrib = 't'";
+      $desc = "This page lists all active contributing members in SPI.";
       break;
     case 'mgr':
       $title = 'Application Managers';
       $where = "AND m.ismember = 't' AND m.ismanager = 't'" ;
+      $desc = "This page lists all members who are application managers.";
       break;
 
     default:
-      $title = 'All Applicants';
+      $title = 'All Records';
       $where = '';
+      $desc = "This page contains a list of ALL membership records in the SPI
+      membership database.";
       break;
   }
 ?>
@@ -44,6 +53,7 @@ You should not be here!!</STRONG>
   session_register("s_manager");
 
   echo "<H1>SPI New Member -- $title</H1><BR>";
+  echo "<P>$desc";
 
     $sql = "SELECT a.*,m.* from applications a, members m WHERE m.memid = a.member $where ORDER BY a.appdate";
     print_applicants($sql);

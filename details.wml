@@ -85,14 +85,22 @@
       if (session_is_registered("s_ismanager")) {
           print "<TR><TD colspan=\"2\"><INPUT type=\"submit\" name=\"form[submit]\" value=\"Update\"></TD></TR>\n";
       }
-      print "</TABLE>\n";
-      print "<HR>";
+?>
+      </TABLE>
+      </form>
+      <FORM method="post" action="delmem.php?<?=SID?>">
+      <input type='hidden' name='email' value='<? echo $row['email']; ?>'>
+      <input type='submit' value='  Delete Member  '>&nbsp;&nbsp;
+      <input type='checkbox' name='sure' value='yes'>&nbsp;I'm sure.
+      </form>
+      <HR>
 
-
+<?
       # Get all the applications for this user.
       print "<h2>Applications for this user</h2>\n";
       $sql = "SELECT * from applications WHERE member = '".$row['memid']."' ORDER BY appdate DESC";
       print_applications($db, $sql,$user);
+
     } #get_member()
   } #sess reg 
 

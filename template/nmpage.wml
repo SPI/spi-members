@@ -41,13 +41,13 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 </tr>
 
 <tr>
-<td valign="top" width="100%">
+<td valign="top" >
 <a href="$(HOME)/"><img src="$(HOME)/Pics/spi2.jpg" border="0" alt="" align="right"></a>
 <br>
 <br>
 <<mainbody>>
 </td>
-<td valign="top" bgcolor="#1983C6">
+<td width="100" valign="top" bgcolor="#1983C6">
 <?
   if (session_is_registered("s_username")) {
 ?>
@@ -62,9 +62,9 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 <b>Managers</b><br>
 <A href="mgrlist.php?<?=SID?>">All Members</A><BR>
 <A href="mgrlist.php?listtype=ncapp&<?=SID?>">NC Applications</A><BR>
-<A href="mgrlist.php?listtype=capp&<?=SID?>">Contrib Applications</A><BR>
 <A href="mgrlist.php?listtype=ncmem&<?=SID?>">NC Members</A><BR>
-<A href="mgrlist.php?listtype=cmem&<?=SID?>">Contrib Members</A><BR>
+<A href="mgrlist.php?listtype=capp&<?=SID?>">C Applications</A><BR>
+<A href="mgrlist.php?listtype=cmem&<?=SID?>">C Members</A><BR>
 <A href="mgrlist.php?listtype=mgr&<?=SID?>">Managers</A><BR>
 
 

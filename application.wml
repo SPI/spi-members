@@ -126,7 +126,7 @@ session management failed or timed out.
         print_textbox('Contributions', 'contrib', $row['contrib'], TRUE);
 
 
-       $sql = "SELECT memid, email FROM members WHERE ismanager is TRUE";
+       $sql = "SELECT memid, email FROM members WHERE ismanager = 't'";
        if (! ($result = pg_exec($db, $sql))) {
            echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
            echo "SQL was: $sql<BR>\n";
@@ -143,7 +143,7 @@ session management failed or timed out.
 	    if ($row['manager'] == $info["memid"]) {
 	        $sel = "SELECTED";
 	    }
-	    printf("<OPTION VALUE=\"%s\">%s\n", $info["memid"], $sel, $info["email"]);
+	    print "<OPTION VALUE=\"".$info["memid"]. "\" $sel>".$info["email"]."\n";
         }
 	print "</SELECT>\n";
 	echo "</TD></TR>\n";

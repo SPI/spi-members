@@ -37,6 +37,12 @@
     echo "as soon as possible so that your application can be reviewed ";
     echo "by the membership committee.";
 
+    // Set the default to true since most members will probably want to
+    // subscribe.  Only those who are actually approved as CM will be
+    // subscribed, so setting this to true now will not hurt.
+    $sql = "UPDATE members SET sub_private = 't' WHERE email = '$email'";
+    pg_exec($db, $sql;
+
 //   $body = "$email applied for a contributing membership.\n";
 //   $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();
 //   mail("admin@nm.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
@@ -77,7 +83,7 @@
   $row = pg_Fetch_Array($query, 0);
   return TRUE;
 }
-  function update_application($db, $form,$mgr_only) {
+  function update_application($db, $form, $mgr_only, $email) {
 
     $sql = "UPDATE applications SET " .
            get_textarea('contrib', $form[contrib]) ;
@@ -102,6 +108,11 @@
       echo "Only one row should be effected but $tuples rows were<BR>\n";
       return FALSE;
     }
+
+    $sql = "UPDATE members SET " . get_bool('sub_private', $form[sub_private]) .
+           "WHERE email = '$email'";
+    $result = pg_exec($db, $sql);
+
     echo "<P>Application information successfully updated.<P>";
     return TRUE;
   }
@@ -132,7 +143,7 @@ session management failed or timed out.
     }
     # Did the user click on update?
     if ($what == 'update') {
-      update_application($db, $form, $mgr_only);
+      update_application($db, $form, $mgr_only, $s_username);
       $appid = $form[appid];
       if ($mgr_only == TRUE) {
         $user = $form[email];
@@ -163,7 +174,7 @@ session management failed or timed out.
         print "<HR><B>Contributing Membership Application Details</B>\n";
         print "<TABLE border=\"0\" summary=\"\">\n";
         print_textbox('Contributions', 'contrib', $row['contrib'], TRUE);
-
+        print_bool('Subscribe to spi-private?', 'sub_private', $row['sub_private'], TRUE);
 
        $sql = "SELECT memid, email FROM members WHERE ismanager = 't'";
        if (! ($result = pg_exec($db, $sql))) {

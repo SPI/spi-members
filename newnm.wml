@@ -140,7 +140,7 @@ echo "<p>You should receive a confirmation email at the email address that ".
      "confirmation email, please send an email to admin@nm.spi-inc.org ".
      "stating the email address used in the application, your application ".
      "ID and the application date.</p>\n";
-					 echo ".<P>";
+					 echo "<P>";
 					 email_user($db, $name, $email,$passwda, $randstr);
 				 } #register ok
 			 } #user ok

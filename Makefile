@@ -1,5 +1,5 @@
-# Please send a message to new-member@spi-inc.org if you need to modify
-# anything here.
+# Please send a message to membership@spi-inc.org if you need to
+# modify anything here.
 
 FINFILES := $(wildcard finances/*.*) finances/.htaccess
 WMLFILES := $(wildcard *.wml)

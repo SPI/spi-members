@@ -1,4 +1,6 @@
 Subject: Your SPI Contributing Membership Application
+Cc: membership@spi-inc.org
+Reply-To: membership@spi-inc.org
 
 Dear XXX,
 

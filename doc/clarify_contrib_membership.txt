@@ -1,0 +1,27 @@
+Subject: Your SPI Contributing Membership Application
+
+Dear XXX,
+
+You have recently signed up for a SPI Contributing Membership application.
+At the moment, the membership process is primarily open only for Debian
+Developers since the membership pages are still in the testing phase.
+You appear not to be a Debian Developer.  This does not mean that you
+cannot become a Contributing Member -- it simply means that we have to
+check why you want to become a Contributing Member and if you are eligible.
+
+The membership guidelines at http://www.spi-inc.org/membershipguidelines
+say that
+
+|   Contributing membership should be available to the following people:
+|     * active members of SPI affiliated projects
+|     * active members of any large free software development project
+|     * any person who has made a significant contribution to the free
+|       software community
+|     * any person who actively contributes to the free software community
+
+Can you please tell me about your contributions and possibly supply some
+URLs I can check out for more information.
+
+I hope to hear from you soon.
+
+Best regards,

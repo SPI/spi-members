@@ -33,7 +33,7 @@
     $appid = $row[0];
     echo "<P>Your application for the Contributing Membership has been ";
     echo "registered successfully.  An Application Manager should soon ";
-    echo "get in contact with you. Your application id is $appid<P>";
+    echo "get in contact with you. Your application ID is $appid<P>";
 
    $body = "$email applied for a contributing membership.\n";
    $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();

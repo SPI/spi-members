@@ -224,7 +224,7 @@ function print_applications($db, $sql, $email) {
       echo "Non-Contrib application";
     }
     echo "<A href=\"application.php?"; ?><?=SID?><?;
-    echo "&appid=", urlencode($row["appid"]), "&user=$email\">";
+    echo "&appid=", urlencode($row["appid"]), "&user=", urlencode($email), "\">";
     echo "#". $row['appid'];
     echo " from ", $row['appdate'], "</a> ";
     if ($row['contribapp'] == 't') { 

@@ -101,7 +101,7 @@
 #use wml::nmpage title="SPI New Member Application"
 <H1>New Member Application</H1>
 <?
-  if (_REQUEST['what'] == "new") { 
+  if ($_REQUEST['what'] == "new") { 
     if ( ($db = open_db())) {
 
       $name = trim(strip_tags($_REQUEST['name']));

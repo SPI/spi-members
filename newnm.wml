@@ -57,7 +57,12 @@
   function register_user($db, $name, $email, $password, $randstr)
   {
     # First update member
-    $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '" . crypt($password) . "')";
+    $salt = "";
+    $itoa64="./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    $random = rand(); $salt .= substr($itoa64, $random % 64, 1);
+    $random = rand(); $salt .= substr($itoa64, $random % 64, 1);
+    $crypted = crypt($password, $salt);
+    $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '$crypted')";
 
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";

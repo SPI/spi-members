@@ -32,8 +32,10 @@
     $row = pg_Fetch_Array($newres, 0);
     $appid = $row[0];
     echo "<P>Your application for the Contributing Membership has been ";
-    echo "registered successfully.  An Application Manager should soon ";
-    echo "get in contact with you. Your application ID is $appid<P>";
+    echo "registered successfully.  Your application ID is $appid. ";
+    echo "Please update the application form with the relevant details ";
+    echo "as soon as possible so that your application can be reviewed ";
+    echo "by the membership committee.";
 
    $body = "$email applied for a contributing membership.\n";
    $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();

@@ -1,0 +1,4 @@
+<?
+  $DBName="spiapp";
+  $DBUser="csmall";
+?>

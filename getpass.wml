@@ -1,0 +1,53 @@
+<?
+  include("config.inc");
+  include("common.inc");
+
+  function email_password($email)
+  {
+    if (! ($db = open_db())) {
+      print "<BR>Problem connection to database.\n";
+      return FALSE;
+    }
+    $sql = "SELECT password FROM members WHERE email = '$email'";
+    if (! ($query = pg_exec($db, $sql))) {
+      print "Problem with SQL query to database.<BR>";
+      print "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+
+    if (pg_NumRows($query) != 1) {
+      print "Could not find email address $email in membership table.<BR>\n";
+      pg_close($db);
+      return FALSE;
+    }
+    $row = pg_Fetch_Row($query, 0);
+    $body = "Your SPI Inc Membership password is: '". $row[0]. "'\n";
+    $headers = "From: new-members@spi-inc.org\nReply-To: new-members@spi-inc.org\nX-Mailer: PHP/" . phpversion();
+    mail($email, "SPI website password", $body, $headers);
+    pg_close($db);
+    return TRUE;
+  }
+
+?>
+#use wml::nmpage title="Website password recovery"
+
+<? if ($email == "") { ?>
+<H1>Password Recovery</H1>
+<P>This page will email you your password.
+<FORM action="getpass.php" method="post">
+Email Address:&nbsp;<INPUT type="text" name="email" length="60"><BR>
+<INPUT type="submit" value="Email Password"><BR>
+</FORM>
+<?
+  } else {
+    $email = strip_tags(trim($email));
+    if (email_password($email)) {
+?>
+<P>Your password has been emailed to you.
+<P>Back to the <A href="http://nm.spi-inc.org/">SPI Application Page</A> or 
+<A href="http://www.spi-inc.org/">SPI Inc Homepage</A>.
+<?
+    }
+  }
+?>
+

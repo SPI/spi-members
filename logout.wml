@@ -1,0 +1,9 @@
+<?
+  session_start();
+  session_destroy();
+?>
+#use wml::nmpage title="New Members - Logout"
+<H1>Logout</H1>
+<P>You are now logged out of the SPI New Members system, thank you!
+<BR>
+<P><A href="index.php">Back to login page</A>.

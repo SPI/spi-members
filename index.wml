@@ -1,0 +1,28 @@
+#use wml::nmpage title="SPI New Member"
+<H1>SPI Membership</H1>
+<P>Welcome to the membership pages of Software in the Public Institute,
+Inc.  These pages are used to apply for membership and to display or
+update the status of members who have already submitted an application.
+<P>
+To apply for membership, please follow the 
+<a href="newnm.php">'Apply' link</a> in the menubar.
+
+<BR>
+<H1>Login</H1>
+<P>
+If your membership application has been filed, you can log in with
+your email address and password.  Once logged in, you can look at the status
+of your application, change your personal information, and apply for a
+application, change your personal information, and apply for a
+contributing membership (provided your email verification has already
+been successfully completed).
+<CENTER>
+<FORM method="post" action="nmstatus.php">
+<INPUT name="what" value="login" type="hidden">
+<TABLE border="0">
+<TR><TD>Email Address:</TD><TD><INPUT name="email" type=text></TD></TR>
+<TR><TD>Password:</TD><TD><INPUT name="passwd" type="password"></TD></TR>
+<TR><TD colspan="2" align="center"><INPUT type="submit" value="Login"></TD></YT>
+</TABLE>
+</FORM>
+</CENTER>

@@ -1,0 +1,28 @@
+<?
+  session_start();
+  include("config.inc");
+  include("common.inc");
+?>
+#use wml::nmpage title="SPI New Member - List of all Applicants"
+<?
+  
+  if (!session_is_registered("s_username") || !session_is_registered("s_ismanager")) {
+?>
+<STRONG>
+You should not be here!!</STRONG>
+<? } else { 
+  session_register("s_username");
+  session_register("s_manager");
+?>
+<H1>SPI New Member - All Applicants</H1><BR>
+<P>This is a list of all applicants known to the database. This list is sorted
+by application date. Applicants who are now maintainers are not shown up
+in this list.
+<TABLE border=0>
+ <TR><TH>Appl Date</TH><TH>Applicant</TH><TH>Manager</TH></TR>
+<?
+   $sql = 'SELECT a.*,m.* from applications a, members m WHERE m.memid = a.member ORDER BY a.appdate';
+   print_applicants($sql);
+?>
+</TABLE>
+<? } # Registered session ?>

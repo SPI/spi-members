@@ -1,0 +1,162 @@
+<?
+  include("config.inc");
+  include("common.inc");
+
+  function email_user($db, $name, $email,$passwd, $randstr) {
+    $body = "Dear $name,\n\n";
+    $body .= "Thank you for your interest in becoming a member of Software in the\n";
+    $body .= "Public Interest, Inc.  To approve your membership, we first need to be\n";
+    $body .= "able to verify your email address.  Please send this email to\n";
+    $body .= "email-check@nm.spi-inc.org including the verification string below.\n";
+    $body .= "For most email programs, simply replying to this email (including the\n";
+    $body .= "body of the mail) will be sufficient.\n\n";
+    $body .= "Application Information:\n";
+    $body .= "Name: $name\n";
+    $body .= "Email: $email\n";
+    $body .= "Password: $passwd\n";
+    $body .= "Subscription Host: ". getenv(REMOTE_ADDR) . "\n\n";
+    $body .= "Your name and email address were entered from the subscription host\n";
+    $body .= "shown above.  If you did not apply for SPI membership, then email\n";
+    $body .= "admin@nm.spi-inc.org asking to be removed.  You can change your password\n";
+    $body .= "on the membership web page once your application has been approved.\n\n";
+    $body .= "Do not delete this random string as it is used for the verification\n";
+    $body .= "process.\n\n";
+    $body .= "====DO NOT DELETE ====\n";
+    $body .= "SPI-NM-CHECK: $randstr\n";
+    $body .= "====DO NOT DELETE ====\n";
+    $body .= "\n";
+    $body .= "Please be patient as your application is processed.  We are working the\n";
+    $body .= "list of applicants as quickly as we can.  If you would like to check\n";
+    $body .= "The progress of your application you can do so at <http://nm.spi-inc.org/>\n\n";
+    $body .= "SPI has several mailing lists dedicated to different topics of\n";
+    $body .= "discussion.  We recommend that you at least subscribe to the\n";
+    $body .= "spi-announce list, and suggest subscribing to the spi-general list as\n";
+    $body .= "well for general, SPI related discussions.  Subscribing and\n";
+    $body .= "unsubscribing is most easily done by using the\n";
+    $body .= "<http://www.spi-inc.org/mailing_lists/> web page.\n\n";
+    $body .= "Thank you for your application!\n\n";
+    $body .= "Software in the Public Interest, Inc.\n\n";
+
+
+    $headers = "From: email-check@nm.spi-inc.org\nReply-To: email-check@nm.spi-inc.org\nErrors-To: admin@spi-inc.org\nX-Mailer: PHP/" . phpversion();
+    mail($email, "SPI Membership application for $email", $body, $headers);
+    return TRUE;
+  }
+
+  function check_user($db, $myuser) {
+      $sql = "SELECT * FROM members WHERE email='$myuser'";
+      if (! ($query = pg_exec($db, $sql))) {
+	echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+	return FALSE;
+      }
+      if (pg_NumRows($query) == 1) {
+	echo "This email address already exists<BR>\n";
+	return FALSE;
+      }
+      return TRUE;
+  }
+  function register_user($db, $name, $email, $password, $randstr)
+  {
+    # First update member
+    $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '$password')";
+
+    if (! ($result = pg_exec($db, $sql))) {
+      echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    if (($tuples = pg_CmdTuples($result)) != 1) {
+      echo "Only one row should be effected but $tuples rows were<BR>\n";
+      return FALSE;
+    }
+    # Then get member number
+    $sql = "INSERT INTO applications (appdate, member, contrib, emailkey, emailkey_date, lastchange) SELECT 'now'::date, memid, 'f', '$randstr', 'now'::date, 'now'::date FROM members WHERE email = '$email'";
+    if (! ($result = pg_exec($db, $sql))) {
+      echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    if (($tuples = pg_CmdTuples($result)) != 1) {
+      echo "Only one row should be effected but $tuples rows were<BR>\n";
+      return FALSE;
+    }
+
+
+  return TRUE;
+} 
+
+  # Given an email ,get the last application ID
+  function get_appid($db, $email) {
+    $sql = "SELECT appid FROM applications,members WHERE aplications.member = members.memid AND members.email = '$email' ORDER BY appid DESC";
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+      return FALSE;
+    }
+    if (pg_NumRows($query) > 0 ) {
+      $row = pg_Fetch_Row($query);
+      return $row[0];
+    }
+    return "unknown";
+  }
+?>
+#use wml::nmpage title="SPI New Member Application"
+<H1>New Member Application</H1>
+<?
+  if ($what == "new") { 
+    if ( ($db = open_db())) {
+
+      $name = trim(strip_tags($name));
+      $email = trim(strip_tags($email));
+      $passwda = trim($passwda);
+      $passwdb = trim($passwdb);
+      $adate = strftime('%Y-%m-%d');
+      $randstr = md5(uniqid(rand()));
+
+        $errors = "";
+	if ($name == "") { $errors .= "<LI>You did not supply your name.\n"; }
+	if ($email == "") { $errors .= "<LI>You did not supply your email address.\n"; }
+	if ($passwda == "" || $passwdb == "") { $errors .= "<LI>You did not enter in your passwd in both boxes."; }
+	if ($passwda != $passwdb) { $errors .= "<LI>The passwords are different."; }
+	if ($errors != "") {
+	 echo "<P>There were problems with your application:<UL>$errors</UL><BR>\n";
+	} else { # fields are there
+				if (!check_user($db, $email)) {
+	?>
+	<P>There is something wrong with the database, or this email address is already
+	registered.  Registration failed.<P>
+	<?
+				} else { #user is ok
+					if (!register_user($db, $name, 
+					       $email,$passwda, $randstr)) {
+	?>
+	<P>Problem with registering you into the database for some reason, try again
+	later.
+	<?
+				 } else { #register ok
+					 echo "<P>SPI membership application submitted successfully on $adate. You should receive a confirmation email at the email address that you specified in the application.  Your application ID is ";
+					 echo get_appid($db,$email);
+					 echo ".<P>";
+					 email_user($db, $name, $email,$passwda, $randstr);
+				 } #register ok
+			 } #user ok
+		 } # fields ok
+	 } # db open
+ } else { #not called  yet
+?>
+<P>Thank you for your interest in SPI, if you would like to be put into
+the new maintainer list then enter in the information below. (NB: please
+do not choose a sensitive password since it will be stored in plain text
+and transmitted by e-mail).
+<BR>
+<HR>
+<FORM method="post" action="newnm.php">
+<INPUT type="hidden" name="what" value="new">
+<TABLE width="90%">
+<TR><TD>Name:</TD><TD><INPUT name="name" type=text></TD></TR>
+<TR><TD>Email Address:</TD> <TD><INPUT name="email" type=text></TD></TR>
+<TR><TD>Password:</TD> <TD><INPUT name="passwda" type="password"></TD></TR>
+<TR><TD>Password (again):</TD> <TD><INPUT name="passwdb" type="password"></TD></TR>
+<TR><TD>&nbsp;</TD><TD><INPUT type="submit" value="Apply!"></TD></TR>
+</TABLE>
+</FORM>
+<? } # not called yet ?>

@@ -1,0 +1,166 @@
+<?
+  session_start();
+  include("config.inc");
+  include("common.inc");
+
+  function create_contrib_application($db, $email) {
+
+    $sql = "INSERT INTO applications (appdate, member, contribapp, lastchange) ";
+    $sql .= "SELECT 'now'::date, memid, 't', 'now'::date FROM members ";
+    $sql .= " WHERE email = '$email'";
+    if (! ($result = pg_exec($db, $sql))) {
+      echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    if (($tuples = pg_CmdTuples($result)) != 1) {
+      echo "Only one row should be effected but $tuples rows were<BR>\n";
+      return FALSE;
+    }
+   echo "<P>Your application for the Contributing Membership has been ";
+   echo "registered successfully.  An Application Manager should soon ";
+   echo "get in contact with you.<P>";
+
+   $body = "$email applied for a contributing membership.\n";
+   $headers = "From: admin@nm.spi-inc.org\nX-Mailer: PHP/" . phpversion();
+   mail("admin@nm.spi-inc.org", "New SPI contrib member: $email", $body, $headers);
+   
+    return TRUE;
+  }
+
+  function get_application($db, $email, $appid) {
+  global $row, $query;
+
+  $sql = "SELECT applications.* FROM members, applications WHERE members.email='$email' AND members.memid = applications.member AND appid = '$appid'";
+  if (! ($query = pg_exec($db, $sql))) {
+    echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
+    echo "SQL was: $sql<BR>\n";
+    return FALSE;
+  }
+  if (pg_NumRows($query) == 0) {
+    echo "<P>Application # $appid was not found or it does not belong to $email<br>\n";
+    return FALSE;
+  }
+  $row = pg_Fetch_Array($query, 0);
+  return TRUE;
+}
+  function update_application($db, $form,$mgr_only) {
+
+    $sql = "UPDATE applications SET " .
+           get_textarea('contrib', $form[contrib]) ;
+    if ($mgr_only) {
+      $sql .= ", " . get_text('appdate', $form[appdate]) .
+              ", " . get_bool('contribapp', $form[contribapp]) .
+	      ", " . get_text('manager', $form[manager]) .
+	      ", " . get_text('manager_date', $form[manager_date]) .
+	      ", " . get_textarea('comment', $form[comment]) .
+	      ", " . get_bool('approve', $form[approve]) .
+	      ", " . get_text('approve_date', $form[approve_date]);
+      }
+    $sql .= ", lastchange = 'today'::date";
+    $sql .= " WHERE appid = '$form[appid]'";
+
+    echo $sql;
+    if (! ($result = pg_exec($db, $sql))) {
+      echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+      echo "SQL was: $sql<BR>\n";
+      return FALSE;
+    }
+    if (($tuples = pg_CmdTuples($result)) != 1) {
+      echo "Only one row should be effected but $tuples rows were<BR>\n";
+      return FALSE;
+    }
+    echo "<P>Application information successfully updated.<P>";
+    return TRUE;
+  }
+
+
+  $db = open_db();
+?>
+#use wml::nmpage title="SPI Membership - Application Status"
+<?
+  if (!session_is_registered("s_username")) {
+?>
+<P>You do not have permssion to view this page.  The problem is
+session management failed or timed out.
+<?
+  } else { #sess reg
+    $mgr_only = FALSE;
+    if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
+    # Did they click the apply?
+    if ($what == 'newapply') {
+      create_contrib_application($db,$s_username);
+    }
+    # Did the user click on update?
+    if ($what == 'update') {
+      update_application($db, $form, $mgr_only);
+      if ($mgr_only == TRUE) {
+        $user = $form[email];
+      }
+    }
+  if ($user == '' || !session_is_registered('s_ismanager')) {
+    $user = $s_username;
+  }
+
+  if (! get_application($db, $user, $appid)) {
+    print "Problem getting your application from the database<BR>\n";
+  } else {
+    print "<BR><H1>Application $appid Details</H1>\n";
+?>
+    <FORM method="post" action="application.php?<?=SID?>">
+    <INPUT type="hidden" name="what" value="update">
+<?
+    print "<INPUT type=\"hidden\" name=\"form[appid]\" value=\"$appid\">\n";
+    print "<TABLE border=\"0\" summary=\"\">\n";
+    print_text('Application #', 'appid', $row['appid'], FALSE);
+    print "<input type=\"hidden\" name=\"form[appid]\" value=\"".$row['appid']."\">\n";
+    print_text('Apply Date', 'appdate', $row['appdate'], $mgr_only);
+    print_checkbox('Contrib Mem Application', 'contribapp', $row['contribapp'], $mgr_only);
+    if ($row['contribapp'] == 't') {
+        print "</TABLE>\n";
+        print "<HR><B>Contributing Membership Application Details</B>\n";
+        print "<TABLE border=\"0\" summary=\"\">\n";
+        print_textbox('Contributions', 'contrib', $row['contrib'], TRUE);
+
+
+       $sql = "SELECT memid, email FROM members WHERE ismanager is TRUE";
+       if (! ($result = pg_exec($db, $sql))) {
+           echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+           echo "SQL was: $sql<BR>\n";
+           return FALSE;
+       }
+       echo "<TR><TD width=\"200\"><B>Manager:</B> </TD><TD width=\"400\"> ";
+	echo "<SELECT NAME = \"form[manager]\">";
+	echo "<OPTION VALUE=''>none\n";
+	$rows = pg_NumRows($result);
+	for ($i = 0 ; $i < $rows ; $i++) {
+	    $info = pg_Fetch_Array($result, $i);
+	    $sel = "";
+	    if ($row['manager'] == $info["memid"]) {
+	        $sel = "SELECTED";
+	    }
+	    printf("<OPTION VALUE=\"%s\">%s\n", $info["memid"], $sel, $info["email"]);
+        }
+	print "</SELECT>\n";
+	echo "</TD></TR>\n";
+
+#	print_text('Manager', 'manager', $row['manager'], $mgr_only);
+
+	print_text('Date Assigned', 'manager_date', $row['manager_date'], $mgr_only);
+        print_textbox('Mgr Comments', 'comment', $row['comment'], $mgr_only);
+	print_bool('Approved', 'approve', $row['approve'], $mgr_only);
+	print_text('Date Approved', 'approve_date', $row['approve_date'], $mgr_only);
+    } else { #noncontrib
+        print_text('Email Check Sent on', 'emailkey', $row['emailkey_date'], FALSE);
+        print_bool('Valid Email?', 'validemail', $row['validemail'], FALSE);
+        print_text('Email Check on', 'validemail_date', $row['validemail_date'], FALSE);
+     } # contrib
+     print_text('Last Changed', 'lastchange', $row['lastchange'], FALSE);
+     print "</TABLE>\n";
+     print "<INPUT type=\"submit\" value=\"Update\">\n";
+     print "</form>\n";
+
+    } # get mem
+  } #sess reg 
+?>
+

@@ -1,0 +1,129 @@
+<?
+  include("config.inc");
+  include("common.inc");
+?>
+<?
+  function print_days($db, $startdate, $stopdate)
+  {
+    $where = " WHERE " . $stopdate . " IS NOT NULL AND age('now'::date, " . $stopdate . ") < '2 months' AND " . $stopdate . " >= " . $startdate;
+
+    #
+    # Mode - the most "popular" number
+    #$sql = "SELECT (date_part('epoch', age(" . $stopdate . "," . $startdate . "))/86400)::int, count(*) AS entries FROM applicant " . $where;
+    #$sql .= " GROUP BY age(" . $stopdate . "::date," . $startdate . "::date)";
+    $sql = "SELECT " . $stopdate . "::date -" . $startdate . "::date AS mode, count(*) AS entries FROM applicant " . $where;
+    $sql .= " GROUP BY mode";
+    $sql .= " ORDER BY entries DESC LIMIT 1";
+    if (! ($query = pg_exec($db, $sql))) {
+          echo "<TD colspan=\"2\">Problem with query: ",
+	  pg_ErrorMessage($db), "</TD>\n";
+	  return;
+    }
+    if (pg_NumRows($query) > 0) {
+      $row = pg_Fetch_Row($query, 0);
+      print "<TD>" .  $row[0] . "</TD>";
+    } else {
+      print "<TD>??</TD>";
+    }
+
+
+    #
+    # First we get the median
+    $sql = "SELECT count(*) FROM applicant " . $where;
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<TD colspan=\"2\">Problem with query: ", 
+         pg_ErrorMessage($db), "</TD>\n";
+      return;
+    }
+    $row = pg_Fetch_Row($query, 0);
+    $medcount= intval($row[0]/2);
+    $sql = "SELECT " . $stopdate . "::date - " . $startdate . "::date as median FROM applicant " . $where;
+    $sql .= " ORDER by median";
+    $sql .= " LIMIT 1 OFFSET " . $medcount;
+    if (! ($query = pg_exec($db, $sql))) {
+          echo "<TD colspan=\"2\">Problem with query: ",
+	  pg_ErrorMessage($db), "</TD>\n";
+	  return;
+    }
+    if (pg_NumRows($query) > 0) {
+      $row = pg_Fetch_Row($query, 0);
+      print "<TD>" .  $row[0] . "</TD>";
+    } else {
+      print "<TD>??</TD>";
+    }
+
+
+    $sql = "SELECT avg(date_part('epoch', age(" . $stopdate . "," . $startdate .  "))/86400)::int, max(date_part('epoch', age(" . $stopdate . "," . $startdate .  "))/86400)::int from applicant " . $where;
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<TD colspan=\"2\">Problem with query: ", 
+         pg_ErrorMessage($db), "</TD>\n";
+      return;
+    }
+    if (pg_NumRows($query) > 0) {
+      $row = pg_Fetch_Row($query, 0);
+      echo "<TD>", $row[0], "</TD><TD>", $row[1], "</TD>";
+    } else {
+      echo "<TD>??</TD><TD>??</TD>";
+    }
+  }
+
+  function print_stat($db, $desc, $sql,$startdate,$stopdate)
+  {
+    if (! ($query = pg_exec($db, $sql))) {
+      echo "<TR><TD colspan=\"2\">Problem with query: ", 
+         pg_ErrorMessage($db), "</TD></TR>\n";
+      return;
+    }
+    if (pg_NumRows($query) > 0) {
+      $row = pg_Fetch_Row($query, 0);
+      echo "<TR><TD>$desc</TD><TD>", $row[0], "</TD>";
+    } else {
+      echo "<TR><TD>$desc</TD><TD>??</TD>";
+    }
+    echo "</TD></TR>\n";
+    return;
+    if ($startdate == '' || $startdate == '') {
+      echo "<TD><SMALL>N/A</SMALL></TD><TD><SMALL>N/A</SMALL></TD><TD><SMALL>N/A</SMALL></TD><TD><SMALL>N/A</SMALL></TD>";
+    } else {
+      print_days($db,$startdate,$stopdate);
+    }
+    "</TR>\n";
+  }
+   
+#
+# Print stats prints a summary list of statistics about the new
+# members, as can be assumed from its name it prints them to
+# the page.
+function print_stats() {
+  if (! ($db = open_db())) {
+    return;
+  }
+  echo "<TABLE border=\"0\" summary=\"\">\n";
+  #echo "<TR valign=\"b\"><TD> </TD><TH>Count</TH><TH>Mode<BR>Days</TH><TH>Median<BR>Days</TH><TH>Average<BR>Days</TH><TH>Maximum<BR>Days</TH></TR>\n";
+  
+  #
+  # This is all applicants we know about
+  print_stat($db, "Applicants Pending", 
+      "SELECT count(*) from members WHERE ismember = 'f'" ,'', '');
+  print_stat($db, "Total Members (non-contrib)", 
+      "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 'f'" ,'', '');
+  print_stat($db, "Total Members (contrib)", 
+      "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 't'" ,'', '');
+  print_stat($db, "Application Managers",
+      "SELECT count(*) FROM members where ismanager = 't'", '', '');
+  echo "</TABLE>\n";
+  pg_Close($db);
+}
+?>
+#use wml::nmpage title="SPI Membership Statistics"
+<H1>Aggregate Statistics</H1>
+<P>
+Here are the current statistics of SPI's membership including all
+applications pending, approved non-contributing members and approved
+contributing members.  Application managers are the people on the
+membership committee that approve contributing memberships.
+<CENTER>
+<?
+print_stats();
+?>
+</CENTER>

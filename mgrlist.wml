@@ -55,6 +55,6 @@ You should not be here!!</STRONG>
   echo "<H1>SPI New Member -- $title</H1><BR>";
   echo "<P>$desc</p>";
 
-    $sql = "SELECT a.*,m.* from applications a, members m WHERE m.memid = a.member $where ORDER BY a.appdate";
+    $sql = "SELECT a.*,m.* from applications a, members m WHERE m.memid = a.member AND a.complete IS NULL $where ORDER BY a.appdate";
     print_applicants($sql);
   } # Registered session ?>

@@ -99,7 +99,7 @@ function print_stats() {
   if (! ($db = open_db())) {
     return;
   }
-  echo "<TABLE border=\"0\" summary=\"\">\n";
+  echo "<TABLE border=\"2\" summary=\"\">\n";
   #echo "<TR valign=\"b\"><TD> </TD><TH>Count</TH><TH>Mode<BR>Days</TH><TH>Median<BR>Days</TH><TH>Average<BR>Days</TH><TH>Maximum<BR>Days</TH></TR>\n";
   
   #
@@ -108,10 +108,10 @@ function print_stats() {
       "SELECT count(*) from members WHERE ismember = 'f'" ,'', '');
   print_stat($db, "NC Members", 
       "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 'f'" ,'', '');
-  print_stat($db, "Contrib Members", 
-      "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 't'" ,'', '');
   print_stat($db, "Contrib Membership Applications", 
       "SELECT count(*) from members m, applications a WHERE ismember = 't' AND a.approve IS NULL AND a.contribapp = 't' AND m.memid = a.member" ,'', '');
+  print_stat($db, "Contrib Members", 
+      "SELECT count(*) from members WHERE ismember = 't' AND iscontrib = 't'" ,'', '');
   print_stat($db, "Application Managers",
       "SELECT count(*) FROM members where ismanager = 't'", '', '');
   echo "</TABLE>\n";

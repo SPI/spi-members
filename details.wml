@@ -71,8 +71,8 @@
     } else {
       if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
 ?>
-      <TABLE border="0" summary="">
       <FORM method="post" action="details.php?<?=SID?>">
+      <TABLE border="0" summary="">
 <?
       print_text('Email Address', 'email', $row['email'], $mgr_only);
       print "<INPUT type=\"hidden\" name=\"form[emailkey]\" value=\"".
@@ -82,11 +82,18 @@
       print_bool('Current Member', 'ismember', $row['ismember'], FALSE);
       print_bool('Application Manager', 'ismanager', $row['ismanager'], $mgr_only);
       print_bool('Contrib Member', 'iscontrib', $row['iscontrib'], $mgr_only);
+      echo "</TABLE>";
+      # Get all the applications for this user.
+      print "<h2>Applications for this user</h2>\n";
+      $sql = "SELECT * from applications WHERE member = '".$row['memid']."' AND contribapp = 't'  ORDER BY appdate DESC";
+      print_applications($db, $sql,$user);
+      print "<br>";
+
       if (session_is_registered("s_ismanager")) {
-          print "<TR><TD colspan=\"2\"><INPUT type=\"submit\" name=\"form[submit]\" value=\"Update\"></TD></TR>\n";
+          print "<INPUT type=\"submit\" name=\"form[submit]\" value=\"Update Membership status\">\n";
+      }
       }
 ?>
-      </TABLE>
       </form>
 <?      if ($mgr_only) { ?>
       <FORM method="post" action="delmem.php?<?=SID?>">
@@ -97,12 +104,6 @@
       <HR>
 
 <?
-      }
-      # Get all the applications for this user.
-      print "<h2>Applications for this user</h2>\n";
-      $sql = "SELECT * from applications WHERE member = '".$row['memid']."' ORDER BY appdate DESC";
-      print_applications($db, $sql,$user);
-
     } #get_member()
   } #sess reg 
 

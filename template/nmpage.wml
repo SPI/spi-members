@@ -24,8 +24,6 @@
 <!-- 1983c6 -->
 
 <BODY text="#000000" bgcolor="#FFFFFF" link="#00007F" vlink="#000000" alink="#FF0000">
-<STRONG>NOTE!! This system is under test.  You can try it out but it does
-not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 
 <<body>>
 
@@ -62,10 +60,10 @@ not bear any official relationship to SPI membership (yet).</STRONG><BR><HR>
 <b>Managers</b><br>
 <A href="stats.php?<?=SID?>">Statistics</A><BR>
 <A href="mgrlist.php?<?=SID?>">Everyone</A><BR>
-<A href="mgrlist.php?listtype=ncapp&<?=SID?>">NC Applications</A><BR>
-<A href="mgrlist.php?listtype=ncmem&<?=SID?>">NC Members</A><BR>
-<A href="mgrlist.php?listtype=capp&<?=SID?>">C Applications</A><BR>
-<A href="mgrlist.php?listtype=cmem&<?=SID?>">C Members</A><BR>
+<A href="mgrlist.php?listtype=ncapp&<?=SID?>">Non-Contrib Applications</A><BR>
+<A href="mgrlist.php?listtype=ncmem&<?=SID?>">Non-Contrib Members</A><BR>
+<A href="mgrlist.php?listtype=capp&<?=SID?>">Contrib Applications</A><BR>
+<A href="mgrlist.php?listtype=cmem&<?=SID?>">Contrib Members</A><BR>
 <A href="mgrlist.php?listtype=mgr&<?=SID?>">Managers</A><BR>
 
 

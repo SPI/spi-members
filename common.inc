@@ -177,15 +177,30 @@ function print_applicants($sql) {
   if ($rows == 0) {
     echo "<p>None Found.</p>\n";
   } else {
-      echo "<TABLE border=\"0\" summary=\"\">\n<TR><TH>Appl Date</TH><TH>Applicant</TH><TH>Manager</TH></TR>\n";
+      echo "<TABLE border=\"0\" summary=\"\">\n<TR><TH>Appl Date</TH><TH>Status</TH><TH>Applicant</TH><TH>App#</TH><TH>Manager</TH></TR>\n";
     for ($i = 0 ; $i < $rows ; $i++) {
       $row = pg_Fetch_Array($query, $i);
       echo "<TR><TD>", $row["appdate"], "</TD>";
+      if ($row['ismember'] != 't') {
+        echo "<td>NCA</td>";
+      } else {
+        if ($row['iscontrib'] == 'f') {
+	  if ($row['approve'] == '' && $row['contribap'] == 't') {
+	    echo "<td>CA</td>";
+	  } else {
+	    echo "<td>NCM</td>";
+	  }
+	} else {
+	  echo "<td>CM</td>";
+	}
+      }
+
       echo "<TD><A href=\"details.php?"; ?><?=SID?><?;
       echo "&user=", urlencode($row["email"]), "\">",
             $row["name"], " &lt;",
   	    $row["email"], "&gt;</A>",
-            " </TD><TD>", get_manager($db, $row["manager"]), "</TD></TR>\n";
+            " </TD><TD>", $row["appid"],
+	    " </td><td>", get_manager($db, $row["manager"]), "</TD></TR>\n";
 
     }
     echo "</table>\n";
@@ -203,12 +218,16 @@ function print_applications($db, $sql, $email) {
   $rows = pg_NumRows($query);
   for ($i = 0 ; $i < $rows ; $i++) {
     $row = pg_Fetch_Array($query, $i);
+    if ($row['contribapp'] == 't') { 
+      echo "Contrib application"; 
+    } else {
+      echo "Non-Contrib application";
+    }
     echo "<A href=\"application.php?"; ?><?=SID?><?;
     echo "&appid=", urlencode($row["appid"]), "&user=$email\">";
-    echo "application #". $row['appid'];
-    echo " applied on ", $row['appdate'], "</a> ";
+    echo "#". $row['appid'];
+    echo " from ", $row['appdate'], "</a> ";
     if ($row['contribapp'] == 't') { 
-      echo " (contrib) "; 
       if ($row['approve'] != '') {
         echo ' (complete) ';
       }

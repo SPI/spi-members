@@ -98,7 +98,7 @@
     print "<P>";
 
     if ($row['ismember'] == 't' && $row['iscontrib'] != 't') {
-        print "<A href=\"application.php?what=newapply&"?><?=SID?><? print "\">Apply</A> for contributing membership.  Please apply only if you belong to one of these groups:";
+        print "<A href=\"application.php?what=newapply&"?><?=session_id()?><? print "\">Apply</A> for contributing membership.  Please apply only if you belong to one of these groups:";
         print "<UL>";
         print "<LI>active members of SPI affiliated projects";
         print "<LI>active members of any large free software development project";

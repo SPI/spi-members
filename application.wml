@@ -162,7 +162,7 @@ session management failed or timed out.
   } else {
     print "<BR><H1>Application $appid Details</H1>\n";
 ?>
-    <FORM method="post" action="application.php?<?=SID?>">
+    <FORM method="post" action="application.php?<?=session_id()?>">
     <INPUT type="hidden" name="what" value="update">
 <?
     print "<INPUT type=\"hidden\" name=\"form[appid]\" value=\"$appid\">\n";

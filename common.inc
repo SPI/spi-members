@@ -195,7 +195,7 @@ function print_applicants($sql) {
 	}
       }
 
-      echo "<TD><A href=\"details.php?"; ?><?=SID?><?;
+      echo "<TD><A href=\"details.php?"; ?><?=session_id()?><?;
       echo "&user=", urlencode($row["email"]), "\">",
             $row["name"], " &lt;",
   	    $row["email"], "&gt;</A>",
@@ -223,7 +223,7 @@ function print_applications($db, $sql, $email) {
     } else {
       echo "Non-Contrib application";
     }
-    echo " <A href=\"application.php?"; ?><?=SID?><?;
+    echo " <A href=\"application.php?"; ?><?=session_id()?><?;
     echo "&appid=", urlencode($row["appid"]), "&user=", urlencode($email), "\">";
     echo "#". $row['appid'];
     echo " from ", $row['appdate'], "</a> ";

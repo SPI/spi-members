@@ -107,7 +107,7 @@
     } else {
       if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
 ?>
-      <FORM method="post" action="details.php?<?=SID?>">
+      <FORM method="post" action="details.php?<?=session_id()?>">
       <TABLE border="0" summary="">
 <?
       print_text('Email Address', 'email', $row['email'], $mgr_only);
@@ -132,7 +132,7 @@
 ?>
       </form>
 <?      if ($mgr_only) { ?>
-      <FORM method="post" action="delmem.php?<?=SID?>">
+      <FORM method="post" action="delmem.php?<?=session_id()?>">
       <input type='hidden' name='email' value='<? echo $row['email']; ?>'>
       <input type='submit' value='  Delete Member  '>&nbsp;&nbsp;
       <input type='checkbox' name='sure' value='yes'>&nbsp;I'm sure.

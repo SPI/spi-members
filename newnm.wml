@@ -149,7 +149,7 @@ echo "<p>You should receive a confirmation email at the email address that ".
  } else { #not called  yet
 ?>
 <P>Thank you for your interest in SPI, if you would like to be put into
-the new maintainer list then enter in the information below. (NB: please
+the member list then enter in the information below. (NB: please
 do not choose a sensitive password since it will be stored in plain text
 and transmitted by e-mail).
 <BR>

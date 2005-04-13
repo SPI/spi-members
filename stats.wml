@@ -120,7 +120,7 @@ function print_stats() {
 ?>
 #use wml::nmpage title="SPI Membership Statistics"
 <?
-  if (!session_is_registered("s_username") || !session_is_registered("s_ismanager")) {
+  if (!session_is_registered("s_username")) {
 ?>
 <STRONG>
 You should not be here!!</STRONG>

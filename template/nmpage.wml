@@ -53,12 +53,12 @@
 <A href="logout.php?<?=SID?>">Logout</A><BR>
 <A href="nmstatus.php?<?=SID?>">Main</A><BR>
 <A href="chpass.php?<?=SID?>">Change Password</A><BR>
+<A href="stats.php?<?=SID?>">Statistics</A><BR>
 <?
     if (session_is_registered('s_ismanager')) {
 ?>
 <hr>
 <b>Managers</b><br>
-<A href="stats.php?<?=SID?>">Statistics</A><BR>
 <A href="mgrlist.php?<?=SID?>">Everyone</A><BR>
 <A href="mgrlist.php?listtype=ncapp&<?=SID?>">Non-Contrib Applications</A><BR>
 <A href="mgrlist.php?listtype=ncmem&<?=SID?>">Non-Contrib Members</A><BR>

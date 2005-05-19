@@ -60,7 +60,7 @@ Email Address:&nbsp;<INPUT type="text" name="email" length="60"><BR>
 </FORM>
 <?
   } else {
-    $email = strip_tags(trim($_REQUEST['[email']));
+    $email = strip_tags(trim($_REQUEST['email']));
     if (email_password($email)) {
 ?>
 <P>A new password has been emailed to you.  Please log in with this new

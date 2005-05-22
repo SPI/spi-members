@@ -1,0 +1,124 @@
+This documents explains most parts of the SPI Membership Committee.
+
+Responsibility and Tasks
+------------------------
+
+The responsibilities of the SPI Membership Committee are to deal with the
+body of SPI members and to handle votes.  SPI's membership program has two
+stages:
+
+ - Non-Contributing Members: these can simply apply on the web site and
+   will become Non-Contributing Members after they reply to an e-mail
+   confirming their e-mail address.  These do not expire and are open
+   to anyone.
+
+ - Contributing Members: those have made a contribution to the free
+   software and open source community; in theory, they are valid for
+   one year but in practice this has not been handled very strictly
+   in the past.  People apply for a Contributing Membership by
+   logging into the web site, filling out a form listing their
+   contributions.  A member of the SPI Membership Committee then has
+   to become their Application Manager and review their application.
+   Members of SPI projects, such as Debian, automatically have a
+   right for a Contributing Membership.  For others, their contribution
+   has to be evaluated.  If they left the "contribution" field
+   empty, ask for more information.
+
+Some tasks in more detail:
+
+ - Approving a Contributing Membership request: you log into the web site,
+   click on "Contrib Members Applications" on the right bar, then you
+   get a page with details about the applicant.  There is one line saying
+   Contrib application #nnn from 200n-nn-nn.  I typically open this
+   link in a new window; I review the application, put in the date and
+   confirm if it's okay.  Afterwards, you have to change Contrib Member
+   to "yes" and click "Update Membership status".  If everything was
+   successful, you should see the message "Applicant became a
+   Contributing Member, emailing them" on the top of the page.
+
+ - From time to time, non-contributing membership requests should be
+   reviewed and removed.  Some people sign up but never respond to
+   the e-mail asking for confirmation.
+
+ - Handle votes: I've no idea about this, maybe weasel can fill this
+   in.
+
+
+Scripts behind the scenes and technical information
+---------------------------------------------------
+
+The PHP source code is currently in CVS at
+:ext:user@cvs.spi-inc.org:/srv/cvs.spi-inc.org/cvs/spi
+
+There is a user called "spinm" who runs cron jobs and there is a group
+"spinm" as which all files should be owned.  Members of the Membership
+Committee have access to the spinm user via sudo.  There is a Postgres
+database called "spiapp".
+
+There are three cron jobs:
+
+ - /srv/members.spi-inc.org/bin/spi-private.pl: updates the text file
+   listing all people subscribed to the spi-private mailing list.
+   This is read by Mailman.
+
+ - /srv/members.spi-inc.org/bin/inform-new-apps.pl: this generates
+   a daily message to the Membership Committee if there are any
+   new pending Contributing Membership applications.
+
+ - /srv/members.spi-inc.org/bin/webbuild: this periodically regenerates
+   the web site from the PHP sources.
+
+
+The Membership Committee does not have root access.  You have to contact
+admin@spi-inc.org (currently Wichert Akkerman) for any requests.
+
+
+Adding new Membership Committee members
+---------------------------------------
+
+ - Simply log in at https://members.spi-inc.org/, go to their profile
+   and tick the "Application Manager" box.
+
+ - They need an account on chic.spi-inc.org
+
+ - They need to be in the "spinm" group
+
+ - They need sudo access to the "spinm" user
+
+ - They should have Postgres access to the "spiapp" database (or
+   they can access it through the "spinm" user).
+
+ - They have to create a ~/.forward file so they receive e-mail.
+
+ - They should be added to /srv/members.spi-inc.org/etc/aliases so
+   they receive mail sent to members@.
+
+
+Members and History
+-------------------
+
+Craig Small originally built the web site based on his scripts for Debian's
+NM process.  Later, Martin Michlmayr and Peter Palfrader took over; little
+modifications to the system itself were made but Peter added support for
+handling votes.  In March, they indicated their interest to step down and
+in May Graham Wilson, Luk Claes and Michael Schultheiss became the new
+Membership Committee.
+
+
+Open Questions
+--------------
+
+In the past, Martin Michlmayr (head of the Membership Committee at that
+time) became an advisor to the SPI board.  It is not clear whether the new
+head should become an advisor too since this is not the case with other
+groups within SPI.  This is something the SPI Board has to decide.
+
+
+TODO list
+---------
+
+ - Move the PHP code from CVS to SVN
+
+ - Check all the scripts into SVN as well, and re-structure the layout
+   (i.e. move the *.php scripts in a sub-directory).
+

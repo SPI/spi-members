@@ -34,7 +34,9 @@ Some tasks in more detail:
    confirm if it's okay.  Afterwards, you have to change Contrib Member
    to "yes" and click "Update Membership status".  If everything was
    successful, you should see the message "Applicant became a
-   Contributing Member, emailing them" on the top of the page.
+   Contributing Member, emailing them" on the top of the page.  A
+   confirmation will be sent to the member and to the Membership
+   Committee.
 
  - From time to time, non-contributing membership requests should be
    reviewed and removed.  Some people sign up but never respond to

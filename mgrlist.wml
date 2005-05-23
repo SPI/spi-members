@@ -28,7 +28,7 @@
       break;
     case 'mgr':
       $title = 'Application Managers';
-      $where = "AND m.ismember = 't' AND m.ismanager = 't'" ;
+      $where = "AND m.ismember = 't' AND contribapp='t' AND m.ismanager = 't'" ;
       $desc = "This page lists all members who are application managers.";
       break;
 

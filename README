@@ -56,6 +56,9 @@ Scripts behind the scenes and technical information
 
 The PHP source code is currently in CVS at
 :ext:user@cvs.spi-inc.org:/srv/cvs.spi-inc.org/cvs/spi
+Note that this code is based on the system used for Debian's New Maintainer
+system so if you make any major changes which might be useful to Debian,
+please send your changes to new-maintainer@debian.org.
 
 There is a user called "spinm" who runs cron jobs and there is a group
 "spinm" as which all files should be owned.  Members of the Membership

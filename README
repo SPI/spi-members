@@ -138,3 +138,6 @@ TODO list
    members@members.spi-inc.org so the SPI admin doesn't have to be
    bothered when changes are needed.
 
+ - the e-mail confirmation for newly accepted Contributing Members
+   should contain the name of the Application Manager.
+

@@ -1,3 +1,8 @@
+# Copyright (C) 2001  Craig Small <csmall@debian.org>
+# Copyright (C) 2001, 2002, 2003, 2004, 2005  Martin Michlmayr <tbm@cyrius.com>
+# Copyright (C) 2003, 2004  Peter Palfrader <weasel@debian.org>
+# This file may be distributed under the GPL v2 or higher.
+
 <?
   session_start();
   include("config.inc");

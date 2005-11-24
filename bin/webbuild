@@ -1,0 +1,27 @@
+#!/bin/sh -e
+
+# this is the script that updates the SPI New Member web pages
+# This script is run from spinm's crontab.
+# 21 * * * * /srv/members.spi-inc.org/bin/webbuild
+
+rootdir=/srv/members.spi-inc.org
+
+umask 002
+unset LANG
+
+# rotate the log file from the last build
+savelog -g spi -m 664 $rootdir/log/webbuild.log &> /dev/null
+
+# everything is logged
+{
+echo SPI New Member web pages build started at `date`
+
+cd $rootdir/wml
+
+cvs update -d -P
+
+make install 
+
+echo Done at `date`
+} &> $rootdir/log/webbuild.log
+

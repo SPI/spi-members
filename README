@@ -54,8 +54,8 @@ Some tasks in more detail:
 Scripts behind the scenes and technical information
 ---------------------------------------------------
 
-The PHP source code is currently in CVS at
-:ext:user@cvs.spi-inc.org:/srv/cvs.spi-inc.org/cvs/spi
+The PHP source code is currently in SVN at
+svn+ssh://code.spi-inc.org/svn/spi/members/trunk
 Note that this code is based on the system used for Debian's New Maintainer
 system so if you make any major changes which might be useful to Debian,
 please send your changes to new-maintainer@debian.org.
@@ -127,10 +127,7 @@ groups within SPI.  This is something the SPI Board has to decide.
 TODO list
 ---------
 
- - Move the PHP code from CVS to SVN
-
- - Check all the scripts into SVN as well, and re-structure the layout
-   (i.e. move the *.php scripts in a sub-directory).
+ - Check all the scripts into SVN
 
  - Create an archive for the Membership Committee alias.
 

@@ -53,6 +53,7 @@
 <A href="logout.php?<?=SID?>">Logout</A><BR>
 <A href="nmstatus.php?<?=SID?>">Main</A><BR>
 <A href="chpass.php?<?=SID?>">Change Password</A><BR>
+<A href="chemail.php?<?=SID?>">Change Email</A><BR>
 <A href="stats.php?<?=SID?>">Statistics</A><BR>
 <?
     if (session_is_registered('s_ismanager')) {

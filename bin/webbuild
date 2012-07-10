@@ -18,7 +18,11 @@ echo SPI New Member web pages build started at `date`
 
 cd $rootdir/wml
 
-cvs update -d -P
+# We are switching to Subversion, but read-only access is not setup right now,
+# so I'm disabling the following for the time being. I think in the future it
+# might be useful to disable this permanently. -- graham (24 Nov 2005)
+#
+#cvs update -d -P
 
 make install 
 

@@ -5,9 +5,6 @@
 // This file may be distributed under the GPL v2 or higher.
 
   #Common functions used everywhere
-  if (!function_exists(pg_connect)) {
-    dl("pgsql.so");
-  }
 
   # Opens the Database, returns the database handle if ok and FALSE if there
   # was a problem.
@@ -19,7 +16,7 @@
     if ($DBPasswd != "") {
       $connstr .= " password=$DBPasswd";
     }
-    if (! ($db = pg_Connect($connstr))) {
+    if (! ($db = pg_connect($connstr))) {
       echo "<STRONG>Problem with connecting to database: ", pg_ErrorMessage($db), "</STRONG><BR>";
       return FALSE;
     }

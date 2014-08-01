@@ -6,7 +6,7 @@ WMLFILES := $(wildcard *.wml)
 PHPFILES := $(WMLFILES:wml=php)
 INCFILES := config.inc common.inc
 SPITEMPLATES := $(wildcard template/*.wml)
-TARGETDIR := ../http/root
+TARGETDIR := ../htdocs
 
 WML_DEFS := -I template -DHOME="http://www.spi-inc.org" \
             -D CUR_YEAR=$(shell date +%Y) -D CUR_ISO_LANG="en"

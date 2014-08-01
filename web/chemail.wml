@@ -45,9 +45,9 @@
 <?
   } else {
     $form = $_REQUEST['form'];
-    $oldemail = strip_tags(trim($form[oldemail]));
-    $password = strip_tags(trim($form[password]));
-    $newemail = strip_tags(trim($form[newemail]));
+    $oldemail = strip_tags(trim($form['oldemail']));
+    $password = strip_tags(trim($form['password']));
+    $newemail = strip_tags(trim($form['newemail']));
     $errors = "";
     if ($oldemail == "") { $errors .= "<LI>You didn't type your old email."; }
     if ($password == "") { $errors .= "<LI>You didn't type your password."; }

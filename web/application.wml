@@ -89,18 +89,18 @@
   function update_application($db, $form, $mgr_only, $email) {
 
     $sql = "UPDATE applications SET " .
-           get_textarea('contrib', $form[contrib]) ;
+           get_textarea('contrib', $form['contrib']) ;
     if ($mgr_only) {
-      $sql .= ", " . get_text('appdate', $form[appdate]) .
-              ", " . get_bool('contribapp', $form[contribapp]) .
-	      ", " . get_text('manager', $form[manager]) .
-	      ", " . get_text('manager_date', $form[manager_date]) .
-	      ", " . get_textarea('comment', $form[comment]) .
-	      ", " . get_bool('approve', $form[approve]) .
-	      ", " . get_text('approve_date', $form[approve_date]);
+      $sql .= ", " . get_text('appdate', $form['appdate']) .
+              ", " . get_bool('contribapp', $form['contribapp']) .
+	      ", " . get_text('manager', $form['manager']) .
+	      ", " . get_text('manager_date', $form['manager_date']) .
+	      ", " . get_textarea('comment', $form['comment']) .
+	      ", " . get_bool('approve', $form['approve']) .
+	      ", " . get_text('approve_date', $form['approve_date']);
       }
     $sql .= ", lastchange = 'today'::date";
-    $sql .= " WHERE appid = '$form[appid]'";
+    $sql .= " WHERE appid = '" . $form['appid'] . "'";
 
     if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
@@ -112,7 +112,7 @@
       return FALSE;
     }
 
-    $sql = "UPDATE members SET " . get_bool('sub_private', $form[sub_private]) .
+    $sql = "UPDATE members SET " . get_bool('sub_private', $form['sub_private']) .
            "WHERE email = '$email'";
     $result = pg_exec($db, $sql);
 
@@ -151,9 +151,9 @@ session management failed or timed out.
     # Did the user click on update?
     if ($what == 'update') {
       update_application($db, $form, $mgr_only, $_SESSION["s_username"]);
-      $appid = $form[appid];
+      $appid = $form['appid'];
       if ($mgr_only == TRUE) {
-        $user = $form[email];
+        $user = $form['email'];
       }
     }
   if ($user == '' || !isset($_SESSION["s_ismanager"])) {

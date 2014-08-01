@@ -53,9 +53,9 @@
 <?
   } else {
     $form = $_REQUEST['form'];
-    $passwda = strip_tags(trim($form[passwda]));
-    $passwdb = strip_tags(trim($form[passwdb]));
-    $oldpasswd = strip_tags(trim($form[oldpasswd]));
+    $passwda = strip_tags(trim($form['passwda']));
+    $passwdb = strip_tags(trim($form['passwdb']));
+    $oldpasswd = strip_tags(trim($form['oldpasswd']));
     $errors = "";
     if ($passwda == "") { $errors .= "<LI>You didn't type your new password."; }
     if ($passwdb == "") { $errors .= "<LI>You didn't type your confirming password."; }

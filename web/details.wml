@@ -26,14 +26,14 @@
 }
   function update_member($db, $form) {
     global $row;
-    get_member($db, $form[email]);
+    get_member($db, $form['email']);
     $iscontrib = $row['iscontrib'];
 
     $sql = 'UPDATE members SET email = $1';
     if (isset($_SESSION['s_ismanager'])) {
-      $sql .= ", ". get_bool('ismanager', $form[ismanager]).
-              ", ". get_bool('iscontrib', $form[iscontrib]).
-              ", ". get_text('expirydate', $form[expirydate]);
+      $sql .= ", ". get_bool('ismanager', $form['ismanager']).
+              ", ". get_bool('iscontrib', $form['iscontrib']).
+              ", ". get_text('expirydate', $form['expirydate']);
     }
     $sql .= " WHERE email = $2";
     if (! ($result = pg_query_params($db, $sql,
@@ -48,7 +48,7 @@
 
     # Applicant just became a Contrib Member, mail them
     if ($iscontrib == 'f' && $form['iscontrib'] == 't') {
-        $body = "Dear " . $row[name] . "!\n";
+        $body = "Dear " . $row['name'] . "!\n";
         $body .= "\n";
         $body .= "I'm happy to announce that your SPI Contributing Membership\n";
         $body .= "application has been accepted.  You can check and update your\n";
@@ -72,7 +72,7 @@
         $headers .= "CC: membership@spi-inc.org\n";
         $headers .= "Precedence: bulk\n";
         $headers .= "Errors-To: admin@members.spi-inc.org";
-        mail($form[email], "Your SPI Contributing Membership application", $body, $headers);
+        mail($form['email'], "Your SPI Contributing Membership application", $body, $headers);
         echo "Applicant became a Contributing Member, emailing them.<P>";
     }
 
@@ -93,15 +93,15 @@
   $form = $_REQUEST['form'];
   $s_username = $_SESSION["s_username"];
   # Did the user click on update?
-  if ($form[submit]) {
+  if ($form['submit']) {
     if (!isset($_SESSION['s_ismanager']) && $form['emailkey'] != $s_username) {
       echo "Can't update another users details.";
     } else {
       update_member($db, $form);
       echo "Member details updated.";
     }
-    if ($form[emailkey] != '' && $form[emailkey] != $s_username && isset($_SESSION['s_ismanager'])) {
-      $user = $form[emailkey];
+    if ($form['emailkey'] != '' && $form['emailkey'] != $s_username && isset($_SESSION['s_ismanager'])) {
+      $user = $form['emailkey'];
     }
   }
   # Work out if we were called as us or as a manager
@@ -118,7 +118,7 @@
       <TABLE border="0" summary="">
 <?
       print_text('Email Address', 'email', $row['email'], $mgr_only);
-      print "<INPUT type=\"hidden\" name=\"form[emailkey]\" value=\"".
+      print "<INPUT type=\"hidden\" name=\"form['emailkey']\" value=\"".
            $row['email']. "\">\n";
       print_text('Member Since', 'firstdate', $row['firstdate'], FALSE);
       print_text('Membership Expires', 'expirydate', $row['expirydate'], $mgr_only);

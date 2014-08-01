@@ -32,7 +32,7 @@
 #use wml::nmpage title="Change Website password"
 
 <? 
-  if (!session_is_registered('s_username')) {
+  if (!isset($_SESSION['s_username'])) {
 ?>
 <P>Session management failed, you are not allowed here.
 <?

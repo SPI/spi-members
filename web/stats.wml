@@ -125,14 +125,12 @@ function print_stats() {
 ?>
 #use wml::nmpage title="SPI Membership Statistics"
 <?
-  if (!session_is_registered("s_username")) {
+  if (!isset($_SESSION['s_username'])) {
 ?>
 <STRONG>
 You should not be here!!</STRONG>
 <? 
   } else { 
-  session_register("s_username");
-  session_register("s_manager");
 ?>
 <H1>Aggregate Statistics</H1>
 <P>

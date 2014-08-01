@@ -41,7 +41,7 @@
 ?>
 #use wml::nmpage title="SPI Membership - Delete Member"
 <?
-  if (!session_is_registered("s_username") || !session_is_registered('s_ismanager')) {
+  if (!isset($_SESSION["s_username"]) || !isset($_SESSION['s_ismanager'])) {
 ?>
 <P>You do not have permission to view this page.  The problem is session management failed or timed out.  You must be an application manager to access this 
 screen.

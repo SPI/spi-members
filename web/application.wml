@@ -127,7 +127,7 @@
 ?>
 #use wml::nmpage title="SPI Membership - Application Status"
 <?
-  if (!session_is_registered("s_username")) {
+  if (!isset($_SESSION['s_username'])) {
 ?>
 <P>You do not have permission to view this page.  The problem is
 session management failed or timed out.
@@ -138,7 +138,7 @@ session management failed or timed out.
     $user = $_REQUEST['user'];
     $appid = $_REQUEST['appid'];
     $form = $_REQUEST['form'];
-    if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
+    if (isset($_SESSION["s_ismanager"])) { $mgr_only = TRUE; }
     # Did they click the apply?
     if ($what == 'newapply') {
       // We can use s_username here as only applicants can apply themselves
@@ -158,7 +158,7 @@ session management failed or timed out.
         $user = $form[email];
       }
     }
-  if ($user == '' || !session_is_registered('s_ismanager')) {
+  if ($user == '' || !isset($_SESSION["s_ismanager"])) {
     $user = $_SESSION["s_username"];
   }
 

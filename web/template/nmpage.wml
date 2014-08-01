@@ -46,7 +46,7 @@
 </td>
 <td nowrap valign="top" bgcolor="#1983C6">
 <?
-  if (session_is_registered("s_username")) {
+  if (isset($_SESSION['s_username'])) {
 ?>
 <B>Logged in</B><BR>
 <A href="logout.php?<?=SID?>">Logout</A><BR>
@@ -55,7 +55,7 @@
 <A href="chemail.php?<?=SID?>">Change Email</A><BR>
 <A href="stats.php?<?=SID?>">Statistics</A><BR>
 <?
-    if (session_is_registered('s_ismanager')) {
+    if (isset($_SESSION['s_ismanager'])) {
 ?>
 <hr>
 <b>Managers</b><br>

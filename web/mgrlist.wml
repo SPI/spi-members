@@ -48,15 +48,12 @@
 #use wml::nmpage title="SPI New Members - <? echo $title; ?>";
 <?
   
-  if (!session_is_registered("s_username") || !session_is_registered("s_ismanager")) {
+  if (!isset($_SESSION["s_username"]) || !isset($_SESSION["s_ismanager"])) {
 ?>
 <STRONG>
 You should not be here!!</STRONG>
 <? 
   } else { 
-  session_register("s_username");
-  session_register("s_manager");
-
   echo "<H1>SPI New Member -- $title</H1><BR>";
   echo "<P>$desc</p>";
 

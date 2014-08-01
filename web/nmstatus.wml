@@ -28,7 +28,7 @@
 
     $sql = 'UPDATE members SET '.
            get_text('email', $form[email]);
-    if (session_is_registered('s_ismanager')) {
+    if (isset($_SESSION['s_ismanager'])) {
       $sql .= ", ".  get_bool('ismanager', $form[ismanager]).
               ", ". get_bool('iscontrib', $form[iscontrib]).
 	      ", ". get_text('expirydate', $form[expirydate]);
@@ -52,21 +52,19 @@
   $db = open_db();
   if ($_REQUEST['what'] == "login") {
     session_name("DebianNM");
-    session_unregister("s_username");
+    unset($_SESSION['s_username']);
 
     if ( ($priv_level = check_login($db, $_REQUEST['email'], $_REQUEST['passwd'])) != 0) {
-      $s_username = $_REQUEST['email'];
-      session_register("s_username");
+      $_SESSION['s_username'] = $_REQUEST['email'];
       if ($priv_level == 2) {
-        $s_ismanager = TRUE;
-        session_register("s_ismanager");
+        $_SESSION['s_ismanager'] = TRUE;
       }
     } 
   }
 ?>
 #use wml::nmpage title="SPI Membership - Status"
 <?
-  if (!session_is_registered("s_username")) {
+  if (!isset($_SESSION['s_username'])) {
 ?>
 <P>You do not have permission to view this page.  The problem is
 <?
@@ -78,18 +76,18 @@
     }
   } else { #sess reg
   # Did the user click on update?
-  if ($form[emailkey] != '' && $form[emailkey] != $s_username && session_is_registered('s_ismanager')) {
+  if ($form[emailkey] != '' && $form[emailkey] != $_SESSION['s_username'] && isset($_SESSION['s_ismanager'])) {
     $user = $form[emailkey];
   }
   # Work out if we were called as us or as a manager
-  if ($user == '' || !session_is_registered('s_ismanager')) {
-    $user = $s_username;
+  if ($user == '' || !isset($_SESSION['s_ismanager'])) {
+    $user = $_SESSION['s_username'];
   }
   print "<H1>Membership Status for $user</H1>\n";
   if (! get_member($db, $user)) {
     print "Problem getting your information<BR>\n";
   } else {
-    if (session_is_registered("s_ismanager")) { $mgr_only = TRUE; }
+    if (isset($_SESSION['s_ismanager'])) { $mgr_only = TRUE; }
 ?>
     <TABLE border="0" summary="">
 <?
@@ -127,7 +125,7 @@
     } #get_member()
 
 
-if (session_is_registered('s_ismanager')) {
+if (isset($_SESSION['s_ismanager'])) {
     echo "<h2>Your Applicants</h2>\n";
     $memid = $row['member'];
     $sql = "SELECT a.*, m.* from applications a, members m WHERE m.memid = a.member AND a.manager = $memid ORDER BY a.appdate";

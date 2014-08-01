@@ -64,6 +64,10 @@ Email Address:&nbsp;<INPUT type="text" name="email" length="60"><BR>
 <INPUT type="submit" value="Email Password"><BR>
 </FORM>
 <?
+  } else if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+?>
+<P>Invalid attempt to reset password.</P>
+<?
   } else {
     $email = strip_tags(trim($_REQUEST['email']));
     if (email_password($email)) {

@@ -65,7 +65,7 @@
         $body .= "There is also an announcement list (spi-announce) and a general,\n";
         $body .= "public discussion list (spi-general) both of which are open to\n";
         $body .= "everyone.  Subscription information and mailing list archives are\n";
-        $body .= "available online at http://www.spi-inc.org/mailing_lists\n";
+        $body .= "available online at http://www.spi-inc.org/contact/mailinglists/\n";
         $body .= "\n";
         $body .= "Welcome to SPI!\n";
         $body .= "-- \n";

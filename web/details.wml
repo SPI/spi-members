@@ -90,10 +90,10 @@
 <?
   } else { #sess reg
   $user = $_REQUEST['user'];
-  $form = $_REQUEST['form'];
   $s_username = $_SESSION["s_username"];
   # Did the user click on update?
-  if ($form['submit']) {
+  if (isset($_REQUEST['form']) && $_REQUEST['form']['submit']) {
+    $form = $_REQUEST['form'];
     if (!isset($_SESSION['s_ismanager']) && $form['emailkey'] != $s_username) {
       echo "Can't update another users details.";
     } else {

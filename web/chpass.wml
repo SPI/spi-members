@@ -37,8 +37,8 @@
 ?>
 <P>Session management failed, you are not allowed here.
 <?
-  } else { 
-    if ($_REQUEST['submit'] == "") { 
+  } else {
+    if (!isset($_REQUEST['submit']) || $_REQUEST['submit'] == "") {
 ?>
 <H1>Change Password</H1>
 <P>If you want to change your password, enter the details below.

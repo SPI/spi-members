@@ -145,7 +145,7 @@
     if ($value == "" ) {
       $str = $name . "= null";
     } else {
-      $str = $name . "='" . trim(strip_tags($value)) . "'";
+      $str = $name . "='" . pg_escape_string(trim(strip_tags($value))) . "'";
     }
     return $str;
   }

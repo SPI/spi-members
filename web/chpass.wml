@@ -43,7 +43,7 @@
 <H1>Change Password</H1>
 <P>If you want to change your password, enter the details below.
 <form action="chpass.php" method="post">
-<table border='0'>
+<table border="0">
 <tr><td>Old Password</td><td><input type="password" name="form[oldpasswd]"></td></tr>
 <tr><td>New Password</td><td><input type="password" name="form[passwda]"></td></tr>
 <tr><td>New Password (again)</td><td><input type="password" name="form[passwdb]"></td></tr>

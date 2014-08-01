@@ -35,7 +35,7 @@
 <H1>Change email address</H1>
 <P>If you want to change your email address, enter the details below.
 <form action="chemail.php" method="post">
-<table border='0'>
+<table border="0">
 <tr><td>Old email address</td><td><input type="text" name="form[oldemail]"></td></tr>
 <tr><td>Password</td><td><input type="password" name="form[password]"></td></tr>
 <tr><td>New email address</td><td><input type="text" name="form[newemail]"></td></tr>

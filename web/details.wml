@@ -140,9 +140,9 @@
       </form>
 <?      if ($mgr_only) { ?>
       <FORM method="post" action="delmem.php?<?=session_id()?>">
-      <input type='hidden' name='email' value='<? echo $row['email']; ?>'>
-      <input type='submit' value='  Delete Member  '>&nbsp;&nbsp;
-      <input type='checkbox' name='sure' value='yes'>&nbsp;I'm sure.
+      <input type="hidden' name="email" value="<? echo $row['email']; ?>">
+      <input type="submit" value="  Delete Member  ">&nbsp;&nbsp;
+      <input type="checkbox" name="sure" value="yes">&nbsp;I'm sure.
       </form>
       <HR>
 

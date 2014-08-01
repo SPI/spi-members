@@ -1,0 +1,42 @@
+#use wml::ctime
+
+<define-tag copyrightyears whitespace=delete>
+<perl>
+$file = $WML_SRC_DIRNAME."/".$WML_SRC_FILENAME;
+if ($file =~ m,/(\d{4})/,) {
+  $first = $1;
+} else {
+  $first = "1997";
+}
+
+# the below code taken from ctime.wml:webwml_ctime
+if (defined $(GEN_TIME)) {
+  $timevar = $WML_GEN_ISOTIME;
+} else {
+  $timevar = $WML_SRC_ISOTIME;
+}
+$timevar =~ /^(\d+)-(..)-(\d+)/;
+if ($1 <= 31) { # for WML 1.x
+  $second = $3;
+} else { # for WML 2.x
+  $second = $1;
+}
+
+if ($first eq $second) {
+  print $first;
+} else {
+  print $first."-".$second;
+}
+</perl>
+</define-tag>
+
+<hr>
+<div align="center"><small>
+Please send comments or corrections on these pages to &lt;<a href="mailto:webmaster@spi-inc.org">webmaster@spi-inc.org</a>&gt;
+<br>
+Last Modified: <:= webwml_ctime() :>
+<br>
+<em><strong>
+Copyright &copy; <copyrightyears/> <a href="http://www.spi-inc.org/">Software in the Public Interest, Inc.</a>
+</strong></em>
+</small></div>

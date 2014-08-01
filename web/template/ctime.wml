@@ -1,0 +1,74 @@
+#use wml::std::tags
+
+<perl>
+use Time::Local;
+
+@dow = (
+# List of weekday names (used in modification dates)
+                'Sun',
+                'Mon',
+                'Tue',
+                'Wed',
+                'Thu',
+                'Fri',
+                'Sat'
+);
+
+@moy = (
+# List of month names (used in modification dates, and may be used in news 
+# listings)
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec'
+);
+
+
+# $dateform: Date format (sprintf) for modification dates.
+# Available variables are: $mday = day-of-month, $monnr = month number,
+# $mon = month string (from @moy), $year = year number.
+# Percent signs are escaped because they are special during pass 2,
+# replace all % by [%]
+$dateform = 'q{[%]s, [%]s [%]2d [%]02d:[%]02d:[%]02d [%]s [%]04d}, $wday, $mon, $mday, $hour, $min, $sec, q{UTC}, 1900+$year';
+$dateform =~ s/\[%\]/%/g;
+
+# This function creates a last modification time stamp for the web pages.
+sub webwml_ctime {
+	my ($time, $sec, $min, $hour, $mday, $monnr, $year, $wday, $yday, $isdst, $mon);
+	# The last modification time of inputfile in ISO dd-mm-yyyy hh:mm:ss format.
+	if (defined $(GEN_TIME)) {
+		$WML_GEN_ISOTIME =~ /(\d+)-(..)-(\d+) (..):(..):(..)/;
+		if ($1 <= 31) { # for WML 1.x
+			$time = timelocal($6, $5, $4, $1, $2-1, $3);
+		} else { # for WML 2.x
+			$time = timelocal($6, $5, $4, $3, $2-1, $1);
+		}
+		# $lday=$1; $lmon=$2; $lyear=$3; $lhr=$4; $lmin=$5; $lsec=$6;
+		# if ($lyear > 19000) { $lyear = 1900+($lyear-19000); }
+		# $time = timelocal($lsec, $lmin, $lhr, $lday, $lmon-1, $lyear);
+	}
+	else {
+		$WML_SRC_ISOTIME =~ /(\d+)-(..)-(\d+) (..):(..):(..)/;
+		if ($1 <= 31) { # for WML 1.x
+			$time = timelocal($6, $5, $4, $1, $2-1, $3);
+		} else { # for WML 2.x
+			$time = timelocal($6, $5, $4, $3, $2-1, $1);
+		}
+		# $lday=$1; $lmon=$2; $lyear=$3; $lhr=$4; $lmin=$5; $lsec=$6;
+		# if ($lyear > 19000) { $lyear = 1900+($lyear-19000); }
+		# $time = timelocal($lsec, $lmin, $lhr, $lday, $lmon-1, $lyear);
+	}
+	($sec, $min, $hour, $mday, $monnr, $year, $wday, $yday, $isdst) = gmtime($time);
+	$wday = $dow[$wday];
+	$mon = $moy[$monnr];
+	return eval("sprintf($dateform)");
+}
+</perl>

@@ -1,6 +1,5 @@
 #use wml::std::tags
 #use wml::std::info
-#use wml::languages
 #use wml::strings
 
 <define-tag fonts_sans-serif endtag=required whitespace=delete>
@@ -81,8 +80,6 @@
 </tr>
 
 </table>
-
-<:= languages() :>
 
 #use wml::footer
 

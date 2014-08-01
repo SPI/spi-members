@@ -108,10 +108,10 @@
   if ($user == '' || !isset($_SESSION['s_ismanager'])) {
     $user = $s_username;
   }
-  print "<H1>Membership Status for $user</H1>\n";
     if (! get_member($db, $user)) {
-      print "Problem getting your information<BR>\n";
+      print "Problem getting information for $user<BR>\n";
     } else {
+      print "<H1>Membership Status for $user (". ($row['name']). ")</H1>\n";
       if (isset($_SESSION["s_ismanager"])) { $mgr_only = TRUE; }
 ?>
       <FORM method="post" action="details.php?<?=session_id()?>">

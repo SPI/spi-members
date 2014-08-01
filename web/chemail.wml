@@ -10,9 +10,10 @@
     if (check_login($db, $oldemail, $password) == 0) {
       return "<LI>User not found or password is incorrect.";
     }
-    $sql = "UPDATE members SET email = '$newemail' WHERE email = '$oldemail'";
-    if (! ($query = pg_exec($db, $sql))) {
-      return "<LI>Problem with SQL query to database<LI>SQL was: $sql";
+    if (! ($query = pg_query_params($db,
+            'UPDATE members SET email = $1 WHERE email = $2',
+            array($newemail, $oldemail)))) {
+      return "<LI>Problem with SQL query to database";
     }
     if (($tuples = pg_CmdTuples($query)) != 1) {
       return "<LI>One user record should have been changed but $tuples were instead.";

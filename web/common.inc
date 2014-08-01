@@ -27,10 +27,11 @@
   # 0 = not found or error
   # 1 = found
   # 2 = found and they are a application manager
-  function check_login($db, $email, $passwd) 
+  function check_login($db, $email, $passwd)
   {
-    $sql = "SELECT * from members WHERE email = '$email'";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'SELECT * from members WHERE email = $1',
+            array($email)))) {
       echo "Problem with query", pg_ErrorMessage($db), "<BR>";
       return 0;
     }
@@ -153,8 +154,9 @@
 function get_manager($db, $manager) {
       if (!$manager) return "none";
 
-      $sql = "SELECT name FROM members WHERE memid = '$manager'";
-      if (! ($query = pg_exec($db, $sql))) {
+      if (! ($query = pg_query_params($db,
+              'SELECT name FROM members WHERE memid = $1',
+              array($manager)))) {
           return "DB error";
       }
 

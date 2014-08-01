@@ -23,10 +23,9 @@
       print "<BR>Problem connection to database.\n";
       return FALSE;
     }
-    $sql = "SELECT * FROM members WHERE email = '$email'";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'SELECT * FROM members WHERE email = $1', array($email)))) {
       print "Problem with SQL query to database.<BR>";
-      print "SQL was: $sql<BR>\n";
       return FALSE;
     }
 
@@ -38,10 +37,10 @@
     $row = pg_Fetch_Row($query, 0);
     $newpass = create_password(8);
     $crypted = crypt($newpass, get_salt());
-    $sql = "UPDATE members SET password = '$crypted' WHERE email = '$email'";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'UPDATE members SET password = $1 WHERE email = $2',
+            array($crypted, $email)))) {
       print "Problem with SQL query to database.<BR>";
-      print "SQL was: $sql<BR>\n";
       return FALSE;
     }
     $body = "Your new password for the SPI membership pages is: '". $newpass. "'\n\n";

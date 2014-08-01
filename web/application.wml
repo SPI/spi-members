@@ -10,23 +10,20 @@
 
   // Returns appid on success, -1 on failure
   function create_contrib_application($db, $email) {
+    if (! ($result = pg_query_params($db,
+            "INSERT INTO applications (appdate, member, contribapp, lastchange) SELECT 'now'::date, memid, 't', 'now'::date FROM members WHERE email = $1",
+            array($email)))) {
 
-    $sql = "INSERT INTO applications (appdate, member, contribapp, lastchange) ";
-    $sql .= "SELECT 'now'::date, memid, 't', 'now'::date FROM members ";
-    $sql .= " WHERE email = '$email'";
-    if (! ($result = pg_exec($db, $sql))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
-      echo "SQL was: $sql<BR>\n";
       return -1;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
       echo "One row should be effected but $tuples rows were<BR>\n";
       return -1;
     }
-    $sql = "SELECT currval('applications_appid_seq')";
-    if (! ($newres = pg_exec($db, $sql))) {
+    if (! ($newres = pg_query($db,
+            "SELECT currval('applications_appid_seq')"))) {
       echo "Cannot find your new application: ", pg_ErrorMessage($db), "<BR>\n";
-      echo "SQL was: $sql<BR>\n";
       return -1;
     }
     if (pg_NumRows($newres) != 1) {
@@ -45,8 +42,9 @@
     // Set the default to true since most members will probably want to
     // subscribe.  Only those who are actually approved as CM will be
     // subscribed, so setting this to true now will not hurt.
-    $sql = "UPDATE members SET sub_private = 't' WHERE email = '$email'";
-    pg_exec($db, $sql);
+    pg_query_params($db,
+      'UPDATE members SET sub_private = true WHERE email = $1',
+      array($email));
 
 //   $body = "$email applied for a contributing membership.\n";
 //   $headers = "From: admin@members.spi-inc.org\nX-Mailer: PHP/" . phpversion();
@@ -58,10 +56,10 @@
   // Tries to find the latest contrib application, returns -1 if not found.
   // Used as a pre-check for new applications
   function get_latest_application($db, $email) {
-    $sql = "SELECT a.appid FROM applications a, members m WHERE m.email = '$email' AND a.member = m.memid AND a.contribapp = 't' AND a.approve IS NULL ORDER BY a.appdate DESC, appid DESC";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'SELECT a.appid FROM applications a, members m WHERE m.email = $1 AND a.member = m.memid AND a.contribapp = true AND a.approve IS NULL ORDER BY a.appdate DESC, appid DESC',
+            array($email)))) {
       echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
-      echo "SQL was: $sql<BR>\n";
       return -1;
     }
     if (pg_NumRows($query) == 0) {
@@ -75,10 +73,10 @@
   function get_application($db, $email, $appid) {
   global $row, $query;
 
-  $sql = "SELECT applications.*, members.* FROM members, applications WHERE members.email='$email' AND members.memid = applications.member AND appid = '$appid'";
-  if (! ($query = pg_exec($db, $sql))) {
+  if (! ($query = pg_query_params($db,
+          'SELECT applications.*, members.* FROM members, applications WHERE members.email = $1 AND members.memid = applications.member AND appid = $2',
+          array($email, $appid)))) {
     echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
-    echo "SQL was: $sql<BR>\n";
     return FALSE;
   }
   if (pg_NumRows($query) == 0) {
@@ -185,13 +183,13 @@ session management failed or timed out.
         print_textbox('Contributions', 'contrib', $row['contrib'], TRUE);
         print_bool('Subscribe to spi-private?', 'sub_private', $row['sub_private'], TRUE);
 
-       $sql = "SELECT memid, email FROM members WHERE ismanager = 't'";
-       if (! ($result = pg_exec($db, $sql))) {
-           echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
-           echo "SQL was: $sql<BR>\n";
-           return FALSE;
-       }
-       if ($mgr_only) {
+        if ($mgr_only) {
+          if (! ($result = pg_query($db,
+                  'SELECT memid, email FROM members WHERE ismanager = true'))) {
+            echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
+            return FALSE;
+          }
+
          echo "<TR><TD width=\"200\"><B>Manager:</B> </TD><TD width=\"400\"> ";
 	 echo "<SELECT NAME = \"form[manager]\">";
 	 echo "<OPTION VALUE=''>none\n";

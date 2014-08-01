@@ -48,8 +48,8 @@
   }
 
   function check_user($db, $myuser) {
-      $sql = "SELECT * FROM members WHERE email='$myuser'";
-      if (! ($query = pg_exec($db, $sql))) {
+      if (! ($query = pg_query_params($db,
+             'SELECT * FROM members WHERE email = $1', array($myuser)))) {
 	echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
 	return FALSE;
       }
@@ -63,11 +63,10 @@
   {
     # First update member
     $crypted = crypt($password, get_salt());
-    $sql = "INSERT INTO members (name, email, password) VALUES ('$name', '$email', '$crypted')";
-
-    if (! ($result = pg_exec($db, $sql))) {
+    if (! ($result = pg_query_params($db,
+            'INSERT INTO members (name, email, password) VALUES ($1, $2, $3)',
+            array($name, $email, $crypted)))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
-      echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
@@ -75,10 +74,10 @@
       return FALSE;
     }
     # Then get member number
-    $sql = "INSERT INTO applications (appdate, member, contrib, emailkey, emailkey_date, lastchange) SELECT 'now'::date, memid, 'f', '$randstr', 'now'::date, 'now'::date FROM members WHERE email = '$email'";
-    if (! ($result = pg_exec($db, $sql))) {
+    if (! ($result = pg_query_params($db,
+            'INSERT INTO applications (appdate, member, contrib, emailkey, emailkey_date, lastchange) SELECT \'now\'::date, memid, \'f\', $1, \'now\'::date, \'now\'::date FROM members WHERE email = $2',
+            array($randstr, $email)))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
-      echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
@@ -92,8 +91,9 @@
 
   # Given an email ,get the last application ID
   function get_appid($db, $email) {
-    $sql = "SELECT appid FROM applications,members WHERE applications.member = members.memid AND members.email = '$email' ORDER BY appid DESC";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'SELECT appid FROM applications, members WHERE applications.member = members.memid AND members.email = $1 ORDER BY appid DESC',
+            array($email)))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
       return FALSE;
     }

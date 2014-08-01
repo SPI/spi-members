@@ -9,11 +9,9 @@
   include("common.inc");
 
   function delete_member($db, $email) {
-    $sql="SELECT memid FROM members WHERE email='$email'";
-
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'SELECT memid FROM members WHERE email = $1', array($email)))) {
       echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
-      echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
     if (pg_NumRows($query) == 0) {
@@ -23,14 +21,14 @@
     $row = pg_Fetch_Array($query, 0);
     $memid = $row["memid"];
 
-    $sql = "DELETE FROM applications WHERE member = $memid";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'DELETE FROM applications WHERE member = $1', array($memid)))) {
       echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
       echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
-    $sql = "DELETE FROM members WHERE memid = $memid";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'DELETE FROM members WHERE memid = $1', array($memid)))) {
       echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
       echo "SQL was: $sql<BR>\n";
       return FALSE;

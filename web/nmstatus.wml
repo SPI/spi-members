@@ -11,10 +11,10 @@
   function get_member($db, $email) {
   global $row, $query;
 
-  $sql = "SELECT members.*, applications.* FROM members, applications WHERE UPPER(email) = UPPER('$email') AND members.memid = applications.member ORDER BY applications.appdate LIMIT 1";
-  if (! ($query = pg_exec($db, $sql))) {
+  if (! ($query = pg_query_params($db,
+          'SELECT members.*, applications.* FROM members, applications WHERE UPPER(email) = UPPER($1) AND members.memid = applications.member ORDER BY applications.appdate LIMIT 1',
+          array($email)))) {
     echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
-    echo "SQL was: $sql<BR>\n";
     return FALSE;
   }
   if (pg_NumRows($query) == 0) {
@@ -24,30 +24,6 @@
   $row = pg_Fetch_Array($query, 0);
   return TRUE;
 }
-  function update_member($db, $form) {
-
-    $sql = 'UPDATE members SET '.
-           get_text('email', $form[email]);
-    if (isset($_SESSION['s_ismanager'])) {
-      $sql .= ", ".  get_bool('ismanager', $form[ismanager]).
-              ", ". get_bool('iscontrib', $form[iscontrib]).
-	      ", ". get_text('expirydate', $form[expirydate]);
-    }
-    $sql .= " WHERE UPPER(email) = '". UPPER($form[emailkey]) . "'";
-	   echo $sql;
-    if (! ($result = pg_exec($db, $sql))) {
-      echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
-      echo "SQL was: $sql<BR>\n";
-      return FALSE;
-    }
-    if (($tuples = pg_CmdTuples($result)) != 1) {
-      echo "One row should be effected but $tuples rows were<BR>\n";
-      echo "SQL was: $sql<BR>\n";
-      return FALSE;
-    }
-    return TRUE;
-  }
-
 
   $db = open_db();
   if ($_REQUEST['what'] == "login") {
@@ -101,10 +77,10 @@
     print "<P>";
 
     # Check whether uses has not applied for a contributing membership yet
-    $sql = "SELECT contribapp FROM applications WHERE member = " .  $row['memid'] . " AND contribapp = 't'";
-    if (! ($query = pg_exec($db, $sql))) {
+    if (! ($query = pg_query_params($db,
+            'SELECT contribapp FROM applications WHERE member = $1 AND contribapp = true',
+            array($row['memid'])))) {
       echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
-      echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
     if (pg_NumRows($query) == 0) {

@@ -11,10 +11,10 @@
   function get_member($db, $email) {
   global $row, $query;
 
-  $sql = "SELECT members.*, applications.* FROM members, applications WHERE email='$email' AND members.memid = applications.member ORDER BY applications.appdate LIMIT 1";
-  if (! ($query = pg_exec($db, $sql))) {
+  if (! ($query = pg_query_params($db,
+          'SELECT members.*, applications.* FROM members, applications WHERE email = $1 AND members.memid = applications.member ORDER BY applications.appdate LIMIT 1',
+          array($email)))) {
     echo "<P>Problem with query", pg_errorMessage($db), "<BR>";
-    echo "SQL was: $sql<BR>\n";
     return FALSE;
   }
   if (pg_NumRows($query) == 0) {
@@ -29,23 +29,20 @@
     get_member($db, $form[email]);
     $iscontrib = $row['iscontrib'];
 
-    $sql = 'UPDATE members SET '.
-           get_text('email', $form[email]);
+    $sql = 'UPDATE members SET email = $1';
     if (isset($_SESSION['s_ismanager'])) {
-      $sql .= ", ".  get_bool('ismanager', $form[ismanager]).
+      $sql .= ", ". get_bool('ismanager', $form[ismanager]).
               ", ". get_bool('iscontrib', $form[iscontrib]).
-	      ", ". get_text('expirydate', $form[expirydate]);
+              ", ". get_text('expirydate', $form[expirydate]);
     }
-    $sql .= " WHERE email = '". $form[emailkey] . "'";
-#	   echo $sql;
-    if (! ($result = pg_exec($db, $sql))) {
+    $sql .= " WHERE email = $2";
+    if (! ($result = pg_query_params($db, $sql,
+            array($form['email'], $form['emailkey'])))) {
       echo "Problem with interrogating database: ", pg_ErrorMessage($db), "<BR>\n";
-      echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
     if (($tuples = pg_CmdTuples($result)) != 1) {
       echo "One row should be effected but $tuples rows were<BR>\n";
-      echo "SQL was: $sql<BR>\n";
       return FALSE;
     }
 
@@ -97,8 +94,12 @@
   $s_username = $_SESSION["s_username"];
   # Did the user click on update?
   if ($form[submit]) {
-    update_member($db, $form);
-    echo "Member details updated.";
+    if (!isset($_SESSION['s_ismanager']) && $form['emailkey'] != $s_username) {
+      echo "Can't update another users details.";
+    } else {
+      update_member($db, $form);
+      echo "Member details updated.";
+    }
     if ($form[emailkey] != '' && $form[emailkey] != $s_username && isset($_SESSION['s_ismanager'])) {
       $user = $form[emailkey];
     }

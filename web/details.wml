@@ -118,7 +118,7 @@
       <TABLE border="0" summary="">
 <?
       print_text('Email Address', 'email', $row['email'], $mgr_only);
-      print "<INPUT type=\"hidden\" name=\"form['emailkey']\" value=\"".
+      print "<INPUT type=\"hidden\" name=\"form[emailkey]\" value=\"".
            $row['email']. "\">\n";
       print_text('Member Since', 'firstdate', $row['firstdate'], FALSE);
       print_text('Membership Expires', 'expirydate', $row['expirydate'], $mgr_only);

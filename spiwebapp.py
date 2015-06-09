@@ -241,7 +241,7 @@ def process_contrib_application(form, application):
             msg['From'] = ('SPI Membership Committee ' +
                            '<membership@spi-inc.org>')
             msg['To'] = application.user.email
-            smtp = smtplib.SMTP('localhost')
+            smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
             smtp.sendmail('membership@spi-inc.org',
                           [application.user.email], msg.as_string())
             smtp.quit()
@@ -397,7 +397,7 @@ def application_form():
                               application.user.name)
             msg['From'] = 'email-check@members.spi-inc.org'
             msg['To'] = application.user.email
-            smtp = smtplib.SMTP('localhost')
+            smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
             smtp.sendmail('email-check@members.spi-inc.org',
                           [application.user.email], msg.as_string())
             smtp.quit()
@@ -428,7 +428,7 @@ def getpass():
             msg['Subject'] = 'SPI Password reset for ' + user.name
             msg['From'] = 'membership@spi-inc.org'
             msg['To'] = user.email
-            smtp = smtplib.SMTP('localhost')
+            smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
             smtp.sendmail('membership@spi-inc.org', [user.email],
                           msg.as_string())
             smtp.quit()

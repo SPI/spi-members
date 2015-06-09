@@ -241,10 +241,13 @@ def process_contrib_application(form, application):
             msg['From'] = ('SPI Membership Committee ' +
                            '<membership@spi-inc.org>')
             msg['To'] = application.user.email
-            smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
-            smtp.sendmail('membership@spi-inc.org',
-                          [application.user.email], msg.as_string())
-            smtp.quit()
+            try:
+                smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+                smtp.sendmail('membership@spi-inc.org',
+                              [application.user.email], msg.as_string())
+                smtp.quit()
+            except:
+                flash('Unable to send contributing member confirmation email.')
 
 
 @app.route("/application/<int:appid>", methods=['GET', 'POST'])
@@ -397,10 +400,13 @@ def application_form():
                               application.user.name)
             msg['From'] = 'email-check@members.spi-inc.org'
             msg['To'] = application.user.email
-            smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
-            smtp.sendmail('email-check@members.spi-inc.org',
-                          [application.user.email], msg.as_string())
-            smtp.quit()
+            try:
+                smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+                smtp.sendmail('email-check@members.spi-inc.org',
+                              [application.user.email], msg.as_string())
+                smtp.quit()
+            except:
+                flash('Unable to send email verification.')
             # Display the confirmation / email verification page
             form = EmailVerificationForm()
             return render_template('verifyemail.html',
@@ -428,10 +434,13 @@ def getpass():
             msg['Subject'] = 'SPI Password reset for ' + user.name
             msg['From'] = 'membership@spi-inc.org'
             msg['To'] = user.email
-            smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
-            smtp.sendmail('membership@spi-inc.org', [user.email],
-                          msg.as_string())
-            smtp.quit()
+            try:
+                smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+                smtp.sendmail('membership@spi-inc.org', [user.email],
+                              msg.as_string())
+                smtp.quit()
+            except:
+                flash('Unable to send password reset email.')
 
     return render_template('getpass.html', form=form, user=user)
 

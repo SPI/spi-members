@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Password Reset{% endblock %}
+{% block content %}
+{% if user %}
+<p>Your new password has been sent to you via email. Please
+<a href="/login">login</a> and change it once you have received it.</p>
+{% else %}
+<div align="center">
+<h1>Forgot your password?</h1>
+<p>If you have forgotten your password you can enter your email address
+here. A new password will then be sent to you.</p>
+<form method="post">
+    {{ form.hidden_tag() }}
+    {{ form.email.label}}: {{ form.email }}
+    <br />
+    <input type="submit" value="Email Password">
+</form>
+</div>
+{% endif %}
+{% endblock %}

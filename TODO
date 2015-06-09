@@ -1,0 +1,8 @@
+Outstanding things to do:
+
+ * Add support for PostgreSQL backend, for production
+ * Add voting support
+ * Add wsgi support
+ * Improve email verification / password reset handling
+ * Implement ability for managers to edit users
+ * Add change email support

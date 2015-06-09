@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Application Status{% endblock %}
+{% block content %}
+    <h1>Application #{{ application.appid }} status</h1>
+    <table>
+        <tr><td>Member Name</td><td>{{ application.user.name }}</td></tr>
+        <tr><td>Email address</td><td>{{ application.user.email }}</td></tr>
+        <tr><td>Application #</td><td>{{ application.appid }}</td></tr>
+        <tr><td>Application Date</td><td>{{ application.appdate }}</td></tr>
+        {% if application.contribapp %}
+            </table>
+            <hr/>
+            <h1>Contributing Membership Application Details</h1>
+            <form method="post">
+            {{ form.hidden_tag() }}
+            <table>
+            <tr><td>Contributions</td><td>{{ form.contrib(cols="60", rows="10") }}</td></tr>
+            <tr><td>Subscribe to spi-private?</td><td>{{ form.sub_private }}</td></tr>
+{% if current_user.is_manager() %}
+            <tr><td>Manager</td><td>{{ form.manager }}</td></tr>
+            <tr><td>Date Assigned</td><td>{{ form.manager_date }}</td></tr>
+            <tr><td>Mgr Comments</td><td>{{ form.comment(cols="60", rows="10") }}</td></tr>
+            <tr><td>Approved</td><td>{{ form.approve }}</td></tr>
+            <tr><td>Date Approved</td><td>{{ form.approve_date }}</td></tr>
+{% else %}
+            <tr><td>Manager</td><td>{{ application.manager.name }}</td></tr>
+            <tr><td>Date Assigned</td><td>{{ application.manager_date }}</td></tr>
+            <tr><td>Mgr Comments</td><td>{{ application.comment }}</td></tr>
+            <tr><td>Approved</td><td>{{ application.approve }}</td></tr>
+            <tr><td>Date Approved</td><td>{{ application.approve_date }}</td></tr>
+{% endif %}
+        {% else %}
+            <tr><td>Email Check Sent on</td><td>{{ application.emailkey_date }}</td></tr>
+            <tr><td>Valid Email?</td><td>{%if application.validemail %}Yes{% else %}No{% endif %}</td></tr>
+            <tr><td>Email Confirmed on</td><td>{{ application.validemail_date }}</td></tr>
+        {% endif %}
+            <tr><td>Last Changed</td><td>{{ application.lastchange }}</td></tr>
+    </table>
+{% if application.contribapp %}
+    <input type="submit" value="Update">
+    </form>
+{% endif %}
+{% endblock %}

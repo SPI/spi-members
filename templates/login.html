@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Member Login{% endblock %}
+{% block content %}
+<p>Welcome to the membership pages of Software in the Public Interest,
+Inc. These pages are used to apply for membership and to display or
+update the status of members who have already submitted an application.
+</p>
+<p>
+After carefully reading the
+<a href="http://www.spi-inc.org/membership">information on memberships</a>,
+you can <a href="/apply">apply for a membership</a>.
+</p>
+<p>
+If your membership application has been filed, you can log in with your
+email address and password.  Once logged in, you can look at the status of
+your application, change your personal information, and apply for a
+contributing membership (provided your email verification has already been
+successfully completed).
+</p>
+<hr />
+<h1>Login</h1>
+<div align="center">
+<form method="post">
+    <table>
+        {{ form.hidden_tag() }}
+        <tr><td>{{ form.username.label }}</td><td>{{ form.username(class="css_class") }}</td></tr>
+        <tr><td>{{ form.password.label }}</td><td>{{ form.password(class="css_class") }}</td></tr>
+        <tr><td colspan="2" align="center"><input type="submit" value="Login"></td></tr>
+    </table>
+</form>
+</div>
+{% if form.username.errors %}
+    <ul class="errors">Email address: {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% if form.password.errors %}
+    <ul class="errors">Password: {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% endblock %}

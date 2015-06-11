@@ -21,6 +21,8 @@ from __future__ import (absolute_import, division, print_function)
 
 import crypt
 import hashlib
+import psycopg2
+import psycopg2.extras
 import random
 import string
 import sqlite3
@@ -29,12 +31,20 @@ import uuid
 
 class MemberDB(object):
     """Provides the interface to the members database backend."""
-    def __init__(self, dbfile):
+    def __init__(self, dbtype, db, user=None, password=None, host=None,
+                 port=None):
         self.data = {}
-        self.data['db'] = dbfile
-        self.data['conn'] = sqlite3.connect(
-            self.data['db'], detect_types=sqlite3.PARSE_DECLTYPES)
-        self.data['conn'].row_factory = sqlite3.Row
+        self.data['dbtype'] = dbtype
+        self.data['db'] = db
+        if dbtype == 'sqlite3':
+            self.data['conn'] = sqlite3.connect(
+                self.data['db'], detect_types=sqlite3.PARSE_DECLTYPES)
+            self.data['conn'].row_factory = sqlite3.Row
+        elif dbtype == 'postgres':
+            self.data['conn'] = psycopg2.connect(
+                database=self.data['db'], user=user, password=password,
+                host=host, port=port,
+                cursor_factory=psycopg2.extras.DictCursor)
 
     def close(self):
         """Close our connection to the database."""
@@ -64,22 +74,33 @@ class MemberDB(object):
         """Check emailkey against the database and mark valid if correct"""
         result = None
         cur = self.data['conn'].cursor()
-        cur.execute('SELECT appid, validemail FROM applications ' +
-                    'WHERE member = ? AND emailkey = ?',
-                    (user.memid, emailkey))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT appid, validemail FROM applications ' +
+                        'WHERE member = ? AND emailkey = ?',
+                        (user.memid, emailkey))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT appid, validemail FROM applications ' +
+                        'WHERE member = %s AND emailkey = %s',
+                        (user.memid, emailkey))
         row = cur.fetchone()
         if row:
             if row['validemail']:
                 result = "Email address already verified."
             else:
-                cur.execute('UPDATE applications SET validemail = 1, ' +
-                            'validemail_date = date(\'now\'), ' +
-                            'lastchange = date(\'now\')' +
-                            'WHERE appid = ?',
-                            (row['appid'], ))
-                cur.execute('UPDATE members SET ismember = 1 WHERE memid = ?',
-                            (user.memid, ))
-                self.data['conn'].commit()
+                if self.data['dbtype'] == 'sqlite3':
+                    cur.execute('UPDATE applications SET validemail = 1, ' +
+                                'validemail_date = date(\'now\'), ' +
+                                'lastchange = date(\'now\')' +
+                                'WHERE appid = ?',
+                                (row['appid'], ))
+                elif self.data['dbtype'] == 'postgres':
+                    cur.execute('UPDATE applications SET validemail = true, ' +
+                                'validemail_date = date(\'now\'), ' +
+                                'lastchange = date(\'now\')' +
+                                'WHERE appid = %s',
+                                (row['appid'], ))
+                # update_member_field will handle the commit
+                self.update_member_field(user.email, 'ismember', True)
         else:
             result = "Application not found."
         return result
@@ -88,7 +109,10 @@ class MemberDB(object):
         """Retrieve a member object from the database by email address"""
         user = None
         cur = self.data['conn'].cursor()
-        cur.execute('SELECT * FROM members WHERE email = ?', (userid, ))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT * FROM members WHERE email = ?', (userid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT * FROM members WHERE email = %s', (userid, ))
         row = cur.fetchone()
         if row:
             user = self.member_from_db(row)
@@ -100,7 +124,10 @@ class MemberDB(object):
             return None
         user = None
         cur = self.data['conn'].cursor()
-        cur.execute('SELECT * FROM members WHERE memid = ?', (memid, ))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT * FROM members WHERE memid = ?', (memid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT * FROM members WHERE memid = %s', (memid, ))
         row = cur.fetchone()
         if row:
             user = self.member_from_db(row)
@@ -109,8 +136,13 @@ class MemberDB(object):
     def update_member_field(self, userid, field, data):
         """Update a single field in the database for a given member"""
         cur = self.data['conn'].cursor()
-        cur.execute('UPDATE members SET ' + field + ' = ? WHERE email = ?',
-                    (data, userid))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('UPDATE members SET ' + field + ' = ? WHERE email = ?',
+                        (data, userid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('UPDATE members SET ' + field +
+                        ' = %s WHERE email = %s',
+                        (data, userid))
         self.data['conn'].commit()
 
     def get_applications(self, manager=None):
@@ -118,9 +150,14 @@ class MemberDB(object):
         applications = []
         cur = self.data['conn'].cursor()
         if manager:
-            cur.execute('SELECT a.*, m.* from applications a, members m ' +
-                        'WHERE m.memid = a.member AND a.manager = ? ' +
-                        'ORDER BY a.appdate', (manager.memid, ))
+            if self.data['dbtype'] == 'sqlite3':
+                cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                            'WHERE m.memid = a.member AND a.manager = ? ' +
+                            'ORDER BY a.appdate', (manager.memid, ))
+            elif self.data['dbtype'] == 'postgres':
+                cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                            'WHERE m.memid = a.member AND a.manager = %s ' +
+                            'ORDER BY a.appdate', (manager.memid, ))
         else:
             cur.execute('SELECT a.*, m.* from applications a, members m ' +
                         'WHERE m.memid = a.member ORDER BY a.appdate')
@@ -134,9 +171,14 @@ class MemberDB(object):
         """Retrieve all applications for the supplied user."""
         applications = []
         cur = self.data['conn'].cursor()
-        cur.execute('SELECT a.*, m.* from applications a, members m ' +
-                    'WHERE m.memid = a.member AND m.memid = ? ' +
-                    'ORDER BY a.appdate', (user.memid, ))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND m.memid = ? ' +
+                        'ORDER BY a.appdate', (user.memid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND m.memid = %s ' +
+                        'ORDER BY a.appdate', (user.memid, ))
         for row in cur.fetchall():
             applications.append(self.application_from_db(row))
         return applications
@@ -145,18 +187,28 @@ class MemberDB(object):
         """Retrieve all applications of a given type."""
         applications = []
         manager = None
+
+        if self.data['dbtype'] == 'sqlite3':
+            t = '1'
+            f = '0'
+        elif self.data['dbtype'] == 'postgres':
+            t = 'true'
+            f = 'false'
+
         if listtype == 'nca':
-            where = 'AND (m.ismember = 0 OR m.ismember IS NULL)'
+            where = 'AND (m.ismember = ' + f + ' OR m.ismember IS NULL)'
         elif listtype == 'ncm':
-            where = ('AND m.ismember = 1 AND m.iscontrib = 0 AND ' +
-                     '(contribapp = 0 OR contribapp IS NULL)')
+            where = ('AND m.ismember = ' + t + ' AND m.iscontrib = ' + f +
+                     ' AND (contribapp = ' + f + ' OR contribapp IS NULL)')
         elif listtype == 'ca':
-            where = ('AND m.ismember = 1 AND a.approve IS NULL AND ' +
-                     'contribapp = 1')
+            where = ('AND m.ismember = ' + t + ' AND a.approve IS NULL AND ' +
+                     'contribapp = ' + t + '')
         elif listtype == 'cm':
-            where = 'AND m.ismember = 1 AND m.iscontrib = 1 AND contribapp = 1'
+            where = ('AND m.ismember = ' + t + ' AND m.iscontrib = ' + t +
+                     ' AND contribapp = ' + t)
         elif listtype == 'mgr':
-            where = 'AND m.ismember = 1 AND m.ismanager = 1 AND contribapp = 1'
+            where = ('AND m.ismember = ' + t + ' AND m.ismanager = ' + t +
+                     ' AND contribapp = ' + t)
         else:
             where = ''
 
@@ -174,8 +226,12 @@ class MemberDB(object):
         """Retrieve application by application ID."""
         application = None
         cur = self.data['conn'].cursor()
-        cur.execute('SELECT a.*, m.* from applications a, members m ' +
-                    'WHERE m.memid = a.member AND a.appid = ?', (appid, ))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND a.appid = ?', (appid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND a.appid = %s', (appid, ))
         row = cur.fetchone()
         if row:
             application = self.application_from_db(row)
@@ -196,19 +252,34 @@ class MemberDB(object):
         salt = random.choice(chars) + random.choice(chars)
         cryptpw = crypt.crypt(password, salt)
         cur = self.data['conn'].cursor()
-        cur.execute('INSERT INTO members (name, email, password, firstdate, ' +
-                    'ismember, iscontrib, ismanager) VALUES ' +
-                    '(?, ?, ?, date(\'now\'), 0, 0, 0)',
-                    (name, email, cryptpw))
-        cur.execute('INSERT INTO applications (appdate, member, contribapp, ' +
-                    'emailkey, emailkey_date, lastchange) SELECT ' +
-                    'date(\'now\'), memid, 0, ?, date(\'now\'), ' +
-                    'date(\'now\') FROM members WHERE email = ?',
-                    (emailkey, email))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('INSERT INTO members (name, email, password, ' +
+                        'firstdate, ismember, iscontrib, ismanager) VALUES ' +
+                        '(?, ?, ?, date(\'now\'), 0, 0, 0)',
+                        (name, email, cryptpw))
+            cur.execute('INSERT INTO applications (appdate, member, ' +
+                        'contribapp, emailkey, emailkey_date, lastchange) ' +
+                        'SELECT date(\'now\'), memid, 0, ?, date(\'now\'), ' +
+                        'date(\'now\') FROM members WHERE email = ?',
+                        (emailkey, email))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('INSERT INTO members (name, email, password, ' +
+                        'firstdate, ismember, iscontrib, ismanager) VALUES ' +
+                        '(%s, %s, %s, date(\'now\'), false, false, false)',
+                        (name, email, cryptpw))
+            cur.execute('INSERT INTO applications (appdate, member, ' +
+                        'contribapp, emailkey, emailkey_date, lastchange) ' +
+                        'SELECT date(\'now\'), memid, false, %s, ' +
+                        'date(\'now\'), date(\'now\') FROM members ' +
+                        'WHERE email = %s', (emailkey, email))
         self.data['conn'].commit()
 
-        cur.execute('SELECT a.*, m.* from applications a, members m WHERE ' +
-                    'm.memid = a.member AND m.email = ?', (email, ))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND m.email = ?', (email, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND m.email = %s', (email, ))
         row = cur.fetchone()
         if row:
             application = self.application_from_db(row)
@@ -217,15 +288,28 @@ class MemberDB(object):
     def create_contrib_application(self, user, contrib, sub_private):
         """Create a new application for contributing member status."""
         cur = self.data['conn'].cursor()
-        cur.execute('INSERT INTO applications (appdate, member, contribapp, ' +
-                    'lastchange, contrib) VALUES ' +
-                    '(date(\'now\'), ?, 1, date(\'now\'), ?)',
-                    (user.memid, contrib))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('INSERT INTO applications (appdate, member, ' +
+                        'contribapp, lastchange, contrib) VALUES ' +
+                        '(date(\'now\'), ?, 1, date(\'now\'), ?)',
+                        (user.memid, contrib))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('INSERT INTO applications (appdate, member, ' +
+                        'contribapp, lastchange, contrib) VALUES ' +
+                        '(date(\'now\'), %s, true, date(\'now\'), %s)',
+                        (user.memid, contrib))
+        # update_member_field will handle the commit
         self.update_member_field(user.email, 'sub_private', sub_private)
-        self.data['conn'].commit()
 
-        cur.execute('SELECT a.*, m.* from applications a, members m WHERE ' +
-                    'm.memid = a.member AND m.email = ?', (user.email, ))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND m.email = ?',
+                        (user.email, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT a.*, m.* from applications a, members m ' +
+                        'WHERE m.memid = a.member AND m.email = %s',
+                        (user.email, ))
+
         row = cur.fetchone()
         if row:
             application = self.application_from_db(row)
@@ -234,8 +318,12 @@ class MemberDB(object):
     def update_application_field(self, appid, field, data):
         """Update a single field in the database for a given application."""
         cur = self.data['conn'].cursor()
-        cur.execute('UPDATE applications SET ' + field + ' = ? ' +
-                    'WHERE appid = ?', (data, appid))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('UPDATE applications SET ' + field + ' = ? ' +
+                        'WHERE appid = ?', (data, appid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('UPDATE applications SET ' + field + ' = %s ' +
+                        'WHERE appid = %s', (data, appid))
         self.data['conn'].commit()
 
     def update_application(self, application):
@@ -245,13 +333,22 @@ class MemberDB(object):
         else:
             managerid = None
         cur = self.data['conn'].cursor()
-        cur.execute('UPDATE applications SET manager = ?, manager_date = ?, ' +
-                    'comment = ?, approve = ?, approve_date = ?, ' +
-                    'lastchange = date(\'now\') ' +
-                    ' WHERE appid = ?',
-                    (managerid, application.manager_date, application.comment,
-                     application.approve, application.approve_date,
-                     application.appid))
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('UPDATE applications SET manager = ?, ' +
+                        'manager_date = ?, comment = ?, approve = ?, ' +
+                        'approve_date = ?, lastchange = date(\'now\') ' +
+                        ' WHERE appid = ?',
+                        (managerid, application.manager_date,
+                         application.comment, application.approve,
+                         application.approve_date, application.appid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('UPDATE applications SET manager = %s, ' +
+                        'manager_date = %s, comment = %s, approve = %s, ' +
+                        'approve_date = %s, lastchange = date(\'now\') ' +
+                        ' WHERE appid = %s',
+                        (managerid, application.manager_date,
+                         application.comment, application.approve,
+                         application.approve_date, application.appid))
         self.data['conn'].commit()
 
 

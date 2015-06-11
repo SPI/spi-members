@@ -137,7 +137,15 @@ def get_db():
     """Retrieve a database object, creating it if necessary."""
     dbh = getattr(g, '_database', None)
     if dbh is None:
-        dbh = g._database = SPI.MemberDB(app.config['DB_FILE'])
+        for key in ['DB_USER', 'DB_PASS', 'DB_HOST', 'DB_PORT']:
+            if not key in app.config:
+                app.config[key] = None
+        dbh = g._database = SPI.MemberDB(app.config['DB_TYPE'],
+                                         app.config['DB_NAME'],
+                                         user=app.config['DB_USER'],
+                                         password=app.config['DB_PASS'],
+                                         host=app.config['DB_HOST'],
+                                         port=app.config['DB_PORT'])
     return dbh
 
 
@@ -212,7 +220,7 @@ def process_contrib_application(form, application):
     if form.approve.data == 'None':
         approve = None
     else:
-        approve = int(form.approve.data)
+        approve = (form.approve.data == '1')
     if approve != application.approve:
         changed = True
         if approve:

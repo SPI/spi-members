@@ -407,6 +407,17 @@ def application_form():
                 smtp.quit()
             except:
                 flash('Unable to send email verification.')
+
+            # For the first user automatically upgrade them to be a
+            # contributing member + manager. Helps with test installs.
+            if application.appid == 1:
+                get_db().update_member_field(application.user.email,
+                                             'iscontrib',
+                                             True)
+                get_db().update_member_field(application.user.email,
+                                             'ismanager',
+                                             True)
+
             # Display the confirmation / email verification page
             form = EmailVerificationForm()
             return render_template('verifyemail.html',

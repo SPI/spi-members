@@ -34,7 +34,7 @@ This page lists all members who are application managers.
 {% endif %}
 </p>
 
-{% with applications = db.get_applications_by_type(type) %}
+{% with applications = db.get_applications_by_type(listtype) %}
     {% include "application-list.html" %}
 {% endwith %}
 {% endblock %}

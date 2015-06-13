@@ -338,6 +338,29 @@ def applycontrib():
     return render_template('contrib-application.html', form=form)
 
 
+@app.route("/votes")
+@login_required
+def list_votes():
+    """Handler for listing votes"""
+
+    votes = get_db().get_votes()
+
+    return render_template('votes.html', votes=votes)
+
+
+@app.route("/vote/<int:voteid>", methods=['GET', 'POST'])
+@login_required
+def view_vote(voteid):
+    """Handler for viewing a specific vote."""
+    vote = get_db().get_vote(voteid)
+
+    if not vote:
+        flash('Unknown vote ID!')
+        return redirect(url_for('mainpage'))
+
+    return render_template('vote.html', vote=vote)
+
+
 @app.route("/")
 @login_required
 def mainpage():

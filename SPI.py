@@ -20,6 +20,7 @@ from __future__ import (absolute_import, division, print_function)
 #                        unicode_literals)
 
 import crypt
+import datetime
 import hashlib
 import psycopg2
 import psycopg2.extras
@@ -69,6 +70,18 @@ class MemberDB(object):
         return Member(row['memid'], row['email'], row['name'], row['password'],
                       row['firstdate'], row['iscontrib'], row['ismanager'],
                       row['ismember'], row['sub_private'])
+
+    @staticmethod
+    def vote_from_db(row):
+        """"Given a row from the vote_election table, return a Vote object"""
+        return Vote(row['ref'], row['title'], row['description'],
+                    row['period_start'], row['period_stop'])
+
+    @staticmethod
+    def vote_option_from_db(row, vote):
+        """"Given a row from the vote_option table, return VoteOption object"""
+        return VoteOption(row['ref'], vote, row['description'], row['sort'],
+                          row['option_character'])
 
     def verify_email(self, user, emailkey):
         """Check emailkey against the database and mark valid if correct"""
@@ -351,6 +364,58 @@ class MemberDB(object):
                          application.approve_date, application.appid))
         self.data['conn'].commit()
 
+    def get_votes(self, active=None):
+        """Return all / only active votes from the database."""
+        votes = []
+        sql = "SELECT * FROM vote_election"
+        if self.data['dbtype'] == 'sqlite3':
+            now = "DATETIME('now')"
+        elif self.data['dbtype'] == 'postgres':
+            now = "'now'"
+
+        if active is not None:
+            if active:
+                sql += ' WHERE period_start <= ' + now
+                sql += ' AND period_stop >= ' + now
+            else:
+                sql += ' WHERE period_start > ' + now
+                sql += ' OR period_stop < ' + now
+
+        cur = self.data['conn'].cursor()
+        cur.execute(sql)
+
+        for row in cur.fetchall():
+            votes.append(self.vote_from_db(row))
+        return votes
+
+    def get_vote(self, voteid):
+        """Return requested vote from the database."""
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT * FROM vote_election WHERE ref = ?',
+                        (voteid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT * FROM vote_election WHERE ref = %s',
+                        (voteid, ))
+
+        row = cur.fetchone()
+        if row:
+            vote = self.vote_from_db(row)
+            options = []
+            if self.data['dbtype'] == 'sqlite3':
+                cur.execute('SELECT * FROM vote_option ' +
+                            'WHERE election_ref = ?', (voteid, ))
+            elif self.data['dbtype'] == 'postgres':
+                cur.execute('SELECT * FROM vote_option ' +
+                            'WHERE election_ref = %s', (voteid, ))
+
+            for row in cur.fetchall():
+                options.append(self.vote_option_from_db(row, vote))
+
+            vote.options = options
+
+        return vote
+
 
 class Application(object):
     """Represents an application to become an SPI member."""
@@ -465,3 +530,27 @@ class Member(object):
 
     def __eq__(self, other):
         return self.memid == other.memid
+
+class Vote(object):
+    """Represents an SPI vote."""
+    def __init__(self, voteid, title, description, start, end, options=None):
+        self.voteid = voteid
+        self.title = title
+        self.description = description
+        self.start = start
+        self.end = end
+        self.options = options
+
+    def is_active(self):
+        """"Check if a vote is currently active"""
+        now = datetime.datetime.now()
+        return self.start <= now <= self.end
+
+class VoteOption(object):
+    """Represents an option for an SPI vote."""
+    def __init__(self, optionid, vote, description, sort, char):
+        self.optionid = optionid
+        self.vote = vote
+        self.description = description
+        self.sort = sort
+        self.char = char

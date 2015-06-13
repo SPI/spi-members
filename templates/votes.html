@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Votes{% endblock %}
+{% block content %}
+    <p>Welcome to the election pages of Software in the Public Interest, Inc.
+    These pages are used to vote in SPI elections.</p>
+
+    <ul>
+        {% for vote in votes %}
+            <li><a href="/vote/{{ vote.voteid }}">{{ vote.title }}</a> (ends {{ vote.end }})</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

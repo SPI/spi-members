@@ -39,3 +39,28 @@ CREATE TABLE applications (
     approve_date date,
     contribapp boolean DEFAULT 0
 );
+
+--
+-- Name: vote_election
+--
+
+CREATE TABLE vote_election (
+    ref INTEGER PRIMARY KEY AUTOINCREMENT,
+    title character varying(256),
+    description text,
+    period_start timestamp with time zone,
+    period_stop timestamp with time zone
+);
+
+
+--
+-- Name: vote_option
+--
+
+CREATE TABLE vote_option (
+    ref INTEGER PRIMARY KEY AUTOINCREMENT,
+    election_ref integer NOT NULL,
+    description text,
+    sort integer NOT NULL,
+    option_character character(1) NOT NULL
+);

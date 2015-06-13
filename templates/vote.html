@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Vote - {{ vote.title }}{% endblock %}
+{% block content %}
+    <h1>{{ vote.title }}</h1>
+
+    <p>
+        {{ vote.description|safe }}
+    </p>
+
+    <h1>Candidates/Options</h1>
+    {% for option in vote.options %}
+        (<b>{{ option.char }}</b>) {{ option.description }}<br />
+    {% endfor %}
+
+    <h1>Vote</h1>
+{% endblock %}

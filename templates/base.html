@@ -28,6 +28,9 @@
 <li><a href="http://www.spi-inc.org/">Main SPI Website</a>
 {% if current_user.is_authenticated() %}
 <li><a href="/">Membership Info</a></li>
+{% if current_user.is_contrib() %}
+<li><a href="/votes">Votes</a></li>
+{% endif %}
 <li><a href="/chpass">Change Password</a></li>
 <li><a href="/logout">Logout</a></li>
     {% if current_user.is_manager() %}

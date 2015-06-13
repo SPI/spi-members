@@ -17,6 +17,19 @@
         </td></tr>
     </table>
 <br />
+{% if current_user.is_contrib() %}
+    {% with votes = db.get_votes(active=True) %}
+        {% if votes %}
+            <h1>Active votes</h1>
+            <ul>
+            {% for vote in votes %}
+                <li><a href="/vote/{{ vote.voteid }}">{{ vote.title }}</a>
+                    (ends {{ vote.end }})</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+{% endif %}
 {% if applications %}
 <h1>Your Applications</h1>
     {% for application in applications %}

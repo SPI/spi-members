@@ -8,9 +8,26 @@
     </p>
 
     <h1>Candidates/Options</h1>
-    {% for option in vote.options %}
-        (<b>{{ option.char }}</b>) {{ option.description }}<br />
-    {% endfor %}
+    {% if vote.voteid == 3 %}
+        <form method="post">
+            <p><strong>2004-01-06.wta.1:</strong><br>
+                    <input type="radio" name="vote1" value="yes"> In Favor;
+                    <input type="radio" name="vote1" value="no"> Against;
+                    <input type="radio" name="vote1" value="abstain"> Abstain;
+            <p><strong>2004-01-06.wta.2:</strong><br>
+                    <input type="radio" name="vote1" value="yes"> In Favor;
+                    <input type="radio" name="vote1" value="no"> Against;
+                    <input type="radio" name="vote1" value="abstain"> Abstain;
+            <p><strong>2004-01-06.wta.3:</strong><br>
+                    <input type="radio" name="vote1" value="yes"> In Favor;
+                    <input type="radio" name="vote1" value="no"> Against;
+                    <input type="radio" name="vote1" value="abstain"> Abstain;
+        </form>
+    {% else %}
+        {% for option in vote.options %}
+            (<b>{{ option.char }}</b>) {{ option.description }}<br />
+        {% endfor %}
+    {% endif %}
 
     <h1>Vote</h1>
     {% if vote.is_over() %}
@@ -40,9 +57,8 @@
             <input type="submit" value="Cast Vote" />
         </form>
         </p>
-    {% endif %}
 
-    <blockquote>
+        <blockquote>
         <p>Votes will be counted using the "Condorcet" election method system
         which will be used to select the most <em>preferred</em> candidate.
         Conceptually, the election will be broken into a series of pairwise
@@ -59,7 +75,8 @@
         the most preferred). Voting &quot;XY&quot; states that you prefer candidate X to Y.
         <em>However, it does not express any preference relationships for any of the
         other candidates.</em></p>
-    </blockquote>
+        </blockquote>
+    {% endif %}
 
     {% if membervote %}
         <h2>Magic Voodoo:</h2>

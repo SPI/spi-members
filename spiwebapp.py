@@ -546,5 +546,12 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
+@app.errorhandler(404)
+def not_found(error):
+    """Return a suitable 404 page for unhandled URLs"""
+    return render_template('404.html'), 404
+
+
 if __name__ == "__main__":
     app.run()

@@ -115,6 +115,11 @@ class PWResetForm(Form):
     email = StringField('Email address', validators=[DataRequired(), Email()])
 
 
+class VotingForm(Form):
+    """Form for handling votes"""
+    vote = StringField('Vote', validators=[DataRequired()])
+
+
 #
 # Actual app / URL handlers below here
 #
@@ -358,7 +363,29 @@ def view_vote(voteid):
         flash('Unknown vote ID!')
         return redirect(url_for('mainpage'))
 
-    return render_template('vote.html', vote=vote)
+    membervote = get_db().get_membervote(current_user, vote)
+
+    form = VotingForm()
+
+    if form.validate_on_submit():
+        if not vote.is_active():
+            flash('Vote is not currently running.')
+        elif membervote is None:
+            membervote = get_db().create_membervote(current_user, vote)
+
+        if vote.is_active() and membervote:
+            if form.vote.data != membervote.votestr():
+                res = membervote.set_vote(form.vote.data)
+                if isinstance(res, basestring):
+                    flash(res)
+                else:
+                    get_db().store_membervote(membervote)
+
+    if membervote:
+        form.vote.data = membervote.votestr()
+
+    return render_template('vote.html', form=form,
+                           membervote=membervote, vote=vote)
 
 
 @app.route("/")

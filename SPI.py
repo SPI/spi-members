@@ -83,6 +83,12 @@ class MemberDB(object):
         return VoteOption(row['ref'], vote, row['description'], row['sort'],
                           row['option_character'])
 
+    @staticmethod
+    def membervote_from_db(row, user, vote):
+        """"Given a row from the vote_vote table, return a MemberVote object"""
+        return MemberVote(row['ref'], user, vote, row['private_secret'],
+                          row['late_updated'])
+
     def verify_email(self, user, emailkey):
         """Check emailkey against the database and mark valid if correct"""
         result = None
@@ -416,6 +422,93 @@ class MemberDB(object):
 
         return vote
 
+    def get_membervote(self, user, vote):
+        """Return requested user's vote from the database."""
+        membervote = None
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT * FROM vote_vote ' +
+                        'WHERE voter_ref = ? AND election_ref = ?',
+                        (user.memid, vote.voteid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT * FROM vote_vote ' +
+                        'WHERE voter_ref = %s AND election_ref = %s',
+                        (user.memid, vote.voteid))
+
+        row = cur.fetchone()
+        if row:
+            membervote = self.membervote_from_db(row, user, vote)
+            votes = []
+            if self.data['dbtype'] == 'sqlite3':
+                cur.execute('SELECT * FROM vote_voteoption ' +
+                            'WHERE vote_ref = ? ORDER BY preference',
+                            (membervote.ref, ))
+            elif self.data['dbtype'] == 'postgres':
+                cur.execute('SELECT * FROM vote_voteoption ' +
+                            'WHERE vote_ref = %s ORDER BY preference',
+                            (membervote.ref, ))
+
+            for row in cur.fetchall():
+                votes.append(vote.option_by_ref(row['option_ref']))
+
+            membervote.votes = votes
+
+        return membervote
+
+    def create_membervote(self, user, vote):
+        """Create a new entry for a member vote"""
+
+        md5 = hashlib.md5()
+        md5.update(vote.title)
+        md5.update(user.email)
+        md5.update(uuid.uuid1().hex)
+        secret = md5.hexdigest()
+
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('INSERT INTO vote_vote ' +
+                        '(ref, voter_ref, election_ref, private_secret) ' +
+                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
+                        'vote_vote), ?, ?, ?)',
+                        (user.memid, vote.voteid, secret))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('INSERT INTO vote_vote ' +
+                        '(ref, voter_ref, election_ref, private_secret) ' +
+                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
+                        'vote_vote), %s, %s, %s)',
+                        (user.memid, vote.voteid, secret))
+        self.data['conn'].commit()
+
+        return self.get_membervote(user, vote)
+
+    def store_membervote(self, membervote):
+        """Store the member's voting preference in the database."""
+        cur = self.data['conn'].cursor()
+
+        # Remove any previous vote details first
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('DELETE FROM vote_voteoption WHERE vote_ref = ?',
+                        (membervote.ref, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('DELETE FROM vote_voteoption WHERE vote_ref = %s',
+                        (membervote.ref, ))
+
+        for i, option in enumerate(membervote.votes, 1):
+            if self.data['dbtype'] == 'sqlite3':
+                print("Vote " + str(i) + " " + str(option.optionid))
+                cur.execute('INSERT INTO vote_voteoption ' +
+                            '(vote_ref, option_ref, preference) '
+                            'VALUES (?, ?, ?)',
+                            (membervote.ref, option.optionid, i))
+            elif self.data['dbtype'] == 'postgres':
+                cur.execute('INSERT INTO vote_voteoption ' +
+                            '(vote_ref, option_ref, preference) '
+                            'VALUES (%s, %s, %s)',
+                            (membervote.ref, option.optionid, i))
+        # update_member_field will do the commit
+        self.update_member_field(membervote.user.email, 'lastactive',
+                                 datetime.date.today())
+
 
 class Application(object):
     """Represents an application to become an SPI member."""
@@ -546,6 +639,33 @@ class Vote(object):
         now = datetime.datetime.now()
         return self.start <= now <= self.end
 
+    def is_over(self):
+        """"Check if a voting period is over"""
+        now = datetime.datetime.now()
+        return now > self.end
+
+    def is_pending(self):
+        """"Check if a vote is still waiting to be active"""
+        now = datetime.datetime.now()
+        return now < self.start
+
+    def option_by_ref(self, ref):
+        """Returns a vote option by its reference ID"""
+        # For the handful of options this is fine; a dict might be better.
+        for option in self.options:
+            if option.optionid == ref:
+                return option
+        return None
+
+    def option_by_char(self, char):
+        """Returns a vote option by its display character"""
+        # For the handful of options this is fine; a dict might be better.
+        for option in self.options:
+            if option.char == char:
+                return option
+        return None
+
+
 class VoteOption(object):
     """Represents an option for an SPI vote."""
     def __init__(self, optionid, vote, description, sort, char):
@@ -554,3 +674,37 @@ class VoteOption(object):
         self.description = description
         self.sort = sort
         self.char = char
+
+
+class MemberVote(object):
+    """Represents a contributing member's vote."""
+    def __init__(self, ref, user, vote, secret, updated):
+        self.ref = ref
+        self.user = user
+        self.vote = vote
+        self.secret = secret
+        self.updated = updated
+        self.votes = None
+
+    def votestr(self):
+        """Returns a string representing the user's voting preference."""
+        res = ""
+        for vote in self.votes:
+            res += vote.char
+        return res
+
+    def resultcookie(self):
+        """Returns the user's secret cookie for voting verification."""
+        md5 = hashlib.md5()
+        md5.update(self.secret + " " + self.user.email + "\n")
+        return md5.hexdigest()
+
+    def set_vote(self, votestr):
+        """Update the user's voting preference based on the voting string."""
+        newvotes = []
+        for char in votestr:
+            option = self.vote.option_by_char(char)
+            if option is None:
+                return "Invalid vote option " + char
+            newvotes.append(option)
+        self.votes = newvotes

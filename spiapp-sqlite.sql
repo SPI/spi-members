@@ -52,7 +52,6 @@ CREATE TABLE vote_election (
     period_stop timestamp with time zone
 );
 
-
 --
 -- Name: vote_option
 --
@@ -63,4 +62,27 @@ CREATE TABLE vote_option (
     description text,
     sort integer NOT NULL,
     option_character character(1) NOT NULL
+);
+
+--
+-- Name: vote_vote
+--
+
+CREATE TABLE vote_vote (
+    ref integer NOT NULL,
+    voter_ref integer,
+    election_ref integer NOT NULL,
+    private_secret character(32),
+    late_updated timestamp with time zone,
+    sent_notify boolean DEFAULT 0 NOT NULL
+);
+
+--
+-- Name: vote_voteoption
+--
+
+CREATE TABLE vote_voteoption (
+    vote_ref integer NOT NULL,
+    option_ref integer NOT NULL,
+    preference integer
 );

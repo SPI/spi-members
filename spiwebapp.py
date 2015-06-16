@@ -348,6 +348,9 @@ def applycontrib():
 def list_votes():
     """Handler for listing votes"""
 
+    if not current_user.is_contrib():
+        return render_template('contrib-only.html')
+
     votes = get_db().get_votes()
 
     return render_template('votes.html', votes=votes)
@@ -357,6 +360,10 @@ def list_votes():
 @login_required
 def view_vote(voteid):
     """Handler for viewing a specific vote."""
+
+    if not current_user.is_contrib():
+        return render_template('contrib-only.html')
+
     vote = get_db().get_vote(voteid)
 
     if not vote:

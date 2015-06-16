@@ -495,7 +495,6 @@ class MemberDB(object):
 
         for i, option in enumerate(membervote.votes, 1):
             if self.data['dbtype'] == 'sqlite3':
-                print("Vote " + str(i) + " " + str(option.optionid))
                 cur.execute('INSERT INTO vote_voteoption ' +
                             '(vote_ref, option_ref, preference) '
                             'VALUES (?, ?, ?)',

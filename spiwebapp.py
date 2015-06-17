@@ -394,6 +394,32 @@ def view_vote(voteid):
     return render_template('vote.html', form=form,
                            membervote=membervote, vote=vote)
 
+@app.route("/vote/<int:voteid>/result")
+@login_required
+def view_vote_result(voteid):
+    """Handler for viewing a specific vote result."""
+
+    if not current_user.is_contrib():
+        return render_template('contrib-only.html')
+
+    vote = get_db().get_vote(voteid)
+
+    if not vote:
+        flash('Unknown vote ID!')
+        return redirect(url_for('mainpage'))
+
+    if not vote.is_over():
+        flash('Vote must be finished to view results.')
+        return redirect(url_for('mainpage'))
+
+    # Get our list of member votes, sorted by the result cookie
+    # as we can't do a sort on a method in the jinga2 template.
+    membervotes = sorted(get_db().get_membervotes(vote),
+                         key=lambda vote: vote.resultcookie())
+
+    return render_template('vote-result.html', membervotes=membervotes,
+                           vote=vote)
+
 
 @app.route("/")
 @login_required

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Vote - {{ vote.title }}{% endblock %}
+{% block content %}
+    <h1>{{ vote.title }}</h1>
+
+    <p>Total unique votes cast: {{ membervotes|length }}</p>
+
+    <h2>Candidates</h2>
+    {% for option in vote.options %}
+        (<b>{{ option.char }}</b>) {{ option.description }}<br />
+    {% endfor %}
+
+    <h2>Voters</h2>
+    <ol>
+    {% for membervote in membervotes|sort(attribute='user.name') %}
+        <li>{{ membervote.user.name }}</li>
+    {% endfor %}
+    </ol>
+
+    <h2>Votes</h2>
+    <code>
+    {% for membervote in membervotes %}
+        {{ membervote.resultcookie() }} {{ membervote.votestr() }}<br />
+    {% endfor %}
+    </code>
+
+
+{% endblock %}

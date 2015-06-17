@@ -455,6 +455,41 @@ class MemberDB(object):
 
         return membervote
 
+    def get_membervotes(self, vote):
+        """Return all user votes for a specific vote from the database."""
+        membervotes = []
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT * FROM vote_vote WHERE election_ref = ?',
+                        (vote.voteid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT * FROM vote_vote WHERE election_ref = %s',
+                        (vote.voteid, ))
+
+        for vote_row in cur.fetchall():
+            membervote = self.membervote_from_db(
+                            vote_row,
+                            self.get_member_by_id(vote_row['voter_ref']),
+                            vote)
+            votes = []
+            if self.data['dbtype'] == 'sqlite3':
+                cur.execute('SELECT * FROM vote_voteoption ' +
+                            'WHERE vote_ref = ? ORDER BY preference',
+                            (membervote.ref, ))
+            elif self.data['dbtype'] == 'postgres':
+                cur.execute('SELECT * FROM vote_voteoption ' +
+                            'WHERE vote_ref = %s ORDER BY preference',
+                            (membervote.ref, ))
+
+            for row in cur.fetchall():
+                votes.append(vote.option_by_ref(row['option_ref']))
+
+            membervote.votes = votes
+            membervotes.append(membervote)
+
+        return membervotes
+
+
     def create_membervote(self, user, vote):
         """Create a new entry for a member vote"""
 

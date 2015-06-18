@@ -468,9 +468,9 @@ class MemberDB(object):
 
         for vote_row in cur.fetchall():
             membervote = self.membervote_from_db(
-                            vote_row,
-                            self.get_member_by_id(vote_row['voter_ref']),
-                            vote)
+                vote_row,
+                self.get_member_by_id(vote_row['voter_ref']),
+                vote)
             votes = []
             if self.data['dbtype'] == 'sqlite3':
                 cur.execute('SELECT * FROM vote_voteoption ' +

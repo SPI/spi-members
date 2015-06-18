@@ -24,5 +24,89 @@
     {% endfor %}
     </code>
 
+    {# This and pairwise wins are Condorcet specific. Jinja2 doesn't allow
+       us to check the type of votesystem, so just assume Condorcet for
+       now. If we ever add another voting system the below will need to be
+       conditional. #}
+    <h2>Beats matrix</h2>
+    <table border="1">
+        <tr>
+            <th></th>
+    {% for col in vote.options %}
+            <th>{{ col.char }}</th>
+    {% endfor %}
+        </tr>
+    {% for row in vote.options %}
+        <tr>
+            <th>{{ row.char }}</th>
+        {% for col in vote.options %}
+            <td>
+            {%- if col == row -%}
+                -
+            {%- else -%}
+                {{ votesystem.beatmatrix[row.optionid][col.optionid] }}
+            {%- endif -%}
+            </td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+
+    <h2>Pairwise wins</h2>
+    <table border="1">
+        <tr>
+            <th></th>
+    {% for col in vote.options %}
+            <th>{{ col.char }}</th>
+    {% endfor %}
+            <th>Wins</th>
+        </tr>
+    {% for row in vote.options %}
+        <tr>
+            <th>{{ row.char }}</th>
+        {% for col in vote.options %}
+            <td>
+            {%- if col == row -%}
+                -
+            {%- else -%}
+                {%- if votesystem.wincount[row.optionid][col.optionid] > 0 -%}
+                    <b>{{ votesystem.wincount[row.optionid][col.optionid] }}</b>
+                {%- else -%}
+                    {{ votesystem.wincount[row.optionid][col.optionid] }}
+                {%- endif -%}
+            {%- endif -%}
+            </td>
+        {% endfor %}
+            <td>{{ votesystem.wincount[row.optionid]['wins'] }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    {# All vote systems should implement the results() method. #}
+    <h2>Results</h2>
+    {% if votesystem.tie %}
+        <p>Ties exist!</p>
+    {% endif %}
+    <ol>
+    {% for winner in votesystem.results() %}
+        <li>{{ winner }}</li>
+    {% endfor %}
+    </ol>
+
+    <h2>Graphviz output</h2>
+    <pre>
+digraph Results {
+    ranksep=0.25;
+{% for option in vote.options %}
+    "{{ option.description }}" [ style="filled", fontname="Helvetica", fontsize=10, color="#99ff99" ];
+    {% for beats in votesystem.wincount[option.optionid] %}
+        {% if beats != 'wins' and
+              votesystem.wincount[option.optionid][beats] > 0 %}
+    "{{ option.description }}" -&gt; "{{ vote.option_by_ref(beats).description }}" [ label="{{ votesystem.wincount[option.optionid][beats] }}" ];
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+}
+    </pre>
 
 {% endblock %}

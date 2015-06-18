@@ -419,8 +419,12 @@ def view_vote_result(voteid):
     membervotes = sorted(get_db().get_membervotes(vote),
                          key=lambda vote: vote.resultcookie())
 
+    # Run the actual vote
+    votesystem = SPI.CondorcetVS(vote, membervotes)
+    votesystem.run()
+
     return render_template('vote-result.html', membervotes=membervotes,
-                           vote=vote)
+                           vote=vote, votesystem=votesystem)
 
 
 @app.route("/")

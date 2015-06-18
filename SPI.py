@@ -742,3 +742,56 @@ class MemberVote(object):
                 return "Invalid vote option " + char
             newvotes.append(option)
         self.votes = newvotes
+
+
+class CondorcetVS(object):
+    """Implementation of the Condorcet voting system"""
+    def __init__(self, vote, membervotes):
+        self.vote = vote
+        self.membervotes = membervotes
+        # Initialise our empty beat matrix
+        self.beatmatrix = {}
+        for row in self.vote.options:
+            self.beatmatrix[row.optionid] = {}
+            for col in self.vote.options:
+                self.beatmatrix[row.optionid][col.optionid] = 0
+        self.tie = False
+        self.winners = [None] * len(self.vote.options)
+        self.wincount = {}
+
+
+    def run(self):
+        """Run the vote"""
+        options = [option.optionid for option in self.vote.options]
+
+        # Fill the beat matrix. bm[x][y] is the number of times x was
+        # preferred over y.
+        for membervote in self.membervotes:
+            votecounted = {}
+            for curpref, pref in enumerate(membervote.votes):
+                votecounted[pref.optionid] = True
+                for lesspref in membervote.votes[curpref + 1:]:
+                    self.beatmatrix[pref.optionid][lesspref.optionid] += 1
+
+        for row in options:
+            wins = 0
+            self.wincount[row] = {}
+            for col in options:
+                if row != col:
+                    self.wincount[row][col] = (self.beatmatrix[row][col] -
+                                               self.beatmatrix[col][row])
+                    if self.wincount[row][col] > 0:
+                        wins += 1
+
+            self.wincount[row]['wins'] = wins
+
+            if self.winners[wins]:
+                self.tie = True
+                self.winners[wins] += " AND "
+                self.winners[wins] += self.vote.option_by_ref(row).description
+            else:
+                self.winners[wins] = self.vote.option_by_ref(row).description
+
+    def results(self):
+        """Return an array of the vote winners"""
+        return reversed(self.winners)

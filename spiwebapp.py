@@ -412,6 +412,10 @@ def view_vote_result(voteid):
         flash('Unknown vote ID!')
         return redirect(url_for('mainpage'))
 
+    if vote.owner.memid != current_user.memid:
+        flash('You can only view results for your own votes.')
+        return redirect(url_for('mainpage'))
+
     if not vote.is_over():
         flash('Vote must be finished to view results.')
         return redirect(url_for('mainpage'))

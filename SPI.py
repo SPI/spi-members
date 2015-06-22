@@ -69,13 +69,14 @@ class MemberDB(object):
         """Given a row dict from the members table, return a Member object"""
         return Member(row['memid'], row['email'], row['name'], row['password'],
                       row['firstdate'], row['iscontrib'], row['ismanager'],
-                      row['ismember'], row['sub_private'], row['lastactive'])
+                      row['ismember'], row['sub_private'], row['createvote'],
+                      row['lastactive'])
 
-    @staticmethod
-    def vote_from_db(row):
+    def vote_from_db(self, row):
         """"Given a row from the vote_election table, return a Vote object"""
+        owner = self.get_member_by_id(row['owner'])
         return Vote(row['ref'], row['title'], row['description'],
-                    row['period_start'], row['period_stop'])
+                    row['period_start'], row['period_stop'], owner)
 
     @staticmethod
     def vote_option_from_db(row, vote):
@@ -622,6 +623,10 @@ class Member(object):
         else:
             return None
 
+    def can_createvote(self):
+        """Is this member allowed to create votes?"""
+        return self.data['createvote']
+
     def validate_password(self, password):
         """Check that the supplied password is correct for this member."""
         return crypt.crypt(password,
@@ -640,7 +645,7 @@ class Member(object):
     #pylint: disable=too-many-arguments
     def __init__(self, memid, email, name, cryptpw, started, iscontrib=False,
                  ismanager=False, ismember=False, sub_private=False,
-                 lastactive=None):
+                 createvote=False, lastactive=None):
         self.data = {}
         self.memid = memid
         self.email = email
@@ -652,6 +657,7 @@ class Member(object):
         self.data['manager'] = ismanager
         self.data['member'] = ismember
         self.data['sub_private'] = sub_private
+        self.data['createvote'] = createvote
     #pylint: enable=too-many-arguments
 
     def __trunc__(self):
@@ -662,12 +668,14 @@ class Member(object):
 
 class Vote(object):
     """Represents an SPI vote."""
-    def __init__(self, voteid, title, description, start, end, options=None):
+    def __init__(self, voteid, title, description, start, end, owner,
+                 options=None):
         self.voteid = voteid
         self.title = title
         self.description = description
         self.start = start
         self.end = end
+        self.owner = owner
         self.options = options
 
     def is_active(self):

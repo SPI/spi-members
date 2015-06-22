@@ -14,6 +14,7 @@ CREATE TABLE members (
     ismember boolean DEFAULT 0 NOT NULL,
     iscontrib boolean DEFAULT 0 NOT NULL,
     ismanager boolean DEFAULT 0 NOT NULL,
+    createvote boolean DEFAULT 0 NOT NULL,
     sub_private boolean DEFAULT 0,
     lastactive date
 );
@@ -46,10 +47,11 @@ CREATE TABLE applications (
 
 CREATE TABLE vote_election (
     ref INTEGER PRIMARY KEY AUTOINCREMENT,
-    title character varying(256),
+    title character varying(256) NOT NULL,
     description text,
     period_start timestamp with time zone,
-    period_stop timestamp with time zone
+    period_stop timestamp with time zone,
+    owner integer NOT NULL
 );
 
 --

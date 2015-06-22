@@ -15,6 +15,9 @@
         <tr><td>Contrib Member</td><td>
             {% if current_user.is_contrib() %} Yes {% else %} No {% endif %}
         </td></tr>
+{% if current_user.is_contrib() %}
+        <tr><td>Last active</td><td>{{ current_user.lastactive }}</td></tr>
+{% endif %}
     </table>
 <br />
 {% if current_user.is_contrib() %}

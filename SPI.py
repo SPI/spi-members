@@ -69,7 +69,7 @@ class MemberDB(object):
         """Given a row dict from the members table, return a Member object"""
         return Member(row['memid'], row['email'], row['name'], row['password'],
                       row['firstdate'], row['iscontrib'], row['ismanager'],
-                      row['ismember'], row['sub_private'])
+                      row['ismember'], row['sub_private'], row['lastactive'])
 
     @staticmethod
     def vote_from_db(row):
@@ -639,12 +639,14 @@ class Member(object):
 
     #pylint: disable=too-many-arguments
     def __init__(self, memid, email, name, cryptpw, started, iscontrib=False,
-                 ismanager=False, ismember=False, sub_private=False):
+                 ismanager=False, ismember=False, sub_private=False,
+                 lastactive=None):
         self.data = {}
         self.memid = memid
         self.email = email
         self.name = name
         self.firstdate = started
+        self.lastactive = lastactive
         self.data['contrib'] = iscontrib
         self.data['password'] = cryptpw
         self.data['manager'] = ismanager

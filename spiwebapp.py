@@ -338,6 +338,8 @@ def applycontrib():
     if form.validate_on_submit():
         application = get_db().create_contrib_application(
             current_user, form.contrib.data, form.sub_private.data)
+        get_db().update_member_field(current_user.email, 'lastactive',
+                                     datetime.date.today())
         if application:
             return redirect(url_for('mainpage'))
         flash('Error creating contributing member application.')
@@ -441,6 +443,15 @@ def mainpage():
     return render_template('status.html', db=get_db(),
                            applications=applications,
                            contribapp=contribapp)
+
+@app.route('/updateactive')
+@login_required
+def updateactive():
+    """Update a users most recently active date and redirect to main page"""
+
+    get_db().update_member_field(current_user.email, 'lastactive',
+                                 datetime.date.today())
+    return redirect(url_for('mainpage'))
 
 
 @app.route('/chpass', methods=['GET', 'POST'])

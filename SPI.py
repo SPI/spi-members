@@ -371,7 +371,7 @@ class MemberDB(object):
                          application.approve_date, application.appid))
         self.data['conn'].commit()
 
-    def get_votes(self, active=None):
+    def get_votes(self, active=None, owner=None):
         """Return all / only active votes from the database."""
         votes = []
         sql = "SELECT * FROM vote_election"
@@ -388,6 +388,15 @@ class MemberDB(object):
                 sql += ' WHERE period_start > ' + now
                 sql += ' OR period_stop < ' + now
 
+        if owner is not None:
+            if active is None:
+                sql += ' WHERE'
+            else:
+                sql += ' AND'
+            # Yes, this isn't escaped, but we know it's just a number and
+            # not user supplied.
+            sql += ' owner = ' + str(owner.memid)
+
         cur = self.data['conn'].cursor()
         cur.execute(sql)
 
@@ -397,6 +406,7 @@ class MemberDB(object):
 
     def get_vote(self, voteid):
         """Return requested vote from the database."""
+        vote = None
         cur = self.data['conn'].cursor()
         if self.data['dbtype'] == 'sqlite3':
             cur.execute('SELECT * FROM vote_election WHERE ref = ?',
@@ -422,6 +432,127 @@ class MemberDB(object):
             vote.options = options
 
         return vote
+
+    def create_vote(self, owner, title, description, start, end):
+        """Create a new vote"""
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('INSERT INTO vote_election (ref, title, ' +
+                        'description, period_start, period_stop, owner) ' +
+                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
+                        'vote_election), ?, ?, ?, ?, ?)',
+                        (title, description, start, end, owner.memid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('INSERT INTO vote_election (ref, title, ' +
+                        'description, period_start, period_stop, owner) ' +
+                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
+                        'vote_vote), %s, %s, %s, %s, %s)',
+                        (title, description, start, end, owner.memid))
+        self.data['conn'].commit()
+
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT * FROM vote_election WHERE title = ?',
+                        (title, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT * FROM vote_election WHERE title = %s',
+                        (title, ))
+
+        row = cur.fetchone()
+        if row:
+            return self.vote_from_db(row)
+
+        return None
+
+
+    def update_vote(self, vote):
+        """Update an existing vote"""
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('UPDATE vote_election SET title = ?, ' +
+                        'description = ?, period_start = ?, ' +
+                        'period_stop = ?, owner = ? WHERE ref = ?',
+                        (vote.title, vote.description, vote.start, vote.end,
+                         vote.owner.memid, vote.voteid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('UPDATE vote_election SET title = %s, ' +
+                        'description = %s, period_start = %s, ' +
+                        'period_stop = %s, owner = %s WHERE ref = %s',
+                        (vote.title, vote.description, vote.start, vote.end,
+                         vote.owner.memid, vote.voteid))
+        self.data['conn'].commit()
+
+        return self.get_vote(vote.voteid)
+
+
+    def delete_vote(self, voteid):
+        """Delete a vote"""
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('DELETE FROM vote_option WHERE election_ref = ?',
+                        (voteid, ))
+            cur.execute('DELETE FROM vote_election WHERE ref = ?', (voteid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('DELETE FROM vote_option WHERE election_ref = %s',
+                        (voteid, ))
+            cur.execute('DELETE FROM vote_election WHERE ref = %s', (voteid, ))
+        self.data['conn'].commit()
+
+        return
+
+    def add_vote_option(self, vote, option, char, order):
+        """Add a new vote option for an existing vote."""
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('INSERT INTO vote_option (ref, election_ref, ' +
+                        'description, sort, option_character) ' +
+                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
+                        'vote_option), ?, ?, ?, ?)',
+                        (vote.voteid, option, order, char))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('INSERT INTO vote_option (ref, election_ref, ' +
+                        'description, sort, option_character) ' +
+                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
+                        'vote_option), %s, %s, %s, %s)',
+                        (vote.voteid, option, order, char))
+        self.data['conn'].commit()
+
+        return self.get_vote(vote.voteid)
+
+
+    def update_vote_option(self, voteoption):
+        """Updates an existing vote option for an existing vote."""
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('UPDATE vote_option SET description = ?, ' +
+                        'sort = ?, option_character = ? WHERE ref = ?',
+                        (voteoption.description, voteoption.sort,
+                         voteoption.char, voteoption.optionid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('UPDATE vote_option SET description = %s, ' +
+                        'sort = %s, option_character = %s WHERE ref = %s',
+                        (voteoption.description, voteoption.sort,
+                         voteoption.char, voteoption.optionid))
+        self.data['conn'].commit()
+
+        return self.get_vote(voteoption.vote.voteid)
+
+
+    def delete_vote_option(self, voteoption):
+        """
+            Removes a vote option for an existing vote.
+            Does not currently re-flow options to eliminate gaps.
+        """
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('DELETE FROM vote_option WHERE ref = ?',
+                        (voteoption.optionid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('DELETE FROM vote_option WHERE ref = %s',
+                        (voteoption.optionid, ))
+        self.data['conn'].commit()
+
+        return self.get_vote(voteoption.vote.voteid)
+
 
     def get_membervote(self, user, vote):
         """Return requested user's vote from the database."""

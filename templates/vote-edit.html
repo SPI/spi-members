@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Edit Vote{% endblock %}
+{% block content %}
+    <h1>Edit Vote</h1>
+
+    <form method="post">
+    {{ form.hidden_tag() }}
+
+    <h2>{{ form.title.label }}</h2>
+    <p>{{ form.title(size="80") }}</p>
+
+    <h2>{{ form.description.label }}</h2>
+    <p>{{ form.description(cols="60", rows="10") }}</p>
+
+    <h2>{{ form.start.label }}</h2>
+    <p>{{ form.start }}</h2>
+
+    <h2>{{ form.end.label }}</h2>
+    <p>{{ form.end }}</p>
+
+    <input type="submit" name="vote-btn" value="Edit" />
+    <input type="submit" name="vote-btn" value="Delete" />
+    </form>
+
+    <form method="post">
+    <table>
+    <tr><th>Selection character</th><th>Option text</th><th></th></tr>
+    {% for of in oforms %}
+        <tr><td>{{ of.char(size="1") }}</td><td>{{ of.option(size="60") }}</td>
+        <td>
+        {% if of == oforms[-1] %}
+          {# Last entry is for creating a new option #}
+          <input type="submit" name="obtn" value="Add" />
+        {% else %}
+          <input type="submit" name="obtn{{ of.order.data }}" value="Edit" />
+          {% if of == oforms[-2] %}
+            {# For now only allow the last created option to be deleted. #}
+            <input type="submit" name="obtn" value="Delete" />
+          {% endif %}
+        {% endif %}
+        {{ of.hidden_tag() }}
+        </td></tr>
+    {% endfor %}
+    </table>
+    </form>
+
+{% for formfield in [form.title, form.description, form.start, form.end] %}
+{% if formfield.errors %}
+    <ul>{% for error in formfield.errors %}<li>{{ formfield.label }}: {{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% endfor %}
+{% endblock %}

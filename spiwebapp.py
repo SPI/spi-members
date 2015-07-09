@@ -31,9 +31,9 @@ from flask_login import (LoginManager, login_required, login_user, logout_user,
 from flask_wtf import Form
 from urlparse import urlparse, urljoin
 from wtforms import (StringField, PasswordField, BooleanField, SelectField,
-                     TextAreaField)
+                     TextAreaField, ValidationError, HiddenField)
 from wtforms.validators import (DataRequired, EqualTo, Email, Optional)
-from wtforms.ext.dateutil.fields import DateField
+from wtforms.ext.dateutil.fields import DateField, DateTimeField
 
 import SPI
 
@@ -118,6 +118,34 @@ class PWResetForm(Form):
 class VotingForm(Form):
     """Form for handling votes"""
     vote = StringField('Vote', validators=[DataRequired()])
+
+
+class VoteCreationForm(Form):
+    """Form for creating/editing a new vote"""
+    title = StringField('Vote title', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    start = DateTimeField('Start date', validators=[DataRequired()])
+    end = DateTimeField('End date', validators=[DataRequired()])
+
+    def validate_start(self, field):
+        """Verify that the start date is in the future"""
+        if field.data <= datetime.datetime.now():
+            raise ValidationError('Start time must be in the future')
+
+    def validate_end(self, field):
+        """Verify that the end date is in the future and after the start"""
+        if field.data <= datetime.datetime.now():
+            raise ValidationError('End time must be in the future')
+
+        if field.data <= self.start.data:
+            raise ValidationError('End time must be after start time')
+
+
+class VoteOptionForm(Form):
+    """"Form for creating/editing a vote option"""
+    option = StringField('Vote option')
+    char = StringField('Vote character', validators=[DataRequired()])
+    order = HiddenField('order')
 
 
 #
@@ -431,6 +459,130 @@ def view_vote_result(voteid):
 
     return render_template('vote-result.html', membervotes=membervotes,
                            vote=vote, votesystem=votesystem)
+
+
+@app.route("/vote/create", methods=['GET', 'POST'])
+@login_required
+def create_vote():
+    """Handler that creates a new vote."""
+
+    if not current_user.is_contrib():
+        return render_template('contrib-only.html')
+
+    if not current_user.can_createvote():
+        flash('You are not allowed to create new votes.')
+        return redirect(url_for('mainpage'))
+
+    form = VoteCreationForm()
+    if form.validate_on_submit():
+        vote = get_db().create_vote(current_user, form.title.data,
+                                    form.description.data,
+                                    form.start.data, form.end.data)
+        return redirect(url_for('edit_vote', voteid=vote.voteid))
+
+    return render_template('vote-create.html', form=form)
+
+
+@app.route("/vote/<int:voteid>/edit", methods=['GET', 'POST'])
+@login_required
+def edit_vote(voteid):
+    """Handler for editing a vote."""
+
+    if not current_user.is_contrib():
+        return render_template('contrib-only.html')
+
+    vote = get_db().get_vote(voteid)
+
+    # Do some sanity checking of our inputs.
+    if not vote:
+        flash('Unknown vote ID!')
+        return redirect(url_for('mainpage'))
+
+    if vote.owner.memid != current_user.memid:
+        flash('You can only edit your own votes.')
+        return redirect(url_for('mainpage'))
+
+    if vote.is_active() or vote.is_over():
+        flash('Vote must not have run to be edited.')
+        return redirect(url_for('mainpage'))
+
+    # Only use the submitted form to update the VoteCreation
+    # details if that's what was actually submitted.
+    if request.form and 'vote-btn' in request.form:
+        form = VoteCreationForm(request.form, vote, prefix="vote")
+    else:
+        form = VoteCreationForm(None, vote, prefix="vote")
+
+    # We always want a new voting option displayed
+    newoptform = VoteOptionForm(prefix="newopt")
+
+    # Slightly hacky, to deal with the fact we've got 4 different form
+    # submission options to deal with (in the order they appear below):
+    # - Delete/edit the vote itself
+    # - Add new a voting option
+    # - Delete the last current voting option
+    # - Edit an existing voting option
+    if request.form:
+        if 'vote-btn' in request.form and form.validate_on_submit():
+            if request.form['vote-btn'] == 'Delete':
+                get_db().delete_vote(voteid)
+                flash('Vote deleted.')
+                return redirect(url_for('mainpage'))
+            elif request.form['vote-btn'] == 'Edit':
+                vote.title = form.title.data
+                vote.description = form.description.data
+                vote.start = form.start.data
+                vote.end = form.end.data
+                vote = get_db().update_vote(vote)
+        elif 'obtn' in request.form and newoptform.validate_on_submit():
+            if request.form['obtn'] == 'Add':
+                if not newoptform.option.data:
+                    flash('Must provide option text!')
+                else:
+                    vote = get_db().add_vote_option(vote,
+                                                    newoptform.option.data,
+                                                    newoptform.char.data,
+                                                    newoptform.order.data)
+            elif request.form['obtn'] == 'Delete':
+                vote = get_db().delete_vote_option(vote.options[-1])
+        else:
+            for i, option in enumerate(vote.options, start=1):
+                if ('obtn' + str(i) in request.form and
+                        request.form['obtn' + str(i)] == 'Edit'):
+                    oform = VoteOptionForm(prefix="opt" + str(i))
+                    if oform.validate_on_submit():
+                        if not oform.option.data:
+                            flash('Must provide option text!')
+                        else:
+                            option.description = oform.option.data
+                            option.char = oform.char.data
+                            vote = get_db().update_vote_option(option)
+
+    # Build our array of voting option forms with what the current
+    # vote looks like (we may have added or removed options above,
+    # so this can't be done earlier)
+    oforms = []
+    for i, option in enumerate(vote.options, start=1):
+        oform = VoteOptionForm(prefix="opt" + str(i))
+        oform.order.data = i
+        if (not request.form or 'vote-btn' in request.form or
+                not 'opt'+str(i)+'-char' in request.form):
+            oform.option.data = option.description
+            oform.char.data = option.char
+        oforms.append(oform)
+
+    # Add the new vote option form.
+    if not vote.options:
+        newoptform.order.data = 1
+    else:
+        newoptform.order.data = len(vote.options) + 1
+    newoptform.char.data = chr(64 + newoptform.order.data)
+    newoptform.option.data = ''
+    oforms.append(newoptform)
+
+    return render_template('vote-edit.html',
+                           vote=vote, form=form,
+                           oforms=oforms)
 
 
 @app.route("/")

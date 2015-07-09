@@ -32,6 +32,27 @@
             </ul>
         {% endif %}
     {% endwith %}
+    {% with votes = db.get_votes(owner=current_user) %}
+        {% if votes %}
+            <h1>Your votes</h1>
+            <ul>
+            {% for vote in votes %}
+                <li>
+                {% if vote.is_active() %}
+                    <a href="/vote/{{ vote.voteid }}">{{ vote.title }}</a>
+                    (ends {{ vote.end }})
+                {% elif vote.is_over() %}
+                    <a href="/vote/{{ vote.voteid }}/result">{{ vote.title }}</a>
+                    (ended)
+                {% else %}
+                    <a href="/vote/{{ vote.voteid }}/edit">{{ vote.title }}</a>
+                    (starts {{ vote.start }})
+                {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 {% endif %}
 {% if applications %}
 <h1>Your Applications</h1>

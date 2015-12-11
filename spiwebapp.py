@@ -25,7 +25,7 @@ import smtplib
 
 from email.mime.text import MIMEText
 from flask import (Flask, render_template, redirect, request, url_for, flash,
-                   abort, g)
+                   abort, g, Response)
 from flask_login import (LoginManager, login_required, login_user, logout_user,
                          current_user)
 from flask_wtf import Form
@@ -718,6 +718,20 @@ def getpass():
                 flash('Unable to send password reset email.')
 
     return render_template('getpass.html', form=form, user=user)
+
+
+@app.route('/privatesubs')
+@login_required
+def privatesubs():
+    """Return the list of -private subscriber addressess"""
+
+    if request.remote_addr not in app.config['LIST_HOSTS']:
+        if not current_user.is_manager():
+            return render_template('manager-only.html')
+
+    emails = get_db().get_private_emails()
+    emaillist = '\n'.join(emails)
+    return Response(emaillist, mimetype='text/plain')
 
 
 @app.route('/login', methods=['GET', 'POST'])

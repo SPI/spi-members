@@ -153,6 +153,18 @@ class MemberDB(object):
             user = self.member_from_db(row)
         return user
 
+    def get_private_emails(self):
+        """Retrieve all of the -private subscriber email addresses"""
+        user = None
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT email FROM members WHERE sub_private = 1');
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT email FROM members WHERE sub_private = true');
+        rows = cur.fetchall()
+        emails = [row['email'] for row in rows]
+        return emails
+
     def update_member_field(self, userid, field, data):
         """Update a single field in the database for a given member"""
         cur = self.data['conn'].cursor()

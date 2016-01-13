@@ -1,0 +1,43 @@
+#!/bin/sh
+
+#
+# Downloads a mailman subscriber list from a URL, then subscribes
+# any new members and unsubscribes any old ones.
+#
+
+set -e
+
+LISTNAME=spi-private
+SUBURL=https://members.spi-inc.org/privatesubs
+MAILMANDIR=/usr/sbin
+
+WORKDIR=$(mktemp -d -t updpriv.XXXXXXXX)
+trap cleanup exit
+cleanup () {
+	rm -rf "$WORKDIR"
+}
+
+if ! $MAILMANDIR/list_members -o $WORKDIR/cur-subs $LISTNAME; then
+	echo "Could not retrieve current subscriber list."
+	exit 1
+fi
+
+if ! wget -q -O $WORKDIR/new-subs $SUBURL; then
+	echo "Could not download new subscriber list."
+	exit 1
+fi
+
+diff --old-line-format="$MAILMANDIR/remove_members $LISTNAME %L" \
+	--new-line-format="$MAILMANDIR/add_members $LISTNAME %L" \
+	--unchanged-line-format="" \
+	$WORKDIR/cur-subs $WORKDIR/new-subs > $WORKDIR/update-subs
+
+if [ ! -f $WORKDIR/update-subs ]; then
+	echo "Couldn't create subscriber update script."
+	exit 1
+fi
+
+if [ ! -s $WORKDIR/update-subs ]; then
+	# Execute changes.
+	. $WORKDIR/update-subs
+fi

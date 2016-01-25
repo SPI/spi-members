@@ -24,6 +24,7 @@ import datetime
 import hashlib
 import psycopg2
 import psycopg2.extras
+import pytz
 import random
 import string
 import sqlite3
@@ -824,17 +825,17 @@ class Vote(object):
 
     def is_active(self):
         """"Check if a vote is currently active"""
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
         return self.start <= now <= self.end
 
     def is_over(self):
         """"Check if a voting period is over"""
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
         return now > self.end
 
     def is_pending(self):
         """"Check if a vote is still waiting to be active"""
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
         return now < self.start
 
     def option_by_ref(self, ref):

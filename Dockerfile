@@ -8,7 +8,7 @@ MAINTAINER Jonathan McDowell
 # Update the sources list + install the dependencies of the app
 RUN apt-get update && apt-get install -y python python-flask \
 	python-flask-login python-flaskext.wtf sqlite3 \
-	apache2 libapache2-mod-wsgi python-psycopg2
+	apache2 libapache2-mod-wsgi python-psycopg2 python-tz
 
 # Create a user for the app to run as.
 RUN groupadd spinm && useradd -m -g spinm spinm

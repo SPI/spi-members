@@ -161,9 +161,11 @@ class MemberDB(object):
         user = None
         cur = self.data['conn'].cursor()
         if self.data['dbtype'] == 'sqlite3':
-            cur.execute('SELECT email FROM members WHERE sub_private = 1');
+            cur.execute('SELECT email FROM members WHERE sub_private = 1 ' +
+                        'AND iscontrib = 1')
         elif self.data['dbtype'] == 'postgres':
-            cur.execute('SELECT email FROM members WHERE sub_private = true');
+            cur.execute('SELECT email FROM members WHERE sub_private = true ' +
+                        'AND iscontrib = true')
         rows = cur.fetchall()
         emails = [row['email'] for row in rows]
         return emails

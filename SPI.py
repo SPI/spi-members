@@ -32,6 +32,7 @@ import uuid
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
+
 class MemberDB(object):
     """Provides the interface to the members database backend."""
     def __init__(self, dbtype, db, user=None, password=None, host=None,
@@ -480,7 +481,6 @@ class MemberDB(object):
 
         return None
 
-
     def update_vote(self, vote):
         """Update an existing vote"""
         cur = self.data['conn'].cursor()
@@ -499,7 +499,6 @@ class MemberDB(object):
         self.data['conn'].commit()
 
         return self.get_vote(vote.voteid)
-
 
     def delete_vote(self, voteid):
         """Delete a vote"""
@@ -535,7 +534,6 @@ class MemberDB(object):
 
         return self.get_vote(vote.voteid)
 
-
     def update_vote_option(self, voteoption):
         """Updates an existing vote option for an existing vote."""
         cur = self.data['conn'].cursor()
@@ -553,7 +551,6 @@ class MemberDB(object):
 
         return self.get_vote(voteoption.vote.voteid)
 
-
     def delete_vote_option(self, voteoption):
         """
             Removes a vote option for an existing vote.
@@ -569,7 +566,6 @@ class MemberDB(object):
         self.data['conn'].commit()
 
         return self.get_vote(voteoption.vote.voteid)
-
 
     def get_membervote(self, user, vote):
         """Return requested user's vote from the database."""
@@ -638,7 +634,6 @@ class MemberDB(object):
 
         return membervotes
 
-
     def create_membervote(self, user, vote):
         """Create a new entry for a member vote"""
 
@@ -695,7 +690,7 @@ class MemberDB(object):
 
 class Application(object):
     """Represents an application to become an SPI member."""
-    #pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments
     def __init__(self, user, manager, appid, appdate, approve, approve_date,
                  contribapp, emailkey, emailkey_date, validemail,
                  validemail_date, contrib, comment, manager_date, lastchange):
@@ -715,7 +710,7 @@ class Application(object):
         self.manager_date = manager_date
         self.sub_private = user.sub_private()
         self.lastchange = lastchange
-    #pylint: enable=too-many-arguments
+    # pylint: enable=too-many-arguments
 
     def get_status(self):
         """Return the member status for this application"""
@@ -790,7 +785,7 @@ class Member(object):
 
         return True
 
-    #pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments
     def __init__(self, memid, email, name, cryptpw, started, iscontrib=False,
                  ismanager=False, ismember=False, sub_private=False,
                  createvote=False, lastactive=None):
@@ -806,13 +801,14 @@ class Member(object):
         self.data['member'] = ismember
         self.data['sub_private'] = sub_private
         self.data['createvote'] = createvote
-    #pylint: enable=too-many-arguments
+    # pylint: enable=too-many-arguments
 
     def __trunc__(self):
         return self.memid
 
     def __eq__(self, other):
         return self.memid == other.memid
+
 
 class Vote(object):
     """Represents an SPI vote."""
@@ -916,7 +912,6 @@ class CondorcetVS(object):
         self.tie = False
         self.winners = [None] * len(self.vote.options)
         self.wincount = {}
-
 
     def run(self):
         """Run the vote"""

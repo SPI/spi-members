@@ -173,7 +173,7 @@ def get_db():
     dbh = getattr(g, '_database', None)
     if dbh is None:
         for key in ['DB_USER', 'DB_PASS', 'DB_HOST', 'DB_PORT']:
-            if not key in app.config:
+            if key not in app.config:
                 app.config[key] = None
         dbh = g._database = SPI.MemberDB(app.config['DB_TYPE'],
                                          app.config['DB_NAME'],
@@ -426,6 +426,7 @@ def view_vote(voteid):
     return render_template('vote.html', form=form,
                            membervote=membervote, vote=vote)
 
+
 @app.route("/vote/<int:voteid>/result")
 @login_required
 def view_vote_result(voteid):
@@ -599,6 +600,7 @@ def mainpage():
     return render_template('status.html', db=get_db(),
                            applications=applications,
                            contribapp=contribapp)
+
 
 @app.route('/updateactive')
 @login_required

@@ -29,6 +29,8 @@ import string
 import sqlite3
 import uuid
 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 class MemberDB(object):
     """Provides the interface to the members database backend."""
@@ -46,6 +48,7 @@ class MemberDB(object):
                 database=self.data['db'], user=user, password=password,
                 host=host, port=port,
                 cursor_factory=psycopg2.extras.DictCursor)
+            self.data['conn'].set_client_encoding('UTF8')
 
     def close(self):
         """Close our connection to the database."""

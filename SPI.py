@@ -130,6 +130,27 @@ class MemberDB(object):
             result = "Application not found."
         return result
 
+    def get_verify_email(self, user):
+        """Retrieves email verification status (and emailkey if necessary)"""
+        result = None
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('SELECT appid, emailkey, validemail FROM ' +
+                        'applications WHERE member = ? AND contribapp = 0',
+                        (user.memid, ))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('SELECT appid, emailkey, validemail FROM ' +
+                        'applications WHERE member = %s AND contribapp = f',
+                        (user.memid, ))
+        row = cur.fetchone()
+        if row:
+            if row['validemail'] in [1, 'true', True]:
+                row['validemail'] = True
+            else:
+                row['validemail'] = False
+            return row
+        return None
+
     def get_member(self, userid):
         """Retrieve a member object from the database by email address"""
         user = None

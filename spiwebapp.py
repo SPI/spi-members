@@ -634,6 +634,11 @@ def verifyemail():
     """Handler for email verification."""
     form = EmailVerificationForm()
 
+    verifystatus = get_db().get_verify_email(current_user)
+    if not verifystatus or verifystatus['validemail']:
+        flash('Email address already verified.')
+        return redirect(url_for('mainpage'))
+
     # We want to allow this to be submitted directly via the email link
     emailkey = request.args.get('emailkey', '')
 

@@ -656,6 +656,35 @@ def verifyemail():
     return render_template('verifyemail.html', application=None, form=form)
 
 
+@app.route('/verifyemail/resend')
+@login_required
+def resendverifyemail():
+    """Handler to resend email verification key to a user."""
+
+    verifystatus = get_db().get_verify_email(current_user)
+    if not verifystatus or verifystatus['validemail']:
+        flash('Email address already verified.')
+        return redirect(url_for('mainpage'))
+
+    # Send the email verification email
+    msg = MIMEText(render_template('verify-email.txt',
+                                   emailkey=verifystatus['emailkey']))
+    msg['Subject'] = ('SPI email verification for ' +
+                      current_user.name)
+    msg['From'] = 'email-check@members.spi-inc.org'
+    msg['To'] = current_user.email
+    try:
+        smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+        smtp.sendmail('email-check@members.spi-inc.org',
+                      [current_user.email], msg.as_string())
+        smtp.quit()
+        flash('Email verification re-sent.')
+    except:
+        flash('Unable to send email verification.')
+
+    return redirect(url_for('verifyemail'))
+
+
 @app.route('/apply', methods=['GET', 'POST'])
 def application_form():
     """Handler for non-contributing membership application."""

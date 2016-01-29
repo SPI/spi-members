@@ -22,4 +22,6 @@ received into the form below:</p>
 {% if form.emailkey.errors %}
     <ul class="errors">Email key: {% for error in form.emailkey.errors %}<li>{{ error }}</li>{% endfor %}</ul>
 {% endif %}
+<p>If you have not received the verification email you can request that it
+is <a href="/verifyemail/resend">resent</a>.</p>
 {% endblock %}

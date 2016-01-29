@@ -140,7 +140,8 @@ class MemberDB(object):
                         (user.memid, ))
         elif self.data['dbtype'] == 'postgres':
             cur.execute('SELECT appid, emailkey, validemail FROM ' +
-                        'applications WHERE member = %s AND contribapp = f',
+                        'applications WHERE member = %s AND ' +
+                        'contribapp = false',
                         (user.memid, ))
         row = cur.fetchone()
         if row:

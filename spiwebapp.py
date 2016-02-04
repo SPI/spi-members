@@ -19,6 +19,8 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import datetime
+import email
+import email.header
 import random
 import string
 import smtplib
@@ -36,6 +38,8 @@ from wtforms.validators import (DataRequired, EqualTo, Email, Optional)
 from wtforms.ext.dateutil.fields import DateField, DateTimeField
 
 import SPI
+
+email.charset.add_charset('utf-8', email.charset.SHORTEST, email.charset.QP)
 
 #
 # Data entry WTF form classes
@@ -278,9 +282,12 @@ def process_contrib_application(form, application):
                   'emailing them.')
             # Send the welcome confirmation email
             msg = MIMEText(render_template('contrib-email.txt',
-                                           application=application))
-            msg['Subject'] = ('SPI Contributing Member application ' +
-                              'for ' + application.user.name)
+                                           application=application),
+                           'plain', 'utf-8')
+            msg['Subject'] = email.header.Header('SPI Contributing Member ' +
+                                                 'application for ' +
+                                                 application.user.name,
+                                                 'utf-8')
             msg['From'] = ('SPI Membership Committee ' +
                            '<membership@spi-inc.org>')
             msg['To'] = application.user.email
@@ -668,9 +675,10 @@ def resendverifyemail():
 
     # Send the email verification email
     msg = MIMEText(render_template('verify-email.txt',
-                                   emailkey=verifystatus['emailkey']))
-    msg['Subject'] = ('SPI email verification for ' +
-                      current_user.name)
+                                   emailkey=verifystatus['emailkey']),
+                   'plain', 'utf-8')
+    msg['Subject'] = email.header.Header('SPI email verification for ' +
+                                         current_user.name, 'utf-8')
     msg['From'] = 'email-check@members.spi-inc.org'
     msg['To'] = current_user.email
     try:
@@ -695,9 +703,12 @@ def application_form():
             login_user(application.user)
             # Send the welcome / email verification email
             msg = MIMEText(render_template('newnm-email.txt',
-                                           application=application))
-            msg['Subject'] = ('SPI Membership application for ' +
-                              application.user.name)
+                                           application=application),
+                           'plain', 'utf-8')
+            msg['Subject'] = email.header.Header('SPI Membership application '
+                                                 'for ' +
+                                                 application.user.name,
+                                                 'utf-8')
             msg['From'] = 'email-check@members.spi-inc.org'
             msg['To'] = application.user.email
             try:
@@ -741,8 +752,11 @@ def getpass():
 
             # Send the welcome / email verification email
             msg = MIMEText(render_template('resetpw-email.txt',
-                                           pw=password))
-            msg['Subject'] = 'SPI Password reset for ' + user.name
+                                           pw=password),
+                           'plain', 'utf-8')
+            msg['Subject'] = email.header.Header('SPI Password reset for ' +
+                                                 user.name,
+                                                 'utf-8')
             msg['From'] = 'membership@spi-inc.org'
             msg['To'] = user.email
             try:

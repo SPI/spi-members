@@ -1,8 +1,9 @@
 Outstanding things to do:
 
- * Add support for PostgreSQL backend, for production
- * Add voting support
- * Add wsgi support
  * Improve email verification / password reset handling
+   - We should not just send out a new password for a reset, but instead
+     a token.
  * Implement ability for managers to edit users
  * Add change email support
+ * Add last active link beside last active date?
+ * Password reset link is not obvious enough on login page [tbm]

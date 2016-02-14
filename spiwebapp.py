@@ -278,6 +278,8 @@ def process_contrib_application(form, application):
             get_db().update_member_field(application.user.email,
                                          'iscontrib',
                                          True)
+            get_db().update_member_field(current_user.email, 'lastactive',
+                                 datetime.date.today())
             flash('Applicant become a Contributing member, ' +
                   'emailing them.')
             # Send the welcome confirmation email

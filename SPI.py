@@ -118,12 +118,20 @@ class MemberDB(object):
                                 'lastchange = date(\'now\')' +
                                 'WHERE appid = ?',
                                 (row['appid'], ))
+                    cur.execute('UPDATE members SET ' +
+                                'firstdate = date(\'now\') WHERE ' +
+                                'email = ? AND firstdate IS NULL',
+                                (user.email, ))
                 elif self.data['dbtype'] == 'postgres':
                     cur.execute('UPDATE applications SET validemail = true, ' +
                                 'validemail_date = date(\'now\'), ' +
                                 'lastchange = date(\'now\')' +
                                 'WHERE appid = %s',
                                 (row['appid'], ))
+                    cur.execute('UPDATE members SET ' +
+                                'firstdate = date(\'now\') WHERE ' +
+                                'email = %s AND firstdate IS NULL',
+                                (user.email, ))
                 # update_member_field will handle the commit
                 self.update_member_field(user.email, 'ismember', True)
         else:

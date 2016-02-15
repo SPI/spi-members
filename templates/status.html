@@ -16,7 +16,7 @@
             {% if current_user.is_contrib() %} Yes {% else %} No {% endif %}
         </td></tr>
 {% if current_user.is_contrib() %}
-        <tr><td>Last active</td><td>{{ current_user.lastactive }}</td></tr>
+        <tr><td>Last active</td><td>{{ current_user.lastactive }} (<a href="/updateactive">Update</a>)</td></tr>
 {% endif %}
     </table>
 <br />

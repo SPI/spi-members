@@ -1,0 +1,21 @@
+Dear {{ name }},
+
+This email is sent as part of the process of ensuring that SPI
+contributing members wish to maintain their membership status. Voting
+status for previous SPI elections is used as an initial data point to
+indicate that a member should potentially be considered inactive.
+
+We have not seen a vote from you in recent elections. If you consider
+yourself an active contributing SPI member and wish to retain this
+status please let us know by updating your activity using the following
+link within the next 4 weeks:
+
+https://members.spi-inc.org/updateactive
+
+If you are not currently active as an SPI contributing member you need
+take no action; your status will be downgraded to that of a
+non-contributing member. You are, of course, free to restore your
+contributing membership status at some future point should you wish to.
+
+-- 
+The SPI Membership Committee <membership@spi-inc.org>

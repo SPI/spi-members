@@ -252,11 +252,8 @@ class MemberDB(object):
             applications.append(self.application_from_db(row))
         return applications
 
-    def get_applications_by_type(self, listtype):
-        """Retrieve all applications of a given type."""
-        applications = []
-        manager = None
-
+    def type_to_sql(self, listtype):
+        """Build the WHERE clause for looking up members by type"""
         if self.data['dbtype'] == 'sqlite3':
             t = '1'
             f = '0'
@@ -280,6 +277,14 @@ class MemberDB(object):
                      ' AND contribapp = ' + t)
         else:
             where = ''
+
+        return where
+
+    def get_applications_by_type(self, listtype):
+        """Retrieve all applications of a given type."""
+        applications = []
+        manager = None
+        where = self.type_to_sql(listtype)
 
         cur = self.data['conn'].cursor()
         cur.execute('SELECT a.*, m.* from applications a, members m ' +
@@ -717,6 +722,21 @@ class MemberDB(object):
         # update_member_field will do the commit
         self.update_member_field(membervote.user.email, 'lastactive',
                                  datetime.date.today())
+
+    def get_stats(self):
+        """Retrieve membership statistics"""
+        stats = {}
+        cur = self.data['conn'].cursor()
+
+        for listtype in ['nca', 'ncm', 'ca', 'cm', 'mgr']:
+            where = self.type_to_sql(listtype)
+            cur.execute('SELECT COUNT(memid) AS count FROM applications a, ' +
+                        'members m WHERE m.memid = a.member ' + where)
+            row = cur.fetchone()
+            if row:
+                stats[listtype] = row['count']
+
+        return stats
 
 
 class Application(object):

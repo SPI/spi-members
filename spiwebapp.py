@@ -637,6 +637,15 @@ def changepw():
     return render_template('pwchange.html', form=form)
 
 
+@app.route('/stats')
+@login_required
+def showstats():
+    """Handler for showing membership statistics"""
+    stats = get_db().get_stats()
+
+    return render_template('stats.html', stats=stats)
+
+
 @app.route('/verifyemail', methods=['GET', 'POST'])
 @login_required
 def verifyemail():

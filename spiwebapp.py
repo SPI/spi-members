@@ -21,17 +21,17 @@ from __future__ import (absolute_import, division, print_function,
 import datetime
 import email
 import email.header
+from email.mime.text import MIMEText
 import random
 import string
 import smtplib
+from urlparse import urlparse, urljoin
 
-from email.mime.text import MIMEText
 from flask import (Flask, render_template, redirect, request, url_for, flash,
                    abort, g, Response)
 from flask_login import (LoginManager, login_required, login_user, logout_user,
                          current_user)
 from flask_wtf import Form
-from urlparse import urlparse, urljoin
 from wtforms import (StringField, PasswordField, BooleanField, SelectField,
                      TextAreaField, ValidationError, HiddenField)
 from wtforms.validators import (DataRequired, EqualTo, Email, Optional)
@@ -279,7 +279,7 @@ def process_contrib_application(form, application):
                                          'iscontrib',
                                          True)
             get_db().update_member_field(current_user.email, 'lastactive',
-                                 datetime.date.today())
+                                         datetime.date.today())
             flash('Applicant become a Contributing member, ' +
                   'emailing them.')
             # Send the welcome confirmation email

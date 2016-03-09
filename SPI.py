@@ -22,13 +22,14 @@ from __future__ import (absolute_import, division, print_function)
 import crypt
 import datetime
 import hashlib
-import psycopg2
-import psycopg2.extras
-import pytz
 import random
 import string
 import sqlite3
 import uuid
+
+import psycopg2
+import psycopg2.extras
+import pytz
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)

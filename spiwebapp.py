@@ -790,9 +790,9 @@ def privatesubs():
         if not current_user.is_manager():
             return render_template('manager-only.html')
 
-    emails = get_db().get_private_emails()
+    emails = sorted(get_db().get_private_emails())
     emaillist = '\n'.join(emails)
-    return Response(emaillist, mimetype='text/plain')
+    return Response(emaillist.lower(), mimetype='text/plain')
 
 
 @app.route('/login', methods=['GET', 'POST'])

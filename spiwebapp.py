@@ -384,6 +384,25 @@ def applycontrib():
     return render_template('contrib-application.html', form=form)
 
 
+@app.route("/member/<int:memid>")
+@login_required
+def view_member(memid):
+    """Handler for viewing a member"""
+
+    if not current_user.is_manager():
+        return render_template('manager-only.html')
+
+    member = get_db().get_member_by_id(memid)
+    if not member:
+        flash('No such member.')
+        return redirect(url_for('mainpage'))
+
+    applications = get_db().get_applications_by_user(member)
+
+    return render_template('member.html', applications=applications,
+                           db=get_db(), member=member)
+
+
 @app.route("/votes")
 @login_required
 def list_votes():

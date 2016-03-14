@@ -2,6 +2,10 @@
 {% block title %}Membership Status{% endblock %}
 {% block content %}
     <h1>Membership status for {{ current_user.name }} &lt;{{ current_user.email }}&gt;</h1>
+{% if current_user.is_contrib() %}
+    <form method="post" action="/member/edit">
+    {{ form.hidden_tag() }}
+{% endif %}
     <table>
         <tr><td>Name</td><td>{{ current_user.name }}</td></tr>
         <tr><td>Email address</td><td>{{ current_user.email }}</td></tr>
@@ -16,7 +20,11 @@
             {% if current_user.is_contrib() %} Yes {% else %} No {% endif %}
         </td></tr>
 {% if current_user.is_contrib() %}
+        <tr><td>spi-private subscription</td><td>
+            {{ form.sub_private }}
+        </td></tr>
         <tr><td>Last active</td><td>{{ current_user.lastactive }} (<a href="/updateactive">Update</a>)</td></tr>
+        <tr><td colspan="2"><input type="submit" value="Update Details" /></td></tr>
 {% endif %}
     </table>
 <br />

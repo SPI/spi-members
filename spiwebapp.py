@@ -106,6 +106,11 @@ class EmailVerificationForm(Form):
     emailkey = StringField('Verification code', validators=[DataRequired()])
 
 
+class MemberForm(Form):
+    """Form handling changes to member details"""
+    sub_private = BooleanField('Subscribe to spi-private?')
+
+
 class PWChangeForm(Form):
     """Form for handling password changes"""
     oldpw = PasswordField('Old Password', validators=[DataRequired()])
@@ -403,6 +408,20 @@ def view_member(memid):
                            db=get_db(), member=member)
 
 
+@app.route("/member/edit", methods=['POST'])
+@login_required
+def edit_member():
+    """Handler for editing member details"""
+
+    form = MemberForm()
+    if form.validate_on_submit():
+        if form.sub_private.data != current_user.sub_private():
+            get_db().update_member_field(current_user.email, 'sub_private',
+                                         form.sub_private.data)
+
+    return redirect(url_for('mainpage'))
+
+
 @app.route("/votes")
 @login_required
 def list_votes():
@@ -624,10 +643,14 @@ def mainpage():
         for apps in applications:
             if apps.contribapp and not apps.approve:
                 contribapp = True
+    else:
+        form = MemberForm()
+        form.sub_private.data = current_user.sub_private()
 
     return render_template('status.html', db=get_db(),
                            applications=applications,
-                           contribapp=contribapp)
+                           contribapp=contribapp,
+                           form=form)
 
 
 @app.route('/updateactive')

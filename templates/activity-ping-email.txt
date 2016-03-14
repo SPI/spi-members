@@ -5,10 +5,10 @@ contributing members wish to maintain their membership status. Voting
 status for previous SPI elections is used as an initial data point to
 indicate that a member should potentially be considered inactive.
 
-We have not seen a vote from you in recent elections. If you consider
-yourself an active contributing SPI member and wish to retain this
-status please let us know by updating your activity using the following
-link within the next 4 weeks:
+We have not seen a vote from you in the most recent election. If you
+consider yourself an active contributing SPI member and wish to retain
+this status please let us know by updating your activity using the
+following link within the next 4 weeks:
 
 https://members.spi-inc.org/updateactive
 

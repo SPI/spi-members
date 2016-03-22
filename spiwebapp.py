@@ -108,6 +108,7 @@ class EmailVerificationForm(Form):
 
 class MemberForm(Form):
     """Form handling changes to member details"""
+    name = StringField('Name', validators=[DataRequired()])
     sub_private = BooleanField('Subscribe to spi-private?')
 
 
@@ -418,6 +419,9 @@ def edit_member():
         if form.sub_private.data != current_user.sub_private():
             get_db().update_member_field(current_user.email, 'sub_private',
                                          form.sub_private.data)
+        if form.name.data != current_user.name:
+            get_db().update_member_field(current_user.email, 'name',
+                                         form.name.data)
 
     return redirect(url_for('mainpage'))
 
@@ -638,13 +642,15 @@ def edit_vote(voteid):
 def mainpage():
     """Handler for main page. Displays users details."""
     applications = get_db().get_applications_by_user(current_user)
+    form = MemberForm()
+    form.name.data = current_user.name
     contribapp = False
     if not current_user.is_contrib():
+        form.sub_private.data = False
         for apps in applications:
             if apps.contribapp and not apps.approve:
                 contribapp = True
     else:
-        form = MemberForm()
         form.sub_private.data = current_user.sub_private()
 
     return render_template('status.html', db=get_db(),

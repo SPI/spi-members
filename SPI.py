@@ -501,7 +501,7 @@ class MemberDB(object):
             cur.execute('INSERT INTO vote_election (ref, title, ' +
                         'description, period_start, period_stop, owner) ' +
                         'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
-                        'vote_vote), %s, %s, %s, %s, %s)',
+                        'vote_election), %s, %s, %s, %s, %s)',
                         (title, description, start, end, owner.memid))
         self.data['conn'].commit()
 

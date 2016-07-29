@@ -452,6 +452,8 @@ class MemberDB(object):
             # not user supplied.
             sql += ' owner = ' + str(owner.memid)
 
+        sql += ' ORDER BY ref DESC'
+
         cur = self.data['conn'].cursor()
         cur.execute(sql)
 

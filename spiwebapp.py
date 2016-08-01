@@ -689,7 +689,6 @@ def changepw():
 
 
 @app.route('/stats')
-@login_required
 def showstats():
     """Handler for showing membership statistics"""
     stats = get_db().get_stats()

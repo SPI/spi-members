@@ -387,6 +387,8 @@ def applycontrib():
         if application:
             return redirect(url_for('mainpage'))
         flash('Error creating contributing member application.')
+    else:
+        form.sub_private.data = True
 
     return render_template('contrib-application.html', form=form)
 
@@ -532,8 +534,6 @@ def create_vote():
                                     form.description.data,
                                     form.start.data, form.end.data)
         return redirect(url_for('edit_vote', voteid=vote.voteid))
-    else:
-        form.sub_private.data = True
 
     return render_template('vote-create.html', form=form)
 

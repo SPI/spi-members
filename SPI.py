@@ -29,7 +29,6 @@ import uuid
 
 import psycopg2
 import psycopg2.extras
-import pytz
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
@@ -878,17 +877,17 @@ class Vote(object):
 
     def is_active(self):
         """"Check if a vote is currently active"""
-        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+        now = datetime.datetime.utcnow()
         return self.start <= now <= self.end
 
     def is_over(self):
         """"Check if a voting period is over"""
-        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+        now = datetime.datetime.utcnow()
         return now > self.end
 
     def is_pending(self):
         """"Check if a vote is still waiting to be active"""
-        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+        now = datetime.datetime.utcnow()
         return now < self.start
 
     def option_by_ref(self, ref):

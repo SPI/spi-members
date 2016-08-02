@@ -22,7 +22,6 @@ import datetime
 import email
 import email.header
 from email.mime.text import MIMEText
-import pytz
 import random
 import string
 import smtplib
@@ -140,12 +139,12 @@ class VoteCreationForm(Form):
 
     def validate_start(self, field):
         """Verify that the start date is in the future"""
-        if field.data <= datetime.datetime.utcnow().replace(tzinfo=pytz.utc):
+        if field.data <= datetime.datetime.utcnow():
             raise ValidationError('Start time must be in the future')
 
     def validate_end(self, field):
         """Verify that the end date is in the future and after the start"""
-        if field.data <= datetime.datetime.utcnow().replace(tzinfo=pytz.utc):
+        if field.data <= datetime.datetime.utcnow():
             raise ValidationError('End time must be in the future')
 
         if field.data <= self.start.data:

@@ -948,6 +948,8 @@ class MemberVote(object):
             option = self.vote.option_by_char(char)
             if option is None:
                 return "Invalid vote option " + char
+            if option in newvotes:
+                return "Can't vote for " + char + " more than once."
             newvotes.append(option)
         self.votes = newvotes
 

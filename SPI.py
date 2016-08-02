@@ -955,9 +955,10 @@ class MemberVote(object):
 
 class CondorcetVS(object):
     """Implementation of the Condorcet voting system"""
-    def __init__(self, vote, membervotes):
+    def __init__(self, vote, membervotes, ignoremissing=True):
         self.vote = vote
         self.membervotes = membervotes
+        self.ignoremissing = ignoremissing
         # Initialise our empty beat matrix
         self.beatmatrix = {}
         for row in self.vote.options:
@@ -980,6 +981,15 @@ class CondorcetVS(object):
                 votecounted[pref.optionid] = True
                 for lesspref in membervote.votes[curpref + 1:]:
                     self.beatmatrix[pref.optionid][lesspref.optionid] += 1
+
+                # If we're not ignoring missing options then treat them
+                # as lower preference than anyone who was listed.
+                if not self.ignoremissing:
+                    for missing in options:
+                        # Check it's actually missing
+                        if missing not in votecounted:
+                            for counted in votecounted:
+                                self.beatmatrix[counted][missing] += 1
 
         for row in options:
             wins = 0

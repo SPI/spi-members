@@ -152,7 +152,7 @@ class MemberDB(object):
                         'applications WHERE member = %s AND ' +
                         'contribapp = false',
                         (user.memid, ))
-        row = cur.fetchone()
+        row = dict(cur.fetchone())
         if row:
             if row['validemail'] in [1, 'true', True]:
                 row['validemail'] = True

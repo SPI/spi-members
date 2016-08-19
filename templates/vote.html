@@ -58,6 +58,12 @@
         </form>
         </p>
 
+        {% if vote.winners == 1 %}
+        <p>This vote has a single winner.</p>
+        {% else %}
+        <p>There are {{ vote.winners }} winners in this vote.</p>
+        {% endif %}
+
         <blockquote>
         <p>Votes will be counted using the "Condorcet" election method system
         which will be used to select the most <em>preferred</em> candidate.

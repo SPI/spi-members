@@ -84,6 +84,12 @@
 
     {# All vote systems should implement the results() method. #}
     <h2>Results</h2>
+    {% if vote.winners == 1 %}
+    <p>This vote had a single winner.</p>
+    {% else %}
+    <p>There were {{ vote.winners }} winners in this vote.</p>
+    {% endif %}
+
     {% if votesystem.tie %}
         <p>Ties exist!</p>
     {% endif %}

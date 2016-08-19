@@ -51,7 +51,8 @@ CREATE TABLE vote_election (
     description text,
     period_start timestamp with time zone,
     period_stop timestamp with time zone,
-    owner integer NOT NULL
+    owner integer NOT NULL,
+    winners integer NOT NULL
 );
 
 --

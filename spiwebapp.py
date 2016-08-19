@@ -33,7 +33,7 @@ from flask_login import (LoginManager, login_required, login_user, logout_user,
                          current_user)
 from flask_wtf import Form
 from wtforms import (StringField, PasswordField, BooleanField, SelectField,
-                     TextAreaField, ValidationError, HiddenField)
+                     TextAreaField, ValidationError, HiddenField, IntegerField)
 from wtforms.validators import (DataRequired, EqualTo, Email, Optional)
 from wtforms.ext.dateutil.fields import DateField, DateTimeField
 
@@ -136,6 +136,7 @@ class VoteCreationForm(Form):
     description = TextAreaField('Description', validators=[DataRequired()])
     start = DateTimeField('Start date', validators=[DataRequired()])
     end = DateTimeField('End date', validators=[DataRequired()])
+    winners = IntegerField('Number of winners')
 
     def validate_start(self, field):
         """Verify that the start date is in the future"""
@@ -583,11 +584,15 @@ def edit_vote(voteid):
                 flash('Vote deleted.')
                 return redirect(url_for('mainpage'))
             elif request.form['vote-btn'] == 'Edit':
-                vote.title = form.title.data
-                vote.description = form.description.data
-                vote.start = form.start.data
-                vote.end = form.end.data
-                vote = get_db().update_vote(vote)
+                if form.winners.data >= len(vote.options):
+                    flash('Must have more options than required winners.')
+                else:
+                    vote.title = form.title.data
+                    vote.description = form.description.data
+                    vote.start = form.start.data
+                    vote.end = form.end.data
+                    vote.winners = form.winners.data
+                    vote = get_db().update_vote(vote)
         elif 'obtn' in request.form and newoptform.validate_on_submit():
             if request.form['obtn'] == 'Add':
                 if not newoptform.option.data:

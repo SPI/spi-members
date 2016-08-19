@@ -81,7 +81,8 @@ class MemberDB(object):
         """"Given a row from the vote_election table, return a Vote object"""
         owner = self.get_member_by_id(row['owner'])
         return Vote(row['ref'], row['title'], row['description'],
-                    row['period_start'], row['period_stop'], owner)
+                    row['period_start'], row['period_stop'], owner,
+                    row['winners'])
 
     @staticmethod
     def vote_option_from_db(row, vote):
@@ -525,15 +526,17 @@ class MemberDB(object):
         if self.data['dbtype'] == 'sqlite3':
             cur.execute('UPDATE vote_election SET title = ?, ' +
                         'description = ?, period_start = ?, ' +
-                        'period_stop = ?, owner = ? WHERE ref = ?',
+                        'period_stop = ?, owner = ?, winners = ? ' +
+                        'WHERE ref = ?',
                         (vote.title, vote.description, vote.start, vote.end,
-                         vote.owner.memid, vote.voteid))
+                         vote.owner.memid, vote.winners, vote.voteid))
         elif self.data['dbtype'] == 'postgres':
             cur.execute('UPDATE vote_election SET title = %s, ' +
                         'description = %s, period_start = %s, ' +
-                        'period_stop = %s, owner = %s WHERE ref = %s',
+                        'period_stop = %s, owner = %s, winners = %s ' +
+                        'WHERE ref = %s',
                         (vote.title, vote.description, vote.start, vote.end,
-                         vote.owner.memid, vote.voteid))
+                         vote.owner.memid, vote.winners, vote.voteid))
         self.data['conn'].commit()
 
         return self.get_vote(vote.voteid)
@@ -866,13 +869,14 @@ class Member(object):
 class Vote(object):
     """Represents an SPI vote."""
     def __init__(self, voteid, title, description, start, end, owner,
-                 options=None):
+                 winners=1, options=None):
         self.voteid = voteid
         self.title = title
         self.description = description
         self.start = start
         self.end = end
         self.owner = owner
+        self.winners = winners
         self.options = options
 
     def is_active(self):

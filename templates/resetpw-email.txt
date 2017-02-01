@@ -1,0 +1,5 @@
+Your new password for the SPI membership pages is:
+
+{{ pw }}
+
+Please log in with this new password and then change it.

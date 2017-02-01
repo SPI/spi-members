@@ -1,0 +1,239 @@
+/* ikiwiki local style sheet */
+
+@font-face {
+  font-family: 'Cantarell';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Cantarell Regular'), local('Cantarell-Regular'), url(cantarell.woff2) format('woff2'), url(cantarell.woff) format('woff');
+}
+
+/* Add local styling here, instead of modifying style.css. */
+
+a {
+	text-decoration: none;
+	color: #4dba33;
+}
+
+a:hover {
+	color: #0e49b6;
+	text-decoration: underline;
+}
+
+
+hr {
+	border-style: none;
+	background-color: #999;
+	height: 1px;
+}
+
+code, pre {
+    background: #eee;
+}
+
+pre {
+	max-width: 640px;
+	margin: 0 auto;
+	padding: .5em;
+}
+
+body {
+	font-size: 1.2em;
+	margin: 0;
+	padding: 0;
+	font-family: 'Cantarell', sans-serif;
+	color: black;
+	background: #FFF;
+}
+
+.pageheader {
+	margin: 0;
+	margin-top: 20px;
+}
+
+.header {
+	font-size: 100%;
+	font-weight: normal;
+	margin-left: 100px;
+}
+
+.title {
+	display: block;
+	text-indent: -1000px;
+	width: 200px;
+	height: 95px;
+	background: url('logo.png');
+}
+
+.actions {
+	text-align: right;
+	padding: 0;
+}
+
+#content {
+	color: #555;
+	line-height: 1.5em;
+	padding: 1em;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+#comments, #footer {
+	color: #999;
+  	padding: 1em;
+}
+
+.page {
+	max-width: 1400px;
+	margin: 0 auto;
+}
+
+#pageinfo {
+	border-color: #999;
+}
+
+.inlinepage {
+	margin: .4em 0;
+	padding: .4em 0;
+	border-style: none;
+	border-top: 1px solid #aaa;
+}
+
+.inlineheader {
+	font-size: 120%;
+	font-weight: normal;
+}
+
+h1 { font: 120% sans-serif }
+h2 { font: bold 100% sans-serif }
+h3 { font: italic 100% sans-serif; font-weight: bold; }
+h4, h5, h6 { font: small-caps 100% sans-serif }
+
+/* Smaller headings for inline pages */
+.inlinepage h1 { font-size: 110% }
+.inlinepage h2 { font-size: 100% }
+.inlinepage h3 { font-size: 100% }
+
+.pageheader .actions ul {
+	border-style: none
+}
+
+.actions ul {
+	font-size: 75%;
+	padding: 0;
+	border-style: none;
+}
+
+.actions ul li a {
+	text-decoration: none;
+}
+
+.actions ul li {
+	margin: 0;
+	padding: .1em .5em 0 .5em;
+	background: #FFF;
+	border-color: #999;
+	border-style: solid solid none solid;
+	border-width: 1px;
+}
+
+div.recentchanges {
+	border-style: none;
+}
+
+.parentlinks {
+	float: right;
+	font-size: 0.8em;
+	color: #FFF;
+}
+
+.parentlinks a {
+	background: #EFE;
+	padding: 0.2em;
+}
+
+.parentlinks a:hover {
+	background: #CFE;
+}
+
+.pagecloud {
+	width: auto;
+}
+
+.projectlogo {
+	/* center image */
+	display: block;
+	margin: 0px auto;
+}
+
+/* footer texts */
+
+.pagecopyright {
+	text-align: center;
+}
+
+.pagelicense {
+	float: left;
+}
+
+.pagedate {
+	float: right;
+}
+
+/* sidebar custom */
+
+.sidebar {
+	width: auto;
+	float: left;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	margin-left: 350px;
+	margin-right: 10px;
+	margin-top: -75px;
+}
+
+.sidebar ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sidebar ul li {
+	display: inline;
+	margin-left: 5px;
+	border-bottom: 1px solid #FFF;
+	transition: 0.5s;
+}
+
+.sidebar ul li:hover {
+	border-bottom: 1px solid #4dba33;
+	transition: 0.3s;
+}
+
+
+.sidebar a {
+	text-decoration: none;
+	color: #0e49b6;
+	padding: 0.5em;
+	line-height: 3em;
+	transition: 0.3s;
+}
+
+.sidebar a:hover {
+	color: #4dba33;
+	transition: 0.3s;
+}
+
+
+/* media-query for mobile */
+
+@media(max-width:640px) {
+
+   .header,
+   .sidebar {
+	margin: 0;
+	padding: 1em;
+	transition: 0.3s;
+   }
+
+}

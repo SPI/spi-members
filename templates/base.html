@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" href="/static/style.css" type="text/css" />
+<link rel="stylesheet" href="/static/local.css" type="text/css" />
+<link rel="copyright" href="#page_copyright" />
+<link rel="license" href="#page_license" />
+<title>SPI - {% block title %}{% endblock %}</title>
+</head>
+<body>
+
+<div class="page">
+
+<div class="pageheader">
+
+<div class="header">
+<span>
+<span class="parentlinks"></span>
+<span class="title">SPI</span>
+</span>
+</div>
+
+</div>
+
+<div class="sidebar">
+<ul>
+<li><a href="http://www.spi-inc.org/">Main SPI Website</a>
+{% if current_user.is_authenticated() %}
+<li><a href="/">Membership Info</a></li>
+{% if current_user.is_contrib() %}
+<li><a href="/votes">Votes</a></li>
+{% endif %}
+{% if current_user.can_createvote() %}
+<li><a href="/vote/create">Create Vote</a></li>
+{% endif %}
+<li><a href="/chpass">Change Password</a></li>
+<li><a href="/logout">Logout</a></li>
+    {% if current_user.is_manager() %}
+        <hr />
+        <li><a href="/applications/all">All Applications</a></li>
+        <li><a href="/applications/nca">Non-Contributing Applications</a></li>
+        <li><a href="/applications/ncm">Non-Contributing Members</a></li>
+        <li><a href="/applications/ca">Contributing Applications</a></li>
+        <li><a href="/applications/cm">Contributing Members</a></li>
+        <li><a href="/applications/mgr">Application Managers</a></li>
+    {% endif %}
+{% else %}
+<li><a href="/login">Login</a></li>
+<li><a href="/apply">New Member Application</a></li>
+<li><a href="/getpass">Password Reset</a></li>
+{% endif %}
+<li><a href="/stats">Statistics</a></li>
+</ul>
+</div>
+
+<div id="pagebody">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+</div>
+
+<div id="footer" class="pagefooter">
+
+<div id="pageinfo">
+
+<div class="pagecopyright">
+<a name="pagecopyright"></a>
+Copyright © 2015 Software in the Public Interest, Inc.
+</div>
+
+<div class="pagelicense">
+<a name="pagelicense"></a>
+License: Creative Commons Attribution-ShareAlike 3.0 Unported
+</div>
+
+<div class="pagedate">
+Last edited <span class="date">2014-07-14</span>
+</div>
+
+</div>
+
+</div>
+</div>
+</body>
+</html>

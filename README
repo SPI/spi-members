@@ -1,0 +1,35 @@
+This is the SPI membership web application, which lives at:
+
+https://members.spi-inc.org/
+
+It enables the following actions:
+
+ * New member registration
+
+  Non-contributing members just need to apply for a new account and
+  verify their email address.
+
+ * Contributing member application
+
+  Once a user is a valid non-contributing member they can submit an
+  application for contributing membership, providing details of why they
+  meet the criteria.
+
+ * Management of member applications
+
+  Users who are marked as application managers can review outstanding
+  applications for contributing membership and approve or deny them
+  as appropriate.
+
+Further functionality is pending and will be added here once complete.
+See the TODO file for more details.
+
+The app is written in Python using the Flask frame work and designed to
+run on a Debian 8 (jessie) host. It requires at least the following
+Debian packages to be installed:
+
+python python-flask python-flask-login python-flaskext.wtf
+
+For the purposes of testing the app can be invoked as:
+
+$ SPIAPP_CONFIG=local-test.cfg python spiwebapp.py

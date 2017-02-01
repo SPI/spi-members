@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}
+{% if listtype == "all" %}
+All Members
+{% elif listtype == "nca" %}
+Non-Contributing Applications
+{% elif listtype == "ncm" %}
+Non-Contributing Members
+{% elif listtype == "ca" %}
+Contributing Applications
+{% elif listtype == "cm" %}
+Contributing Members
+{% elif listtype == "mgr" %}
+Application Managers
+{% endif %}
+{% endblock %}
+{% block content %}
+<p>
+{% if listtype == "all" %}
+This page contains a list of ALL membership records in the SPI membership
+database.
+{% elif listtype == "nca" %}
+This page contains a list of all people who have applied for non-contributing
+membership but have not completed the email verification step.
+{% elif listtype == "ncm" %}
+This page lists all members who have non-contributing status.
+{% elif listtype == "ca" %}
+This page lists all non-contributing members who have filed a contributing
+membership application.
+{% elif listtype == "cm" %}
+This page lists all active contributing members in SPI.
+{% elif listtype == "mgr" %}
+This page lists all members who are application managers.
+{% endif %}
+</p>
+
+{% with applications = db.get_applications_by_type(listtype) %}
+    {% include "application-list.html" %}
+{% endwith %}
+{% endblock %}

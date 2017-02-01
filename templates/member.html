@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Membership Status for {{ member.name }}{% endblock %}
+{% block content %}
+    <h1>Membership status for {{ member.name }} &lt;{{ member.email }}&gt;</h1>
+    <table>
+        <tr><td>Name</td><td>{{ member.name }}</td></tr>
+        <tr><td>Email address</td><td>{{ member.email }}</td></tr>
+        <tr><td>Member Since</td><td>{{ member.firstdate }}</td></tr>
+        <tr><td>Current Member</td><td>
+            {% if member.is_member() %} Yes {% else %} No {% endif %}
+        </td></tr>
+        <tr><td>Application Manager</td><td>
+            {% if member.is_manager() %} Yes {% else %} No {% endif %}
+        </td></tr>
+        <tr><td>Contrib Member</td><td>
+            {% if member.is_contrib() %} Yes {% else %} No {% endif %}
+        </td></tr>
+{% if member.is_contrib() %}
+        <tr><td>Last active</td><td>{{ member.lastactive }}</td></tr>
+{% endif %}
+    </table>
+<br />
+{% if applications %}
+<h1>Applications</h1>
+    {% for application in applications %}
+        {% if not application.contribapp %}Non-{% endif %}Contributing application
+        <a href="/application/{{ application.appid }}">#{{ application.appid }}</a> from
+        {{ application.appdate }}
+        {% if application.approve %}(complete){% endif %}
+        <br />
+    {% endfor %}
+{% endif %}
+{% if member.is_manager() %}
+    {% with applications = db.get_applications(member) %}
+        <h1>Applicants</h1>
+        {% include "application-list.html" %}
+    {% endwith %}
+{% endif %}
+{% endblock %}

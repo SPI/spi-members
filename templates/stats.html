@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Membership Statistic{% endblock %}
+{% block content %}
+<table border="1">
+  <tr>
+    <td>NC Applicants Pending Email Approval</td>
+    <td>{{ stats['nca']}}</td>
+  </tr>
+  <tr>
+    <td>NC Members</td>
+    <td>{{ stats['ncm']}}</td>
+  </tr>
+  <tr>
+    <td>Contrib Membership Applications </td>
+    <td>{{ stats['ca']}}</td>
+  </tr>
+  <tr>
+    <td>Contrib Members</td>
+    <td>{{ stats['cm']}}</td>
+  </tr>
+  <tr>
+    <td>Application Managers</td>
+    <td>{{ stats['mgr']}}</td>
+  </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,79 @@
+#!/usr/bin/python
+
+from __future__ import (absolute_import, division, print_function)
+
+import argparse
+from email import charset
+from email.header import Header
+from email.mime.text import MIMEText
+import smtplib
+
+from jinja2 import Environment, FileSystemLoader
+import psycopg2
+import psycopg2.extras
+
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
+
+charset.add_charset('utf-8', charset.SHORTEST, charset.QP)
+
+
+def clean_contrib(db, dryrun):
+    cur = db.cursor()
+
+    if dryrun:
+        cur.execute('SELECT memid, name, email FROM members WHERE iscontrib ' +
+                    'AND expirydate IS NULL AND lastactive < ' +
+                    '(SELECT MAX(period_start) FROM vote_election)')
+
+        for row in cur.fetchall():
+            print("Would downgrade " + row['name'] + " to non-contributing")
+    else:
+        cur.execute('UPDATE members SET iscontrib = false WHERE ' +
+                    'iscontrib AND expirydate IS NULL AND lastactive < ' +
+                    '(SELECT MAX(period_start) FROM vote_election)')
+        db.commit()
+
+
+def send_ping(db, dryrun):
+    env = Environment(loader=FileSystemLoader('templates/'))
+    cur = db.cursor()
+    cur.execute('SELECT memid, name, email FROM members WHERE iscontrib AND ' +
+                'expirydate IS NULL AND lastactive < ' +
+                '(SELECT MAX(period_start) FROM vote_election)')
+
+    for row in cur.fetchall():
+        print("Sending ping to " + row['name'])
+
+        template = env.get_template('activity-ping-email.txt')
+
+        msg = MIMEText(template.render(name=row['name'], ),
+                       'plain', 'utf-8')
+        msg['Subject'] = Header('SPI activity ping for ' + row['name'],
+                                'utf-8')
+        msg['From'] = 'SPI Membership Committee <membership@spi-inc.org>'
+        msg['To'] = row['email']
+        if not dryrun:
+            smtp = smtplib.SMTP('localhost')
+            smtp.sendmail('membership@spi-inc.org',
+                          [row['email']], msg.as_string())
+            smtp.quit()
+
+parser = argparse.ArgumentParser(description='Deal with cleaning up ' +
+                                 'inactive SPI contributing members.')
+parser.add_argument('action', choices=['clean', 'ping'],
+                    help="Clean or only ping inactive members.")
+parser.add_argument('--dry-run', dest='dryrun',
+                    help="Just show what would happen, don't take any action",
+                    action='store_const', const=True, default=False)
+
+args = parser.parse_args()
+
+db = psycopg2.connect(database="spiapp",
+                      cursor_factory=psycopg2.extras.DictCursor)
+db.set_client_encoding('UTF8')
+
+if args.action == 'clean':
+    clean_contrib(db, args.dryrun)
+elif args.action == 'ping':
+    send_ping(db, args.dryrun)

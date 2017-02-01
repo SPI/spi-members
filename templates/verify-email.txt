@@ -1,0 +1,11 @@
+Dear {{ current_user.name }},
+
+Please verify your email address by clicking on the link below:
+
+https://members.spi-inc.org/verifyemail?emailkey={{ emailkey }}
+
+Alternatively go to:
+
+https://members.spi-inc.org/verifyemail
+
+And enter {{ emailkey }} as the verification code.

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Membership Status{% endblock %}
+{% block content %}
+    <h1>Membership status for {{ current_user.name }} &lt;{{ current_user.email }}&gt;</h1>
+    <form method="post" action="/member/edit">
+    {{ form.hidden_tag() }}
+    <table>
+        <tr><td>Name</td><td>{{ form.name }}</td></tr>
+        <tr><td>Email address</td><td>{{ current_user.email }}</td></tr>
+        <tr><td>Member Since</td><td>{{ current_user.firstdate }}</td></tr>
+        <tr><td>Current Member</td><td>
+            {% if current_user.is_member() %} Yes {% else %} No {% endif %}
+        </td></tr>
+        <tr><td>Application Manager</td><td>
+            {% if current_user.is_manager() %} Yes {% else %} No {% endif %}
+        </td></tr>
+        <tr><td>Contrib Member</td><td>
+            {% if current_user.is_contrib() %} Yes {% else %} No {% endif %}
+        </td></tr>
+{% if current_user.is_contrib() %}
+        <tr><td>spi-private subscription</td><td>
+            {{ form.sub_private }}
+        </td></tr>
+        <tr><td>Last active</td><td>{{ current_user.lastactive }} (<a href="/updateactive">Update</a>)</td></tr>
+{% endif %}
+        <tr><td colspan="2"><input type="submit" value="Update Details" /></td></tr>
+    </table>
+<br />
+{% if current_user.is_contrib() %}
+    {% with votes = db.get_votes(active=True) %}
+        {% if votes %}
+            <h1>Active votes</h1>
+            <ul>
+            {% for vote in votes %}
+                <li><a href="/vote/{{ vote.voteid }}">{{ vote.title }}</a>
+                    (ends {{ vote.end }})</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    {% with votes = db.get_votes(owner=current_user) %}
+        {% if votes %}
+            <h1>Your votes</h1>
+            <ul>
+            {% for vote in votes %}
+                <li>
+                {% if vote.is_active() %}
+                    <a href="/vote/{{ vote.voteid }}">{{ vote.title }}</a>
+                    (ends {{ vote.end }})
+                {% elif vote.is_over() %}
+                    <a href="/vote/{{ vote.voteid }}/result">{{ vote.title }}</a>
+                    (ended)
+                {% else %}
+                    <a href="/vote/{{ vote.voteid }}/edit">{{ vote.title }}</a>
+                    (starts {{ vote.start }})
+                {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+{% endif %}
+{% if applications %}
+<h1>Your Applications</h1>
+    {% for application in applications %}
+        {% if not application.contribapp %}Non-{% endif %}Contributing application
+        <a href="/application/{{ application.appid }}">#{{ application.appid }}</a> from
+        {{ application.appdate }}
+        {% if application.approve %}(complete){% endif %}
+        <br />
+    {% endfor %}
+{% endif %}
+{% if not current_user.is_member() %}
+<p>You have not yet verified your email address and are thus not yet a member of
+SPI. Once you have received the welcome email please use the code to
+<a href="/verifyemail">verify</a> it.</p>
+{% elif not current_user.is_contrib() and not contribapp %}
+<a href="/apply/contrib">Apply</a> for contributing membership. Please apply
+only if you belong to one of these groups:
+<ul>
+<li>active members of SPI associated projects</li>
+<li>active members of any large free software development project</li>
+<li>any person who has made a significant contribution to the free software community</li>
+<li>any person who actively contributes to the free software community</li>
+</ul>
+{% endif %}
+{% if current_user.is_manager() %}
+    {% with applications = db.get_applications(current_user) %}
+        <h1>Your Applicants</h1>
+        {% include "application-list.html" %}
+    {% endwith %}
+{% endif %}
+{% endblock %}

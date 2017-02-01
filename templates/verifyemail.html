@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Verify application email address{% endblock %}
+{% block content %}
+<h1>Verify email address</h1>
+{% if application %}
+<p>SPI membership application #{{ application.appid }} submitted successfully
+on {{ application.appdate }}.</p>
+<p>You will receive an automatic confirmation email at {{ application.email }}
+which contains a verification code. Enter the code below in order to verify
+your email address and enable your non-contributing SPI membership.</p>
+{% else %}
+<p>To verify your email address please paste the verification code you
+received into the form below:</p>
+{% endif %}
+<form method="post" action="/verifyemail">
+{{ form.hidden_tag() }}
+<table border='0' summary="">
+<tr><td>{{ form.emailkey.label }}</td><td>{{ form.emailkey }}</td></tr>
+<tr><td colspan="2" align="center"><input type="submit" name="submit" value="Verify Email"><td></tr>
+</table>
+</form>
+{% if form.emailkey.errors %}
+    <ul class="errors">Email key: {% for error in form.emailkey.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+{% endif %}
+<p>If you have not received the verification email you can request that it
+is <a href="/verifyemail/resend">resent</a>.</p>
+{% endblock %}

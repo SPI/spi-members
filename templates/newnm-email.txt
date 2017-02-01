@@ -1,0 +1,43 @@
+Dear {{ application.user.name }},
+
+Thank you for your interest in becoming a member of Software in the
+Public Interest, Inc. To approve your membership, we first need to be
+able to verify your email address. Please click on the link below:
+
+https://members.spi-inc.org/verifyemail?emailkey={{ application.emailkey }}
+
+Alternatively go to:
+
+https://members.spi-inc.org/verifyemail
+
+And enter {{ application.emailkey }} as the verification code.
+
+Application information:
+Name:              {{ application.user.name }}
+Email:             {{ application.user.email }}
+Subscription Host: 
+
+Your name and email address where entered from the subscription host
+shown above. If you did not apply for SPI membership, then email
+admin@members.spi-inc.org asking to be removed. You can change your
+password on the membership page once your application has been approved.
+
+Please be patient as your application is processed. We are working the
+list of applicants as quickly as we cann. If you would like to check the
+progress of your application you can do so at:
+
+https://members.spi-inc.org/
+
+SPI has several mailing lists dedicated to different topics of
+discussion. We recommend that you at least subscribe to the spi-announce
+list, and suggest subscribing to the spi-general list as well for
+general, SPI related, discussions. Subscribing and
+unsubscribing is most easily done using the
+
+http://www.spi-inc.org/mailing_lists
+
+web page.
+
+Thank you for your application!
+
+Software in the Public Interest, Inc.

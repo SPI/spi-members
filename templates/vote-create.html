@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Create Vote{% endblock %}
+{% block content %}
+    <h1>Create Vote</h1>
+
+    <form method="post">
+    {{ form.hidden_tag() }}
+
+    <h2>{{ form.title.label }}</h2>
+    <p>{{ form.title(size="80") }}</p>
+
+    <h2>{{ form.description.label }}</h2>
+    <p>{{ form.description(cols="60", rows="10") }}</p>
+
+    <h2>{{ form.start.label }}</h2>
+    <p>{{ form.start }}</h2>
+
+    <h2>{{ form.end.label }}</h2>
+    <p>{{ form.end }}</p>
+
+    <input type="submit" value="Create" />
+    </form>
+
+{% for formfield in [form.title, form.description, form.start, form.end] %}
+{% if formfield.errors %}
+    <ul>{% for error in formfield.errors %}<li>{{ formfield.label }}: {{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% endfor %}
+{% endblock %}

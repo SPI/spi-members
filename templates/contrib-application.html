@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Contributing Member Application{% endblock %}
+{% block content %}
+    <h1>SPI Contributing Member Application</h1>
+    <form method="post">
+    {{ form.hidden_tag() }}
+    <table>
+        <tr><td>Member Name</td><td>{{ current_user.name }}</td></tr>
+        <tr><td>Email address</td><td>{{ current_user.email }}</td></tr>
+        <tr>
+            <td>{{ form.contrib.label }}</td>
+            <td>{{ form.contrib(cols="60", rows="10") }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.sub_private.label }}</td>
+            <td>{{ form.sub_private }}</td>
+        </tr>
+        <tr><td colspan="2"><input type="submit" value="Submit Application" /></td></tr>
+    </table>
+    </form>
+
+{% if form.contrib.errors %}
+    <ul>{% for error in form.contrib.errors %}<li>{{ form.contrib.label}}: {{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% if form.sub_private.errors %}
+    <ul>{% for error in form.sub_private.errors %}<li>{{ form.sub_private.label}}: {{ error }}</li>{% endfor %}</ul>
+{% endif %}
+
+<p>Please describe your contributions to the Free Software community so that
+the membership committee can evaluate your application. For example include
+details of any SPI associated project which you are a member of, or other
+large Free Software project which you are actively involved in.</p>
+{% endblock %}

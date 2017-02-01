@@ -1,0 +1,12 @@
+        <table>
+            <tr><th>Appl Date</th><th>Status</th><th>Applicant</th><th>App#</th><th>Manager</th></tr>
+        {% for application in applications %}
+            <tr>
+                <td>{{ application.appdate }}</td>
+                <td>{{ application.get_status() }}</td>
+                <td>{{ application.user.name }} &lt;<a href="/member/{{ application.user.memid }}">{{ application.user.email }}</a>&gt;</td>
+                <td><a href="/application/{{ application.appid }}">{{ application.appid }}</a></td>
+                <td>{{ application.manager.name }}</td>
+            </tr>
+        {% endfor %}
+        </table>

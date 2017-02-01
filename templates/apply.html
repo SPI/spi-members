@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}New Member Application{% endblock %}
+{% block content %}
+<div align="center">
+<form method="post" action="/apply">
+    {{ form.hidden_tag() }}
+<table>
+<tr><td>{{ form.name.label }}</td><td>{{ form.name }}</td></tr>
+<tr><td>{{ form.username.label }}</td><td>{{ form.username }}</td></tr>
+<tr><td>{{ form.password.label }}</td><td>{{ form.password }}</td></tr>
+<tr><td>{{ form.confirm.label }}</td><td>{{ form.confirm }}</td></tr>
+</table>
+<input type="submit" value="Apply">
+</form>
+</div>
+{% if form.username.errors %}
+    <ul class="errors">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% if form.password.errors %}
+    <ul class="errors">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+{% endif %}
+{% endblock %}

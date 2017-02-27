@@ -79,8 +79,17 @@
         candidates. Your preference will best be shown when you specify <strong>
         all</strong> candidates, in order of preference (i.e. &quot;XYZWTUV&quot;, X being
         the most preferred). Voting &quot;XY&quot; states that you prefer candidate X to Y.
-        <em>However, it does not express any preference relationships for any of the
-        other candidates.</em></p>
+
+        {% if vote.system == 0 %}
+        <em>It does not express any preference relationships for any of the
+        other candidates, meaning TUVW &amp Z are deemed to be neither more
+        nor less desirable than each other or X &amp; Y.</em>
+        {% else %}
+        <em>Unspecified candidates are ranked equally below those listed, so
+        in this example TUVW &amp; Z  will all be ranked equally below X &amp;
+        Y.</em>
+        {% endif %}
+        </p>
         </blockquote>
     {% endif %}
 

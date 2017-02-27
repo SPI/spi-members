@@ -82,7 +82,7 @@ class MemberDB(object):
         owner = self.get_member_by_id(row['owner'])
         return Vote(row['ref'], row['title'], row['description'],
                     row['period_start'], row['period_stop'], owner,
-                    row['winners'])
+                    row['winners'], row['system'])
 
     @staticmethod
     def vote_option_from_db(row, vote):
@@ -526,17 +526,19 @@ class MemberDB(object):
         if self.data['dbtype'] == 'sqlite3':
             cur.execute('UPDATE vote_election SET title = ?, ' +
                         'description = ?, period_start = ?, ' +
-                        'period_stop = ?, owner = ?, winners = ? ' +
-                        'WHERE ref = ?',
+                        'period_stop = ?, owner = ?, winners = ?, ' +
+                        'system = ? WHERE ref = ?',
                         (vote.title, vote.description, vote.start, vote.end,
-                         vote.owner.memid, vote.winners, vote.voteid))
+                         vote.owner.memid, vote.winners, vote.system,
+                         vote.voteid))
         elif self.data['dbtype'] == 'postgres':
             cur.execute('UPDATE vote_election SET title = %s, ' +
                         'description = %s, period_start = %s, ' +
-                        'period_stop = %s, owner = %s, winners = %s ' +
-                        'WHERE ref = %s',
+                        'period_stop = %s, owner = %s, winners = %s, ' +
+                        'system = %s WHERE ref = %s',
                         (vote.title, vote.description, vote.start, vote.end,
-                         vote.owner.memid, vote.winners, vote.voteid))
+                         vote.owner.memid, vote.winners, vote.system,
+                         vote.voteid))
         self.data['conn'].commit()
 
         return self.get_vote(vote.voteid)
@@ -869,7 +871,7 @@ class Member(object):
 class Vote(object):
     """Represents an SPI vote."""
     def __init__(self, voteid, title, description, start, end, owner,
-                 winners=1, options=None):
+                 winners=1, system=1, options=None):
         self.voteid = voteid
         self.title = title
         self.description = description
@@ -877,6 +879,7 @@ class Vote(object):
         self.end = end
         self.owner = owner
         self.winners = winners
+        self.system = system
         self.options = options
 
     def is_active(self):
@@ -972,6 +975,12 @@ class CondorcetVS(object):
         self.tie = False
         self.winners = [None] * len(self.vote.options)
         self.wincount = {}
+
+    def description(self):
+        if self.ignoremissing:
+            return "Condorcet (ignore unspecified)"
+        else:
+            return "Condorcet (unspecified ranked lowest)"
 
     def run(self):
         """Run the vote"""

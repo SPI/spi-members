@@ -41,6 +41,10 @@ import SPI
 
 email.charset.add_charset('utf-8', email.charset.SHORTEST, email.charset.QP)
 
+VOTE_SYSTEMS = [(0, "Condorcet (ignore unspecified)"),
+                (1, "Condorcet (unspecified ranked lowest)"),
+                ]
+
 #
 # Data entry WTF form classes
 #
@@ -137,6 +141,7 @@ class VoteCreationForm(Form):
     start = DateTimeField('Start date', validators=[DataRequired()])
     end = DateTimeField('End date', validators=[DataRequired()])
     winners = IntegerField('Number of winners')
+    system = SelectField('Voting System', choices=VOTE_SYSTEMS, coerce=int, default=1)
 
     def validate_start(self, field):
         """Verify that the start date is in the future"""
@@ -508,8 +513,15 @@ def view_vote_result(voteid):
     membervotes = sorted(get_db().get_membervotes(vote),
                          key=lambda vote: vote.resultcookie())
 
+    # Choose the correct voting system. Must match VOTE_SYSTEMS
+    if vote.system == 0:
+        votesystem = SPI.CondorcetVS(vote, membervotes)
+    elif vote.system == 1:
+        votesystem = SPI.CondorcetVS(vote, membervotes, ignoremissing=False)
+    else:
+        flash('Unsupported voting system ID ' + str(vote.system) + '.')
+        return redirect(url_for('mainpage'))
     # Run the actual vote
-    votesystem = SPI.CondorcetVS(vote, membervotes)
     votesystem.run()
 
     return render_template('vote-result.html', membervotes=membervotes,
@@ -592,6 +604,7 @@ def edit_vote(voteid):
                     vote.start = form.start.data
                     vote.end = form.end.data
                     vote.winners = form.winners.data
+                    vote.system = form.system.data
                     vote = get_db().update_vote(vote)
         elif 'obtn' in request.form and newoptform.validate_on_submit():
             if request.form['obtn'] == 'Add':

@@ -18,10 +18,12 @@
     <h2>{{ form.end.label }}</h2>
     <p>{{ form.end }}</p>
 
+    <h2>{{ form.system.label }}</h2>
+    <p>{{ form.system }}</p>
     <input type="submit" value="Create" />
     </form>
 
-{% for formfield in [form.title, form.description, form.start, form.end] %}
+{% for formfield in [form.title, form.description, form.start, form.end, form.system] %}
 {% if formfield.errors %}
     <ul>{% for error in formfield.errors %}<li>{{ formfield.label }}: {{ error }}</li>{% endfor %}</ul>
 {% endif %}

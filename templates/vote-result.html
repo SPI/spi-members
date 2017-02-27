@@ -4,6 +4,7 @@
     <h1>{{ vote.title }}</h1>
 
     <p>Total unique votes cast: {{ membervotes|length }}</p>
+    <p>Voting system: {{ votesystem.description() }}</p>
 
     <h2>Candidates</h2>
     {% for option in vote.options %}

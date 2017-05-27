@@ -27,6 +27,9 @@ import string
 import sqlite3
 import uuid
 
+import openstv.ballots
+from openstv.plugins import LoaderPlugin, getMethodPlugins
+
 import psycopg2
 import psycopg2.extras
 
@@ -1026,3 +1029,71 @@ class CondorcetVS(object):
     def results(self):
         """Return an array of the vote winners"""
         return reversed(self.winners)
+
+
+class SPIBallotLoader(LoaderPlugin):
+    "OpenSTV Ballot loader class for SPI Membership Website"
+
+    def __init__(self, vote, membervotes):
+        self.vote = vote
+        self.membervotes = membervotes
+        LoaderPlugin.__init__(self)
+
+    def loadballots(self, ballots):
+        "Load data from the database into an OpenSTV ballot object"
+
+        ballots.numCandidates = len(self.vote.options)
+        ballots.numSeats = self.vote.winners
+        ballots.title = self.vote.title
+        # Make a textual array
+        ballots.names = []
+        optionmap = {}
+        for (index, option) in enumerate(sorted(self.vote.options,
+                                                key=lambda option:
+                                                option.char)):
+            ballots.names.append(option.description)
+            optionmap[option.char] = index
+
+        for vote in self.membervotes:
+            ballot = []
+
+            for rank in vote.votes:
+                ballot.append(optionmap[rank.char])
+
+            ballots.appendBallot(ballot)
+
+
+class OpenSTVVS(object):
+    """Implementation of various STV voting systems using OpenSTV"""
+    def __init__(self, vote, membervotes, system="ScottishSTV"):
+        self.vote = vote
+        self.membervotes = membervotes
+        self.tie = False
+        methods = getMethodPlugins("byName", exclude0=False)
+        if system not in methods:
+            raise Exception("Unknown OpenSTV method " + system)
+        self.system = methods[system]
+        self.election = None
+
+    def description(self):
+        """Return a text string describing the voting system"""
+        return self.system.longMethodName + " (OpenSTV)"
+
+    def run(self):
+        """Run the vote using the OpenSTV backend"""
+        loader = SPIBallotLoader(self.vote, self.membervotes)
+        dirty = openstv.ballots.Ballots()
+        dirty.loader = loader
+        loader.loadballots(dirty)
+        clean = dirty.getCleanBallots()
+        self.election = self.system(clean)
+        self.election.runElection()
+
+    def results(self):
+        """Return an array of the vote winners"""
+        winners = list(self.election.winners)
+        winners.sort()
+        if len(winners) == 0:
+            return None
+        else:
+            return [self.election.b.names[c] for c in winners]

@@ -43,6 +43,7 @@ email.charset.add_charset('utf-8', email.charset.SHORTEST, email.charset.QP)
 
 VOTE_SYSTEMS = [(0, "Condorcet (ignore unspecified)"),
                 (1, "Condorcet (unspecified ranked lowest)"),
+                (2, "Scottish STV"),
                 ]
 
 #
@@ -518,6 +519,8 @@ def view_vote_result(voteid):
         votesystem = SPI.CondorcetVS(vote, membervotes)
     elif vote.system == 1:
         votesystem = SPI.CondorcetVS(vote, membervotes, ignoremissing=False)
+    elif vote.system == 2:
+        votesystem = SPI.OpenSTVVS(vote, membervotes)
     else:
         flash('Unsupported voting system ID ' + str(vote.system) + '.')
         return redirect(url_for('mainpage'))

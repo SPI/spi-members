@@ -25,10 +25,8 @@
     {% endfor %}
     </code>
 
-    {# This and pairwise wins are Condorcet specific. Jinja2 doesn't allow
-       us to check the type of votesystem, so just assume Condorcet for
-       now. If we ever add another voting system the below will need to be
-       conditional. #}
+    {% if vote.system == 0 or vote.system == 1 %}
+    {# Condorcet specific output. #}
     <h2>Beats matrix</h2>
     <table border="1">
         <tr>
@@ -83,6 +81,44 @@
     {% endfor %}
     </table>
 
+    {% else %}
+    {# OpenSTV specific output #}
+
+    <table class="rounds">
+        <tr>
+            <th>Round</th>
+        {%- for candidate in votesystem.election.b.names %}
+            <th>{{ candidate }}</th>
+        {%- endfor %}
+            <th>Exhausted</th>
+        {%- if votesystem.election.threshMethod %}
+            <th>Surplus</th>
+            <th>Threshold</th>
+        {% endif -%}
+        </tr>
+
+    {% for r in range(votesystem.election.numRounds) %}
+        <tr>
+            <td class="round" rowspan="2">{{ r + 1 }}</td>
+        {%- for candidate in range(votesystem.election.b.numCandidates) %}
+            <td>{{ votesystem.election.displayValue(votesystem.election.count[r][candidate]) }}</td>
+        {%- endfor %}
+            <td>{{ votesystem.election.displayValue(votesystem.election.exhausted[r]) }}</td>
+        {% if votesystem.election.threshMethod -%}
+            <td>{{ votesystem.election.displayValue(votesystem.election.surplus[r]) }}</td>
+            <td>{{ votesystem.election.displayValue(votesystem.election.thresh[r]) }}</td>
+        {% endif -%}
+        </tr>
+        <tr>
+            <td colspan="{{ votesystem.election.b.numCandidates + 1 + 2 if votesystem.election.threshMethod }}" class="comment">
+                {{ votesystem.election.msg[r] }}
+            </td>
+        </tr>
+    {% endfor -%}
+
+    </table>
+    {% endif %}
+
     {# All vote systems should implement the results() method. #}
     <h2>Results</h2>
     {% if vote.winners == 1 %}
@@ -100,6 +136,7 @@
     {% endfor %}
     </ol>
 
+    {% if vote.system == 0 or vote.system == 1 %}
     <h2>Graphviz output</h2>
     <pre>
 digraph Results {
@@ -115,5 +152,6 @@ digraph Results {
 {% endfor %}
 }
     </pre>
+    {% endif %}
 
 {% endblock %}

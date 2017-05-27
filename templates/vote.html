@@ -64,6 +64,22 @@
         <p>There are {{ vote.winners }} winners in this vote.</p>
         {% endif %}
 
+        {% if vote.system == 2 %}
+        <blockquote>
+        <p>Votes will be counted using the "Scottish Single Transferable Vote"
+        (ScottishSTV) election method system. STV is a form of proportional
+        representation. You should vote for the candidates in order of
+        preference. If your preferred candidate has no chance of being elected
+        or has enough votes already, your vote is transferred to your second
+        choice candidate in accordance with your instructions.</p>
+
+        <p>A full description of the algorithm used is specified in
+        <a href="http://www.legislation.gov.uk/ssi/2007/42/schedule/1/part/III/crossheading/counting-of-votes/made">Rules 45-52 of
+        the Scottish Local Government Elections Order 2007 (a UK Statutory
+        Instrument)</a>. The implementation used is that provided by
+        <a href="https://github.com/Conservatory/openstv">OpenSTV</a>.</p>
+        </blockquote>
+        {% else %}
         <blockquote>
         <p>Votes will be counted using the "Condorcet" election method system
         which will be used to select the most <em>preferred</em> candidate.
@@ -91,6 +107,7 @@
         {% endif %}
         </p>
         </blockquote>
+        {% endif %}
     {% endif %}
 
     {% if membervote %}

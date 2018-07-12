@@ -493,21 +493,21 @@ class MemberDB(object):
 
         return vote
 
-    def create_vote(self, owner, title, description, start, end):
+    def create_vote(self, owner, title, description, start, end, system):
         """Create a new vote"""
         cur = self.data['conn'].cursor()
         if self.data['dbtype'] == 'sqlite3':
             cur.execute('INSERT INTO vote_election (ref, title, ' +
-                        'description, period_start, period_stop, owner) ' +
-                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
-                        'vote_election), ?, ?, ?, ?, ?)',
-                        (title, description, start, end, owner.memid))
+                        'description, period_start, period_stop, owner, ' +
+                        'system) VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) ' +
+                        'FROM vote_election), ?, ?, ?, ?, ?, ?)',
+                        (title, description, start, end, owner.memid, system))
         elif self.data['dbtype'] == 'postgres':
             cur.execute('INSERT INTO vote_election (ref, title, ' +
-                        'description, period_start, period_stop, owner) ' +
-                        'VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) FROM ' +
-                        'vote_election), %s, %s, %s, %s, %s)',
-                        (title, description, start, end, owner.memid))
+                        'description, period_start, period_stop, owner, ' +
+                        'system) VALUES ((SELECT COALESCE(MAX(ref) + 1, 1) ' +
+                        'FROM vote_election), %s, %s, %s, %s, %s, %s)',
+                        (title, description, start, end, owner.memid, system))
         self.data['conn'].commit()
 
         if self.data['dbtype'] == 'sqlite3':

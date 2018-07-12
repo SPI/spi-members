@@ -547,7 +547,8 @@ def create_vote():
     if form.validate_on_submit():
         vote = get_db().create_vote(current_user, form.title.data,
                                     form.description.data,
-                                    form.start.data, form.end.data)
+                                    form.start.data, form.end.data,
+                                    form.system.data)
         return redirect(url_for('edit_vote', voteid=vote.voteid))
 
     return render_template('vote-create.html', form=form)

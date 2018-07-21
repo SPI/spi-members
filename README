@@ -33,3 +33,18 @@ python python-flask python-flask-login python-flaskext.wtf
 For the purposes of testing the app can be invoked as:
 
 $ SPIAPP_CONFIG=local-test.cfg python spiwebapp.py
+
+
+The official code repository for the site lives within the SPI
+infrastructure and can be browsed at:
+
+https://git.spi-inc.org/gitweb/?p=members.git;a=summary
+
+There are also unofficial mirrors in GitHub and Gitlab:
+
+https://github.com/u1f35c/spi-members
+
+https://gitlab.com/noodles/spi-members
+
+Patches can be emailed to webmaster@spi-inc.org or submitted via the
+pull request feature on these sites.

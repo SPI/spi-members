@@ -24,14 +24,14 @@ def clean_contrib(db, dryrun):
     if dryrun:
         cur.execute('SELECT memid, name, email FROM members WHERE iscontrib ' +
                     'AND expirydate IS NULL AND lastactive < ' +
-                    '(SELECT MAX(period_start) FROM vote_election)')
+                    '(SELECT MAX(DATE(period_start)) FROM vote_election)')
 
         for row in cur.fetchall():
             print("Would downgrade " + row['name'] + " to non-contributing")
     else:
         cur.execute('UPDATE members SET iscontrib = false WHERE ' +
                     'iscontrib AND expirydate IS NULL AND lastactive < ' +
-                    '(SELECT MAX(period_start) FROM vote_election)')
+                    '(SELECT MAX(DATE(period_start)) FROM vote_election)')
         db.commit()
 
 
@@ -40,7 +40,7 @@ def send_ping(db, dryrun):
     cur = db.cursor()
     cur.execute('SELECT memid, name, email FROM members WHERE iscontrib AND ' +
                 'expirydate IS NULL AND lastactive < ' +
-                '(SELECT MAX(period_start) FROM vote_election)')
+                '(SELECT MAX(DATE(period_start)) FROM vote_election)')
 
     for row in cur.fetchall():
         print("Sending ping to " + row['name'])

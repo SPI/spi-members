@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Change Email Address{% endblock %}
+{% block content %}
+<p>
+Enter new email address. A verification email will be sent with a confirmation
+code.
+</p>
+<form method="post">
+    {{ form.hidden_tag() }}
+<div>{{ form.newemail.label }}: {{ form.newemail }}</div>
+<input type="submit" value="Change Email Address">
+</form>
+</div>
+{% endblock %}

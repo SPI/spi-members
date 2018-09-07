@@ -104,18 +104,18 @@ class MemberDB(object):
         result = None
         cur = self.data['conn'].cursor()
         if self.data['dbtype'] == 'sqlite3':
-            cur.execute('SELECT appid, validemail FROM applications ' +
-                        'WHERE member = ? AND emailkey = ?',
+            cur.execute('SELECT appid, validemail, comment FROM applications' +
+                        ' WHERE member = ? AND emailkey = ?',
                         (user.memid, emailkey))
         elif self.data['dbtype'] == 'postgres':
-            cur.execute('SELECT appid, validemail FROM applications ' +
-                        'WHERE member = %s AND emailkey = %s',
+            cur.execute('SELECT appid, validemail, comment FROM applications' +
+                        ' WHERE member = %s AND emailkey = %s',
                         (user.memid, emailkey))
         row = cur.fetchone()
         if row:
             if row['validemail']:
                 result = "Email address already verified."
-            else:
+            elif not row['comment'] or row['comment'] == '':
                 if self.data['dbtype'] == 'sqlite3':
                     cur.execute('UPDATE applications SET validemail = 1, ' +
                                 'validemail_date = date(\'now\'), ' +
@@ -138,8 +138,27 @@ class MemberDB(object):
                                 (user.email, ))
                 # update_member_field will handle the commit
                 self.update_member_field(user.email, 'ismember', True)
+            else:
+                if self.data['dbtype'] == 'sqlite3':
+                    cur.execute('UPDATE applications SET validemail = 1, ' +
+                                'validemail_date = date(\'now\'), ' +
+                                'lastchange = date(\'now\'), ' +
+                                'comment = ? ' +
+                                'WHERE appid = ?',
+                                ('Email changed from ' + user.email,
+                                 row['appid']))
+                elif self.data['dbtype'] == 'postgres':
+                    cur.execute('UPDATE applications SET validemail = true, ' +
+                                'validemail_date = date(\'now\'), ' +
+                                'lastchange = date(\'now\'), ' +
+                                'comment = %s ' +
+                                'WHERE appid = %s',
+                                ('Email changed from ' + user.email,
+                                 row['appid']))
+                # update_member_field will handle the commit
+                self.update_member_field(user.email, 'email', row['comment'])
         else:
-            result = "Application not found."
+            result = "Email verification information not found."
         return result
 
     def get_verify_email(self, user):
@@ -314,6 +333,28 @@ class MemberDB(object):
         if row:
             application = self.application_from_db(row)
         return application
+
+    def change_email(self, user, newemail):
+        """Start an email change for an existing user"""
+        md5 = hashlib.md5()
+        md5.update(newemail)
+        md5.update(uuid.uuid1().hex)
+        emailkey = md5.hexdigest()
+
+        cur = self.data['conn'].cursor()
+        if self.data['dbtype'] == 'sqlite3':
+            cur.execute('UPDATE applications SET validemail = 0, ' +
+                        'validemail_date = NULL, comment = ?, emailkey = ? '
+                        'WHERE member = ? AND contribapp = 0',
+                        (newemail, emailkey, user.memid))
+        elif self.data['dbtype'] == 'postgres':
+            cur.execute('UPDATE applications SET validemail = false, ' +
+                        'validemail_date = NULL, comment = %s, emailkey = %s '
+                        'WHERE member = %s AND contribapp = false',
+                        (newemail, emailkey, user.memid))
+        self.data['conn'].commit()
+
+        return emailkey
 
     def create_application(self, name, email, password):
         """Create a new non-contributing membership application."""

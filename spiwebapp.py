@@ -106,6 +106,11 @@ class MgrContribApplicationForm(ContribApplicationForm):
                              display_format='%Y-%m-%d')
 
 
+class EmailChangeForm(Form):
+    """Form for handling email changes"""
+    newemail = StringField('New Email Address', validators=[DataRequired()])
+
+
 class EmailVerificationForm(Form):
     """Form for handling email verification"""
     emailkey = StringField('Verification code', validators=[DataRequired()])
@@ -200,6 +205,25 @@ def get_db():
                                          host=app.config['DB_HOST'],
                                          port=app.config['DB_PORT'])
     return dbh
+
+
+def sendverifyemail(emailaddr, key):
+    """Handler to send email verification key to a user."""
+
+    msg = MIMEText(render_template('verify-email.txt', emailkey=key),
+                   'plain', 'utf-8')
+    msg['Subject'] = email.header.Header('SPI email verification for ' +
+                                         current_user.name, 'utf-8')
+    msg['From'] = 'email-check@members.spi-inc.org'
+    msg['To'] = emailaddr
+    try:
+        smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+        smtp.sendmail('email-check@members.spi-inc.org',
+                      [emailaddr], msg.as_string())
+        smtp.quit()
+        return True
+    except:
+        return False
 
 
 @app.teardown_appcontext
@@ -694,6 +718,25 @@ def updateactive():
     return redirect(url_for('mainpage'))
 
 
+@app.route('/chemail', methods=['GET', 'POST'])
+@login_required
+def changeemail():
+    """Handler for changing user email address."""
+    form = EmailChangeForm()
+    if form.validate_on_submit():
+        if get_db().get_member(form.newemail.data):
+            flash('Email address already exists.')
+        else:
+            emailkey = get_db().change_email(current_user, form.newemail.data)
+
+            if sendverifyemail(form.newemail.data, emailkey):
+                flash('Email verification sent.')
+                return redirect(url_for('verifyemail'))
+            else:
+                flash('Unable to send email verification.')
+    return render_template('emailchange.html', form=form)
+
+
 @app.route('/chpass', methods=['GET', 'POST'])
 @login_required
 def changepw():
@@ -756,21 +799,9 @@ def resendverifyemail():
         flash('Email address already verified.')
         return redirect(url_for('mainpage'))
 
-    # Send the email verification email
-    msg = MIMEText(render_template('verify-email.txt',
-                                   emailkey=verifystatus['emailkey']),
-                   'plain', 'utf-8')
-    msg['Subject'] = email.header.Header('SPI email verification for ' +
-                                         current_user.name, 'utf-8')
-    msg['From'] = 'email-check@members.spi-inc.org'
-    msg['To'] = current_user.email
-    try:
-        smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
-        smtp.sendmail('email-check@members.spi-inc.org',
-                      [current_user.email], msg.as_string())
-        smtp.quit()
+    if sendverifyemail(current_user.email, verifystatus['emailkey']):
         flash('Email verification re-sent.')
-    except:
+    else:
         flash('Unable to send email verification.')
 
     return redirect(url_for('verifyemail'))

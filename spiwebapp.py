@@ -142,7 +142,8 @@ class VoteCreationForm(Form):
     start = DateTimeField('Start date', validators=[DataRequired()])
     end = DateTimeField('End date', validators=[DataRequired()])
     winners = IntegerField('Number of winners')
-    system = SelectField('Voting System', choices=VOTE_SYSTEMS, coerce=int, default=2)
+    system = SelectField('Voting System', choices=VOTE_SYSTEMS, coerce=int,
+                         default=2)
 
     def validate_start(self, field):
         """Verify that the start date is in the future"""

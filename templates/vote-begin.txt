@@ -1,0 +1,12 @@
+Dear {{ user.name }},
+
+SPI created a new vote: {{ vote.title }}
+
+As a contributing member of SPI, you're now eligible to cast your vote.
+Please go to https://members.spi-inc.org/vote/{{ vote.voteid }} to cast your vote.
+
+You can cast your vote until {{ vote.end }}
+
+We look forward to your participation in this vote!
+
+Software in the Public Interest, Inc.

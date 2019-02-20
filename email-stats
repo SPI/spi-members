@@ -1,0 +1,53 @@
+#!/usr/bin/python
+
+from __future__ import (absolute_import, division, print_function)
+
+import argparse
+import datetime
+from email import charset
+from email.header import Header
+from email.mime.text import MIMEText
+import smtplib
+
+import SPI
+
+from jinja2 import Environment, FileSystemLoader
+
+config = SPI.Config()
+charset.add_charset('utf-8', charset.SHORTEST, charset.QP)
+
+
+def send_stats(db, args):
+    env = Environment(loader=FileSystemLoader(config.get('BASE_DIR') +
+                                              '/templates/'))
+    template = env.get_template('stats.txt')
+
+    stats = db.get_stats()
+    date = '{:%F %T}'.format(datetime.datetime.today())
+
+    msg = MIMEText(template.render(stats=stats, date=date), 'plain', 'utf-8')
+    msg['Subject'] = Header('SPI membership statistics')
+    msg['From'] = 'SPI Membership Committee <membership@spi-inc.org>'
+    msg['To'] = args.email
+    msg['Bcc'] = 'membership@spi-inc.org'
+    if not args.dryrun:
+        smtp = smtplib.SMTP(config.get('SMTP_SERVER'))
+        smtp.sendmail('membership@spi-inc.org', [args.email], msg.as_string())
+        smtp.quit()
+    else:
+        print(msg)
+
+
+parser = argparse.ArgumentParser(description='Email membership statistics')
+parser.add_argument('--email', dest='email',
+                    help="Email address to send message",
+                    action='store', default='board@spi-inc.org')
+parser.add_argument('--dry-run', dest='dryrun',
+                    help="Just show what would happen, don't take any action",
+                    action='store_const', const=True, default=False)
+
+args = parser.parse_args()
+
+db = SPI.MemberDB(config.get('DB_TYPE'), config.get('DB_NAME'))
+
+send_stats(db, args)

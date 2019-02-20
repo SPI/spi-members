@@ -22,10 +22,14 @@ from __future__ import (absolute_import, division, print_function)
 import crypt
 import datetime
 import hashlib
+import os
 import random
 import string
 import sqlite3
 import uuid
+
+import ConfigParser
+import StringIO
 
 import openstv.ballots
 from openstv.plugins import LoaderPlugin, getMethodPlugins
@@ -1138,3 +1142,20 @@ class OpenSTVVS(object):
             return None
         else:
             return [self.election.b.names[c] for c in winners]
+
+
+class Config(object):
+    def __init__(self):
+        configfile = os.getenv('SPIAPP_CONFIG',
+                               '/srv/members.spi-inc.org/spiapp/spiapp.cfg')
+
+        config = StringIO.StringIO()
+        config.write('[Flask]\n')
+        config.write(open(configfile).read())
+        config.seek(0, os.SEEK_SET)
+
+        self.config = ConfigParser.ConfigParser()
+        self.config.readfp(config)
+
+    def get(self, item):
+        return self.config.get('Flask', item).strip('\"\'')

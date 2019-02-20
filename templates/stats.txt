@@ -1,0 +1,8 @@
+SPI membership statistics as of {{ date }}
+
+NC Applicants Pending Email Approval: {{ stats['nca']}}
+NC Members: {{ stats['ncm']}}
+Contrib Membership Applications: {{ stats['ca']}}
+Contrib Members: {{ stats['cm']}}
+Application Managers: {{ stats['mgr']}}
+

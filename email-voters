@@ -1,0 +1,67 @@
+#!/usr/bin/python
+
+from __future__ import (absolute_import, division, print_function)
+
+import argparse
+from datetime import datetime, timedelta
+from email import charset
+from email.header import Header
+from email.mime.text import MIMEText
+import smtplib
+
+import SPI
+
+from jinja2 import Environment, FileSystemLoader
+
+config = SPI.Config()
+charset.add_charset('utf-8', charset.SHORTEST, charset.QP)
+
+
+def send_email(db, user, vote, new):
+    env = Environment(loader=FileSystemLoader(config.get('BASE_DIR') +
+                                              '/templates/'))
+    if new:
+        template = env.get_template('vote-begin.txt')
+        subject = Header('SPI vote open: %s' % vote.title)
+    else:
+        template = env.get_template('vote-mid.txt')
+        subject = Header('SPI vote reminder: %s' % vote.title)
+
+    msg = MIMEText(template.render(user=user, vote=vote), 'plain', 'utf-8')
+    msg['Subject'] = subject
+    msg['From'] = 'SPI Membership Committee <membership@spi-inc.org>'
+    msg['To'] = user.email
+    print("Emailing voter %s" % user.name)
+    if not args.dryrun:
+        smtp = smtplib.SMTP(config.get('SMTP_SERVER'))
+        smtp.sendmail('membership@spi-inc.org',
+                      [user.email], msg.as_string())
+        smtp.quit()
+
+
+def inform_voters(db, vote, new=False):
+    voters = [x.user.memid for x in db.get_membervotes(vote)]
+    for cm in db.get_applications_by_type('cm'):
+        if cm.user.memid not in voters:
+            send_email(db, cm.user, vote, new)
+
+
+parser = argparse.ArgumentParser(description='Email contributing members ' +
+                                             'about open votes')
+parser.add_argument('--dry-run', dest='dryrun',
+                    help="Just show what would happen, don't take any action",
+                    action='store_const', const=True, default=False)
+
+args = parser.parse_args()
+
+db = SPI.MemberDB(config.get('DB_TYPE'), config.get('DB_NAME'))
+
+votes = db.get_votes(active=True)
+for vote in votes:
+    now = datetime.utcnow()
+    mid = vote.start + timedelta(seconds=(vote.end -
+                                          vote.start).total_seconds() / 2)
+    if now-timedelta(hours=24) < vote.start <= now:
+        inform_voters(db, vote, new=True)
+    elif now-timedelta(hours=24) < mid <= now:
+        inform_voters(db, vote, new=False)

@@ -1,0 +1,15 @@
+Dear {{ user.name }},
+
+SPI created a new vote recently: {{ vote.title }}
+
+As a contributing member of SPI, you're now eligible to cast your vote.
+Since half of the voting period is over already, we wanted to send you
+a gentle reminder to participate in this vote.
+
+Please go to https://members.spi-inc.org/vote/{{ vote.voteid }} to cast your vote.
+
+You can cast your vote until {{ vote.end }}
+
+We look forward to your participation in this vote!
+
+Software in the Public Interest, Inc.

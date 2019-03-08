@@ -34,7 +34,7 @@ list, and suggest subscribing to the spi-general list as well for
 general, SPI related, discussions. Subscribing and
 unsubscribing is most easily done using the
 
-http://www.spi-inc.org/mailing_lists
+https://www.spi-inc.org/mailing_lists
 
 web page.
 

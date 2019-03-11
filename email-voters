@@ -39,7 +39,8 @@ def send_email(db, user, vote, new):
         smtp.quit()
 
 
-def inform_voters(db, vote, new=False):
+def inform_voters(db, voteid, new=False):
+    vote = db.get_vote(voteid)
     voters = [x.user.memid for x in db.get_membervotes(vote)]
     for cm in db.get_applications_by_type('cm'):
         if cm.user.memid not in voters:
@@ -62,6 +63,6 @@ for vote in votes:
     mid = vote.start + timedelta(seconds=(vote.end -
                                           vote.start).total_seconds() / 2)
     if now-timedelta(hours=24) < vote.start <= now:
-        inform_voters(db, vote, new=True)
+        inform_voters(db, vote.voteid, new=True)
     elif now-timedelta(hours=24) < mid <= now:
-        inform_voters(db, vote, new=False)
+        inform_voters(db, vote.voteid, new=False)

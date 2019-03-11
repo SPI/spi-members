@@ -31,7 +31,7 @@ def send_email(db, user, vote, new):
     msg['Subject'] = subject
     msg['From'] = 'SPI Membership Committee <membership@spi-inc.org>'
     msg['To'] = user.email
-    print("Emailing voter %s" % user.name)
+    print("Emailing voter %s" % user.name.encode('utf-8'))
     if not args.dryrun:
         smtp = smtplib.SMTP(config.get('SMTP_SERVER'))
         smtp.sendmail('membership@spi-inc.org',

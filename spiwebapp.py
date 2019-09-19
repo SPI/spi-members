@@ -615,7 +615,7 @@ def edit_vote(voteid):
     # Slightly hacky, to deal with the fact we've got 4 different form
     # submission options to deal with (in the order they appear below):
     # - Delete/edit the vote itself
-    # - Add new a voting option
+    # - Add a new voting option
     # - Delete the last current voting option
     # - Edit an existing voting option
     if request.form:

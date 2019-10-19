@@ -31,7 +31,7 @@ from flask import (Flask, render_template, redirect, request, url_for, flash,
                    abort, g, Response)
 from flask_login import (LoginManager, login_required, login_user, logout_user,
                          current_user)
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SelectField,
                      TextAreaField, ValidationError, HiddenField, IntegerField)
 from wtforms.validators import (DataRequired, EqualTo, Email, Optional)
@@ -51,7 +51,7 @@ VOTE_SYSTEMS = [(0, "Condorcet (ignore unspecified)"),
 #
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     """Form handling user logins"""
     username = StringField('Email address',
                            validators=[DataRequired(), Email()])
@@ -66,7 +66,7 @@ class LoginForm(Form):
         return user
 
 
-class ApplicationForm(Form):
+class ApplicationForm(FlaskForm):
     """Form handling non-contributing applications"""
     name = StringField('Name', validators=[DataRequired()])
     username = StringField('Email address',
@@ -86,7 +86,7 @@ class ApplicationForm(Form):
                                            self.password.data)
 
 
-class ContribApplicationForm(Form):
+class ContribApplicationForm(FlaskForm):
     """Form handling contributing applications"""
     contrib = TextAreaField('Contributions', validators=[DataRequired()])
     sub_private = BooleanField('Subscribe to spi-private?')
@@ -106,23 +106,23 @@ class MgrContribApplicationForm(ContribApplicationForm):
                              display_format='%Y-%m-%d')
 
 
-class EmailChangeForm(Form):
+class EmailChangeForm(FlaskForm):
     """Form for handling email changes"""
     newemail = StringField('New Email Address', validators=[DataRequired()])
 
 
-class EmailVerificationForm(Form):
+class EmailVerificationForm(FlaskForm):
     """Form for handling email verification"""
     emailkey = StringField('Verification code', validators=[DataRequired()])
 
 
-class MemberForm(Form):
+class MemberForm(FlaskForm):
     """Form handling changes to member details"""
     name = StringField('Name', validators=[DataRequired()])
     sub_private = BooleanField('Subscribe to spi-private?')
 
 
-class PWChangeForm(Form):
+class PWChangeForm(FlaskForm):
     """Form for handling password changes"""
     oldpw = PasswordField('Old Password', validators=[DataRequired()])
     newpw = PasswordField('New Password', validators=[DataRequired()])
@@ -130,17 +130,17 @@ class PWChangeForm(Form):
                               validators=[DataRequired(), EqualTo('newpw')])
 
 
-class PWResetForm(Form):
+class PWResetForm(FlaskForm):
     """Form for handling password resets"""
     email = StringField('Email address', validators=[DataRequired(), Email()])
 
 
-class VotingForm(Form):
+class VotingForm(FlaskForm):
     """Form for handling votes"""
     vote = StringField('Vote', validators=[DataRequired()])
 
 
-class VoteCreationForm(Form):
+class VoteCreationForm(FlaskForm):
     """Form for creating/editing a new vote"""
     title = StringField('Vote title', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
@@ -164,7 +164,7 @@ class VoteCreationForm(Form):
             raise ValidationError('End time must be after start time')
 
 
-class VoteOptionForm(Form):
+class VoteOptionForm(FlaskForm):
     """"Form for creating/editing a vote option"""
     option = StringField('Vote option')
     char = StringField('Vote character', validators=[DataRequired()])

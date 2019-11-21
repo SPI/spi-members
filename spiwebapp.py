@@ -360,7 +360,7 @@ def view_application(appid):
     # who is viewing the application form.
     if current_user.is_manager():
         mgrs = get_db().get_applications_by_type('mgr')
-        form = MgrContribApplicationForm(request.form, application)
+        form = MgrContribApplicationForm(formdata=request.form, obj=application)
         if (not application.manager or
                 application.manager in [(mgr.user) for mgr in mgrs]):
             form.manager.choices = ([(0, 'None')] +
@@ -374,7 +374,7 @@ def view_application(appid):
                                     [(mgr.user.memid, mgr.user.name)
                                      for mgr in mgrs])
     else:
-        form = ContribApplicationForm(request.form, application)
+        form = ContribApplicationForm(formdata=request.form, obj=application)
 
     if form.validate_on_submit():
         if form.sub_private.data != application.user.sub_private():
@@ -605,9 +605,9 @@ def edit_vote(voteid):
     # Only use the submitted form to update the VoteCreation
     # details if that's what was actually submitted.
     if request.form and 'vote-btn' in request.form:
-        form = VoteCreationForm(request.form, vote, prefix="vote")
+        form = VoteCreationForm(formdata=request.form, obj=vote, prefix="vote")
     else:
-        form = VoteCreationForm(None, vote, prefix="vote")
+        form = VoteCreationForm(obj=vote, prefix="vote")
 
     # We always want a new voting option displayed
     newoptform = VoteOptionForm(prefix="newopt")

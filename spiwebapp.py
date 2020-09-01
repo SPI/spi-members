@@ -31,7 +31,7 @@ from flask import (Flask, render_template, redirect, request, url_for, flash,
                    abort, g, Response)
 from flask_login import (LoginManager, login_required, login_user, logout_user,
                          current_user)
-from flask_wtf import FlaskForm
+from flask_wtf import Form as FlaskForm
 from wtforms import (StringField, PasswordField, BooleanField, SelectField,
                      TextAreaField, ValidationError, HiddenField, IntegerField)
 from wtforms.validators import (DataRequired, EqualTo, Email, Optional)

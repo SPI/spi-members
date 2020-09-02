@@ -17,6 +17,7 @@ RUN groupadd spinm && useradd -m -g spinm spinm
 RUN mkdir -p /srv/members.spi-inc.org/htdocs /srv/members.spi-inc.org/spiapp \
 	/srv/members.spi-inc.org/db
 COPY *.py /srv/members.spi-inc.org/spiapp/
+COPY static/ /srv/members.spi-inc.org/spiapp/static/
 COPY templates/ /srv/members.spi-inc.org/spiapp/templates/
 COPY docker-instance.cfg /srv/members.spi-inc.org/spiapp/spiapp.cfg
 COPY spiapp-sqlite.sql /srv/members.spi-inc.org/spiapp/

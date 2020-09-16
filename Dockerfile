@@ -34,7 +34,6 @@ RUN cd /srv/members.spi-inc.org/ && \
 	chown -R spinm db/
 
 # We expose our webserver port
-# TODO: Switch to SSL
 EXPOSE 80
 
 # Set the directory for the app

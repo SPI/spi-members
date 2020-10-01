@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y python python-flask \
 	apache2 libapache2-mod-wsgi python-psycopg2 python-tz \
 	openstv
 
+RUN /bin/bash -c "sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf"
+
 # Create a user for the app to run as.
 RUN groupadd spinm && useradd -m -g spinm spinm
 
@@ -34,7 +36,7 @@ RUN cd /srv/members.spi-inc.org/ && \
 	chown -R spinm db/
 
 # We expose our webserver port
-EXPOSE 80
+EXPOSE 8080
 
 # Set the directory for the app
 WORKDIR /srv/members.spi-inc.org/spiapp

@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y python python-flask \
 RUN /bin/bash -c "sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf"
 
 # Create a user for the app to run as.
-RUN groupadd spinm && useradd -m -g spinm spinm
+RUN groupadd -g 517 spimembers && \
+  useradd -u 2006 -m -g spimembers spimembers && \
+  mkdir -p /srv/roles/spimembers
 
 RUN mkdir -p /srv/members.spi-inc.org/htdocs /srv/members.spi-inc.org/spiapp \
 	/srv/members.spi-inc.org/db
@@ -33,7 +35,7 @@ RUN a2ensite members.spi-inc.org
 # Create the empty members database
 RUN cd /srv/members.spi-inc.org/ && \
 	(cat spiapp/spiapp-sqlite.sql ; echo .quit) | sqlite3 db/spiapp.db && \
-	chown -R spinm db/
+	chown -R spimembers db/
 
 # We expose our webserver port
 EXPOSE 8080

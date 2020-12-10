@@ -217,7 +217,7 @@ def sendverifyemail(emailaddr, key):
     msg['From'] = 'email-check@members.spi-inc.org'
     msg['To'] = emailaddr
     try:
-        smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+        smtp = smtplib.SMTP(app.config['SMTP_SERVER'], app.config['SMTP_PORT'])
         smtp.sendmail('email-check@members.spi-inc.org',
                       [emailaddr], msg.as_string())
         smtp.quit()
@@ -332,7 +332,7 @@ def process_contrib_application(form, application):
                            '<membership@spi-inc.org>')
             msg['To'] = application.user.email
             try:
-                smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+                smtp = smtplib.SMTP(app.config['SMTP_SERVER'], app.config['SMTP_PORT'])
                 smtp.sendmail('membership@spi-inc.org',
                               [application.user.email], msg.as_string())
                 smtp.quit()
@@ -826,7 +826,7 @@ def application_form():
             msg['From'] = 'email-check@members.spi-inc.org'
             msg['To'] = application.user.email
             try:
-                smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+                smtp = smtplib.SMTP(app.config['SMTP_SERVER'], app.config['SMTP_PORT'])
                 smtp.sendmail('email-check@members.spi-inc.org',
                               [application.user.email], msg.as_string())
                 smtp.quit()
@@ -874,7 +874,7 @@ def getpass():
             msg['From'] = 'membership@spi-inc.org'
             msg['To'] = user.email
             try:
-                smtp = smtplib.SMTP(app.config['SMTP_SERVER'])
+                smtp = smtplib.SMTP(app.config['SMTP_SERVER'], app.config['SMTP_PORT'])
                 smtp.sendmail('membership@spi-inc.org', [user.email],
                               msg.as_string())
                 smtp.quit()

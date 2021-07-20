@@ -19,7 +19,7 @@ charset.add_charset('utf-8', charset.SHORTEST, charset.QP)
 
 def send_stats(db, args):
     env = Environment(loader=FileSystemLoader(config.get('BASE_DIR') +
-                                              '/templates/'))
+                                              '/members.git/templates/'))
     template = env.get_template('stats.txt')
 
     stats = db.get_stats()

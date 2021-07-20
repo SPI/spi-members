@@ -19,7 +19,7 @@ charset.add_charset('utf-8', charset.SHORTEST, charset.QP)
 
 def send_email(db, user, vote, new):
     env = Environment(loader=FileSystemLoader(config.get('BASE_DIR') +
-                                              '/templates/'))
+                                              '/members.git/templates/'))
     if new:
         template = env.get_template('vote-begin.txt')
         subject = Header('SPI vote open: %s' % vote.title)

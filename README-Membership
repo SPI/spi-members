@@ -51,38 +51,6 @@ Some tasks in more detail:
    them) and changes to the Membership Committee.
 
 
-Scripts behind the scenes and technical information
----------------------------------------------------
-
-The PHP source code is currently in SVN at
-svn+ssh://code.spi-inc.org/svn/spi/members/trunk
-Note that this code is based on the system used for Debian's New Maintainer
-system so if you make any major changes which might be useful to Debian,
-please send your changes to new-maintainer@debian.org.
-
-There is a user called "spinm" who runs cron jobs and there is a group
-"spinm" as which all files should be owned.  Members of the Membership
-Committee have access to the spinm user via sudo.  There is a Postgres
-database called "spiapp".
-
-There are three cron jobs:
-
- - /srv/members.spi-inc.org/bin/spi-private.pl: updates the text file
-   listing all people subscribed to the spi-private mailing list.
-   This is read by Mailman.
-
- - /srv/members.spi-inc.org/bin/inform-new-apps.pl: this generates
-   a daily message to the Membership Committee if there are any
-   new pending Contributing Membership applications.
-
- - /srv/members.spi-inc.org/bin/webbuild: this periodically regenerates
-   the web site from the PHP sources.
-
-
-The Membership Committee does not have root access.  You have to contact
-admin@spi-inc.org (currently Wichert Akkerman) for any requests.
-
-
 Adding new Membership Committee members
 ---------------------------------------
 

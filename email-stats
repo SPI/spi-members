@@ -32,7 +32,7 @@ def send_stats(db, args):
     msg['Bcc'] = 'membership@spi-inc.org'
     if not args.dryrun:
         smtp = smtplib.SMTP(config.get('SMTP_SERVER'))
-        smtp.sendmail('membership@spi-inc.org', [args.email], msg.as_string())
+        smtp.sendmail('membership@spi-inc.org', args.email, msg.as_string())
         smtp.quit()
     else:
         print(msg)
@@ -41,7 +41,7 @@ def send_stats(db, args):
 parser = argparse.ArgumentParser(description='Email membership statistics')
 parser.add_argument('--email', dest='email',
                     help="Email address to send message",
-                    action='store', default='board@spi-inc.org')
+                    action='store', default=['board@spi-inc.org', 'membership@spi-inc.org'])
 parser.add_argument('--dry-run', dest='dryrun',
                     help="Just show what would happen, don't take any action",
                     action='store_const', const=True, default=False)

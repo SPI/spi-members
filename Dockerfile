@@ -32,9 +32,6 @@ COPY apache-host.conf /etc/apache2/sites-available/members.spi-inc.org.conf
 RUN a2dissite 000-default
 RUN a2ensite members.spi-inc.org
 
-# Ensure old PID due to previous usage are killed
-RUN rm -f /var/run/apache2/apache2.pid
-
 # Create the empty members database
 RUN cd /srv/members.spi-inc.org/ && \
 	(cat spiapp/spiapp-sqlite.sql ; echo .quit) | sqlite3 db/spiapp.db && \
@@ -47,4 +44,4 @@ EXPOSE 8080
 WORKDIR /srv/members.spi-inc.org/spiapp
 
 # Start Apache
-CMD /bin/bash -c "source /etc/apache2/envvars && /usr/sbin/apache2 -D FOREGROUND"
+CMD /bin/bash -c "rm -f /run/apache2/apache2.pid && source /etc/apache2/envvars && /usr/sbin/apache2 -D FOREGROUND"

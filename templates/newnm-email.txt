@@ -19,7 +19,7 @@ Subscription Host:
 
 Your name and email address were entered from the subscription host
 shown above. If you did not apply for SPI membership, then email
-admin@members.spi-inc.org asking to be removed. You can change your
+admin@spi-inc.org asking to be removed. You can change your
 password on the membership page once your application has been approved.
 
 Please be patient as your application is processed. We are working the

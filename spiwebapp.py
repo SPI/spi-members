@@ -214,11 +214,11 @@ def sendverifyemail(emailaddr, key):
                    'plain', 'utf-8')
     msg['Subject'] = email.header.Header('SPI email verification for ' +
                                          current_user.name, 'utf-8')
-    msg['From'] = 'email-check@members.spi-inc.org'
+    msg['From'] = 'members@spi-inc.org'
     msg['To'] = emailaddr
     try:
         smtp = smtplib.SMTP(app.config['SMTP_SERVER'], app.config['SMTP_PORT'])
-        smtp.sendmail('email-check@members.spi-inc.org',
+        smtp.sendmail('members@spi-inc.org',
                       [emailaddr], msg.as_string())
         smtp.quit()
         return True
@@ -823,11 +823,11 @@ def application_form():
                                                  'for ' +
                                                  application.user.name,
                                                  'utf-8')
-            msg['From'] = 'email-check@members.spi-inc.org'
+            msg['From'] = 'admin@spi-inc.org'
             msg['To'] = application.user.email
             try:
                 smtp = smtplib.SMTP(app.config['SMTP_SERVER'], app.config['SMTP_PORT'])
-                smtp.sendmail('email-check@members.spi-inc.org',
+                smtp.sendmail('admin@spi-inc.org',
                               [application.user.email], msg.as_string())
                 smtp.quit()
             except:

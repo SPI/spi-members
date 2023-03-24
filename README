@@ -1,6 +1,5 @@
-This is the SPI membership web application, which lives at:
-
-https://members.spi-inc.org/
+This is the old SPI membership web application, since 2023-03, is
+replaced by [its Django rewrite](https://gitlab.com/spi-inc/members-django.git)
 
 It enables the following actions:
 

@@ -1,5 +1,7 @@
 This is the old SPI membership web application, since 2023-03, is
-replaced by [its Django rewrite](https://gitlab.com/spi-inc/members-django.git)
+replaced by its Django rewrite:
+
+https://gitlab.com/spi-inc/members-django/
 
 It enables the following actions:
 
